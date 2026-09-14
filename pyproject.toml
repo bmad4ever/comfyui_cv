@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-cv"
 description = "Computer-vision nodes for ComfyUI: curated high-level nodes plus auto-generated wrappers for ~470 raw functions of the OpenCV (cv2) library. Built on the V3 node API."
-version = "1.0.0"
+version = "1.0.1"
 license = "GPL-3.0-only"
 license-files = ["LICENSE"]
 authors = [{ name = "bmad4ever" }]
