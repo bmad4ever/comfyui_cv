@@ -1,0 +1,825 @@
+{
+  "id": "3ecdbb27-db16-40f5-9c2d-33b01793935f",
+  "revision": 0,
+  "last_node_id": 16,
+  "last_link_id": 18,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        -91.0518011561428
+      ],
+      "size": [
+        760,
+        288.875
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Delaunay triangulation + Voronoi cells",
+      "properties": {},
+      "widgets_values": [
+        "cv2.Subdiv2D - Delaunay triangulation and its dual Voronoi diagram - is a stateful class (insert points, then query) rather than a plain function. 'CV Delaunay / Voronoi' inserts, queries and drops it in one run, so no live handle crosses the graph.\n\nThe points here are GFTT corners, but any Nx2 set works: blob centres, k-means centroids, annotated points, tracked features.\n\nDelaunay maximises the smallest angle, so the triangles are as well-shaped as the points allow - that is why it is THE mesh for piecewise-affine image morphing (triangulate landmarks, warp each triangle) and for surface reconstruction from sparse points.\n\nThe Voronoi cell of a point is everything closer to it than to any other point. The cells on the hull are unbounded, so the node clips every one against the enclosing rectangle - connect 'bounds' to the image and they tile it exactly.\n\nTry: raise min_distance on the detector to thin the points out and watch both structures get coarser; the 'edges' output draws the mesh once per edge instead of three times per triangle."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            3,
+            4,
+            9,
+            12
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load art_posters_wall.png",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "art_posters_wall.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_DetectCorners",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        360,
+        403.984375
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "keypoints",
+          "type": "CV_KEYPOINTS",
+          "links": null
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "sizes",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "responses",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV Detect Corners] 60 well-spread corners",
+      "properties": {
+        "Node name for S&R": "CV_DetectCorners"
+      },
+      "widgets_values": [
+        "GFTT (Shi-Tomasi)",
+        10,
+        true,
+        60,
+        0.03,
+        60,
+        "9/16 (default)",
+        3,
+        0.04
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_DelaunayTriangulation",
+      "pos": [
+        778,
+        240
+      ],
+      "size": [
+        450,
+        196
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 2
+        },
+        {
+          "name": "bounds",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "triangles",
+          "type": "CV_CONTOURS",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "edges",
+          "type": "NPARRAY",
+          "links": [
+            10,
+            17
+          ]
+        },
+        {
+          "name": "facets",
+          "type": "CV_CONTOURS",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "centers",
+          "type": "NPARRAY",
+          "links": [
+            7,
+            15
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV Delaunay / Voronoi] Subdiv2D: triangulate + Voronoi",
+      "properties": {
+        "Node name for S&R": "CV_DelaunayTriangulation"
+      },
+      "widgets_values": [
+        10
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_DrawContours",
+      "pos": [
+        1238,
+        240
+      ],
+      "size": [
+        290,
+        208
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 4
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "title": "Draw the triangles (blue edges)",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "(233, 180, 86)",
+        1,
+        false,
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_DrawPoints",
+      "pos": [
+        1588,
+        240
+      ],
+      "size": [
+        290,
+        178
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 6
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "...and the vertices (vermillion dots)",
+      "properties": {
+        "Node name for S&R": "CV_DrawPoints"
+      },
+      "widgets_values": [
+        4,
+        "(0, 94, 213)"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "PreviewImage",
+      "pos": [
+        1938,
+        240
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Delaunay mesh",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "CV_DrawSegments",
+      "pos": [
+        1238,
+        503.0639371301057
+      ],
+      "size": [
+        290,
+        178
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        },
+        {
+          "name": "segments",
+          "type": "NPARRAY",
+          "link": 10
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "The same mesh from 'edges'",
+      "properties": {
+        "Node name for S&R": "CV_DrawSegments"
+      },
+      "widgets_values": [
+        1,
+        "(255, 255, 0)"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "PreviewImage",
+      "pos": [
+        1588,
+        503.0639371301057
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Mesh edges (drawn once each)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "CV_DrawContours",
+      "pos": [
+        1238,
+        864.372250475173
+      ],
+      "size": [
+        290,
+        208
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "Draw the Voronoi cells (purple edges)",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "(167, 121, 204)",
+        1,
+        false,
+        0
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_DrawPoints",
+      "pos": [
+        1588,
+        864.372250475173
+      ],
+      "size": [
+        290,
+        178
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 14
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "title": "...and their sites",
+      "properties": {
+        "Node name for S&R": "CV_DrawPoints"
+      },
+      "widgets_values": [
+        3,
+        "(255, 255, 255)"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "PreviewImage",
+      "pos": [
+        1938,
+        864.372250475173
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Voronoi cells (clipped to the image)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "CV_CVInspect",
+      "pos": [
+        2288,
+        246.82179981795372
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            18
+          ]
+        }
+      ],
+      "title": "Inspect: mesh edges",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "PreviewAny",
+      "pos": [
+        2289,
+        377.3476107517688
+      ],
+      "size": [
+        291.078125,
+        158
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "title": "Preview as Text: Inspect: mesh edges"
+    },
+    {
+      "id": 15,
+      "type": "Note",
+      "pos": [
+        -201,
+        630.3908345202294
+      ],
+      "size": [
+        559.140625,
+        179.078125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "art_posters_wall.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Synthetic composite: three public-domain paintings on a generated plaster wall\nCreator: generated (this repo)\nLicense: source paintings public domain; wall texture synthetic (no third-party rights)\nSource:  synthetic; paintings: art_ref_starry.png (Van Gogh), art_ref_wave.png (Hokusai), art_ref_pearl.png (Vermeer)\nSize:    1500x1050\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      1,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      2,
+      0,
+      4,
+      1,
+      "IMAGE"
+    ],
+    [
+      4,
+      2,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      4,
+      0,
+      5,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      6,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      4,
+      3,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      8,
+      6,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      2,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      4,
+      1,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      11,
+      8,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      2,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      4,
+      2,
+      10,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      14,
+      10,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      4,
+      3,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      16,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      4,
+      1,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      18,
+      13,
+      0,
+      14,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5232784615384637,
+      "offset": [
+        611.2468128114333,
+        540.7939367226556
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

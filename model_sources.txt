@@ -1,0 +1,272 @@
+MODEL FILES - provenance, licensing and where to put them
+=========================================================
+
+NONE of these files ship with this repo; download them yourself into the ComfyUI folder named under each
+section heading. Every workflow that needs one also carries a "Model:" note
+on its canvas with the same download URL; this file is the licensing record.
+
+Provenance for the images, videos and 3D assets that DO ship with the pack
+(example_inputs/) lives in example_inputs/sources.txt.
+
+Licenses below were read from the model card / LICENSE of the linked
+repository. Where a model is a re-export of someone else's network, BOTH the
+upstream license and the packaging license are listed - the stricter one
+governs. Anything not verified says so.
+
+Two entries need reading before use rather than after: yolo26n-seg.onnx is
+AGPL-3.0 (copyleft, with a network clause), and paligemma2-3b-pt-224 is under
+the Gemma Terms and is not redistributable at all.
+
+
+ComfyUI/models/onnx
+-------------------
+
+face_detection_yunet_2023mar.onnx
+  Title:   YuNet face detector (OpenCV Zoo)
+  Creator: Shiqi Yu et al.; ONNX packaging by OpenCV Zoo
+  License: MIT ("all files in this directory are licensed under MIT License")
+           https://opensource.org/license/mit
+  Source:  https://huggingface.co/opencv/face_detection_yunet
+  Upstream: https://github.com/ShiqiYu/libfacedetection.train
+           (Wu, Peng, Yu - "YuNet: a tiny millisecond-level face detector",
+           Machine Intelligence Research 2023)
+  Used in: 65_yunet_face_detection.json, 66_face_recognition.json
+
+palm_detection_mediapipe_2023feb_int8bq.onnx
+handpose_estimation_mediapipe_2023feb_int8bq.onnx
+  Title:   MediaPipe palm detection + hand-pose estimation (OpenCV Zoo)
+  Creator: Google (MediaPipe Hands); TFLite->ONNX conversion by OpenCV Zoo
+  License: Apache-2.0 ("all files in this directory are licensed under
+           Apache 2.0 License")
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://huggingface.co/opencv/palm_detection_mediapipe
+           https://huggingface.co/opencv/handpose_estimation_mediapipe
+  Note:    converted with tensorflow-onnx + onnx-simplifier; the int8
+           block-quantized variants were calibrated on FreiHAND.
+  Used in: 67_handpose_estimation.json
+
+detect_2026april.onnx + sr_2026april.onnx
+  Title:   WeChat QR code detector + super-resolution models
+  Creator: WeChatCV, redistributed through the OpenCV contribution repo
+  License: Apache-2.0 (opencv_contribution repo license)
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://huggingface.co/opencv/opencv_contribution
+  Note:    the repo is Apache-2.0 as a whole but asks contributors to
+           "refer to licenses of different models" - a per-model LICENSE may
+           be stricter. Not separately verified for these two files.
+  Used in: 81_qr_code_detection.json
+
+deblurring_nafnet_2025may.onnx
+  Title:   NAFNet deblurring / restoration model
+  Creator: megvii-research (NAFNet); ONNX packaging by OpenCV
+  License: MIT ("all files in this directory are licensed under MIT License")
+           https://opensource.org/license/mit
+  Source:  https://huggingface.co/opencv/deblurring_nafnet
+  Upstream: https://github.com/megvii-research/NAFNet
+  Used in: 72_dnn_deblur.json (the NAFNet deblur node)
+
+mosaic-9.onnx
+  Title:   ONNX fast-neural-style 'mosaic' model (Johnson et al. 2016)
+  License: MIT (ONNX Model Zoo)
+           https://opensource.org/license/mit
+  Source:  https://huggingface.co/onnxmodelzoo/mosaic-9
+  Used in: 73_dnn_style_transfer.json, 74_batch_dnn_style_transfer.json
+  Note:    Swap in eudnie.onnx / candy-9.onnx / rain-princess-9.onnx /
+           pointilism-9.onnx (same preprocessing) for the other styles.
+
+east_text_detection_2026jul.onnx
+  Title:   EAST text detection ONNX model (East Text Detection Demo)
+  License: Apache-2.0 (OpenCV)
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://huggingface.co/opencv/opencv_contribution
+  Used in: 68_east_text_detection.json
+
+colorization_deploy_v2_2026april.onnx
+  Title:   Colorization Deploy V2 ONNX model
+  Creator: OpenCV contribution (Richard Zhang / ECCV 2016)
+  License: BSD-2-Clause (upstream model, (c) 2016 Richard Zhang, Phillip Isola,
+           Alexei A. Efros), Apache-2.0 (OpenCV packaging)
+           https://opensource.org/license/bsd-2-clause
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://huggingface.co/opencv/opencv_contribution/tree/main/submissions/colorization
+  Upstream: https://github.com/richzhang/colorization
+           LICENSE: https://raw.githubusercontent.com/richzhang/colorization/master/LICENSE
+           (the README's own relative link to it 404s; the raw file above is the
+           text that was checked - 2 numbered conditions, no non-endorsement clause)
+  Used in: 75_colorization.json
+
+yolo26n-seg.onnx
+  Title:   YOLO26-nano segmentation model
+  Creator: Ultralytics (weights + exporter); conversion published through the
+           OpenCV contribution repo
+  License: AGPL-3.0 - the model's own README on the contribution repo states
+           that "YOLO26n weights and the Ultralytics exporter are released
+           under AGPL-3.0", and that any redistribution of the converted file
+           is subject to those terms. The Apache-2.0 on the opencv_contribution
+           repo covers the packaging only; AGPL-3.0 is the governing term.
+           https://www.gnu.org/licenses/agpl-3.0.html
+           https://github.com/ultralytics/ultralytics/blob/main/LICENSE
+  Source:  https://huggingface.co/opencv/opencv_contribution
+  Note:    THIS IS THE ONE MODEL HERE WITH A COPYLEFT NETWORK CLAUSE. Nothing
+           in this pack redistributes it - the user downloads it themselves,
+           which is what AGPL-3.0 leaves untouched. Serving its output over a
+           network, or shipping the file inside anything, pulls the AGPL
+           obligations in. The README's wording is about the converted
+           yolo26n.tflite; the -seg ONNX is the same upstream weights, so the
+           same terms apply.
+  Used in: 70_yolo_seg.json
+           (labels: example_inputs/coco-labels-2014_2017.txt, see
+           example_inputs/sources.txt)
+
+yolov4.onnx / yolov4x-mish.onnx
+  Title:   YOLOv4 COCO object detector
+  Creator: Bochkovskiy / Wang / Liao (darknet); ONNX packaging by OpenCV
+  License: public domain (darknet's "YOLO LICENSE Version 2, July 29 2016":
+           "0. Darknet is public domain. 1. Do whatever you want with it."),
+           Apache-2.0 (opencv_contribution packaging)
+           https://raw.githubusercontent.com/AlexeyAB/darknet/master/LICENSE
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://huggingface.co/opencv/opencv_contribution
+  Used in: 69_yolov4_detection.json
+           (labels: example_inputs/coco-labels-2014_2017.txt, see
+           example_inputs/sources.txt)
+
+face_recognition_sface_2021dec.onnx   (37 MB)
+  Title:   SFace face-recognition embeddings (OpenCV Zoo)
+  Creator: Yaoyao Zhong (SFace loss / MobileFaceNet); ONNX conversion by
+           Chengrui Wang
+  License: Apache-2.0 ("all files in this directory are licensed under
+           Apache 2.0 License")
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://huggingface.co/opencv/face_recognition_sface
+           https://github.com/opencv/opencv_zoo/raw/main/models/face_recognition_sface/face_recognition_sface_2021dec.onnx
+  Upstream: https://github.com/zhongyy/SFace
+  Used in: 66_face_recognition.json ('OpenCV SFace Embeddings')
+
+optical_flow_estimation_raft_2023aug.onnx   (61 MB fp32)
+  Title:   RAFT optical flow, ONNX export
+  Creator: Zachary Teed + Jia Deng (Princeton); ONNX export by PINTO0309
+  License: BSD-3-Clause (upstream RAFT), MIT (the ONNX conversion)
+           https://opensource.org/license/bsd-3-clause
+           https://opensource.org/license/mit
+  Source:  https://huggingface.co/opencv/optical_flow_estimation_raft
+  Upstream: https://github.com/princeton-vl/RAFT (arXiv 2003.12039)
+  Note:    the 47 MB block-quantized ..._int8bq.onnx is in the same repo.
+  Used in: 76_raft_optical_flow_dnn.json
+
+rife_v4.9.onnx   (21 MB fp32)
+  Title:   RIFE v4.9 frame interpolation, ONNX export
+  Creator: Huang et al. (RIFE, ECCV 2022, arXiv 2011.06294); export by FuryTMP
+  License: MIT (HF repo tag; upstream RIFE is MIT)
+           https://opensource.org/license/mit
+  Source:  https://huggingface.co/FuryTMP/RIFE_v4.9
+  Note:    NOT the export at https://huggingface.co/FuryTMP/RIFE_fp32 -
+           cv2.dnn cannot run that graph.
+  Used in: 77_rife_frame_interpolation.json
+
+squeezenet1.1-7.onnx   (~4.9 MB)
+  Title:   SqueezeNet 1.1 ImageNet classifier, ONNX opset 7
+  Source:  ONNX Model Zoo (validated/vision/classification/squeezenet)
+  URL:     https://github.com/onnx/models/raw/main/validated/vision/classification/squeezenet/model/squeezenet1.1-7.onnx
+  License: BSD-3-Clause (upstream SqueezeNet), Apache-2.0 (ONNX Model Zoo packaging)
+           https://opensource.org/license/bsd-3-clause
+           https://www.apache.org/licenses/LICENSE-2.0
+  Used in: exercise_transfer_learning.json - as a FROZEN feature-extractor
+           backbone: 'OpenCV Deep Features' taps the fire-module bottleneck
+           squeezenet0_concat7 (auto-prefixed onnx_node! under the pinned
+           CLASSIC dnn engine) and global-average-pools it to a 512-d
+           embedding; no classifier logits, no finetuning. (The dataset itself
+           is synthesized in-graph.)
+
+
+ComfyUI/models/onnx/lightglue
+-----------------------------
+
+disk.onnx
+  Title:   DISK feature extractor ONNX model (Tyszkiewicz et al. 2020)
+  License: Apache-2.0 (LightGlue-ONNX), Apache-2.0 (DISK upstream)
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/fabio-sim/LightGlue-ONNX/releases (v0.1.0)
+  Used in: 36_feature_matching_playground.json
+
+disk_lightglue.onnx
+  Title:   LightGlue matcher ONNX model (Lindenberger et al. 2023)
+  License: Apache-2.0 (LightGlue-ONNX), Apache-2.0 (LightGlue upstream)
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/fabio-sim/LightGlue-ONNX/releases (v0.1.0)
+  Used in: 36_feature_matching_playground.json
+
+
+ComfyUI/models/cascades
+-----------------------
+
+haarcascade_*.xml / lbpcascade_*.xml
+  Title:   Trained Viola-Jones cascades for 'OpenCV Cascade Detect'
+  License: Intel/Willow Garage BSD-3-Clause (see the header of each XML)
+           https://opensource.org/license/bsd-3-clause
+  Source:  https://github.com/opencv/opencv/tree/4.x/data/haarcascades
+           https://github.com/opencv/opencv/tree/4.x/data/lbpcascades
+  Note:    OpenCV 5 DELETED the data/ folder these used to ship in
+           (cv2.data.haarcascades is an empty directory in this build), so they
+           must come from the 4.x branch - they still load. The 5.x URLs return
+           a 404 HTML page; saved as .xml that loads as an EMPTY cascade, which
+           the node reports as a config error.
+  Used in: 66_face_recognition.json
+
+
+ComfyUI/models/quality
+----------------------
+
+brisque_model_live.yml + brisque_range_live.yml
+  Title:   BRISQUE no-reference quality model + range file, trained on LIVE
+  License: Apache-2.0 (opencv_contrib)
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/opencv/opencv_contrib
+           (modules/quality/samples/)
+  Used in: 86_quality_metrics.json
+
+ComfyUI/models/llm
+------------------
+
+opencv/qwen2.5-0.5b-instruct   (folder, ~2 GB)
+  Title:   Qwen2.5-0.5B-Instruct, ONNX export (fp32, with-past)
+  Creator: Alibaba Qwen team; ONNX export by onnx-community
+  License: Apache-2.0 (Qwen/Qwen2.5-0.5B-Instruct, the base model)
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://huggingface.co/onnx-community/Qwen2.5-0.5B-Instruct
+           (file onnx/model.onnx)
+  Note:    the export repo declares no license tag of its own; the base model's
+           Apache-2.0 is the governing term. The folder also needs an
+           OpenCV-format config.json + the family's tokenizer.json from
+           https://github.com/opencv/opencv_extra (testdata/dnn/llm/,
+           Apache-2.0). Both parts of the folder matter.
+  Used in: 78_llm_chat.json
+
+opencv/paligemma2-3b-pt-224   (folder, 3-part export)
+  Title:   PaliGemma2-3B pt-224 vision-language model, ONNX export
+  Creator: Google; ONNX export by nklskyoy
+  License: Gemma Terms of Use - NOT an open-source license and NOT
+           redistributable. Gated: accept the terms on the Google model page
+           before downloading.
+           https://ai.google.dev/gemma/terms
+           https://ai.google.dev/gemma/prohibited_use_policy
+  Source:  https://huggingface.co/nklskyoy/paligemma2-3b-pt-224-onnx
+           (siglip/, embedding/, gemma/ - fp32, no past inputs)
+  Upstream: https://huggingface.co/google/paligemma2-3b-pt-224
+  Note:    also needs the OpenCV-format config.json + the gemma2 SentencePiece
+           tokenizer from https://github.com/opencv/opencv_extra
+           (testdata/dnn/llm/, Apache-2.0).
+  Used in: 79_vlm_caption.json
+
+
+ComfyUI/models/checkpoints
+--------------------------
+
+sam3.1_multiplex_fp16.safetensors
+  Title:   SAM 3.1 multiplex checkpoint, ComfyUI repack
+  Creator: Meta (SAM 3.1); repacked by Comfy-Org
+  License: "sam-license" (Meta's SAM License) - repo license tag. Terms not
+           read here; check them before redistributing. Not an OSI license.
+  Source:  https://huggingface.co/Comfy-Org/sam3.1 (checkpoints/)
+  Upstream: https://huggingface.co/facebook/sam3.1
+  Used in: exercise_clock_reading.json, exercise_document_perspective.json

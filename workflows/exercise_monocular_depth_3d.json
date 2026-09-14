@@ -1,0 +1,1252 @@
+{
+  "id": "ccf1c414-3c96-4457-8d5c-952b8e4b373d",
+  "revision": 0,
+  "last_node_id": 134,
+  "last_link_id": 135,
+  "nodes": [
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        640
+      ],
+      "size": [
+        320,
+        340
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load color image",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "nyu_depth_rgb.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_CameraMatrix",
+      "pos": [
+        1350,
+        640
+      ],
+      "size": [
+        290,
+        200
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            5,
+            11,
+            15
+          ]
+        }
+      ],
+      "title": "Camera matrix K",
+      "properties": {
+        "Node name for S&R": "CV_CameraMatrix"
+      },
+      "widgets_values": [
+        518.86,
+        519.47,
+        325.58,
+        253.74
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_ImageToCV",
+      "pos": [
+        1000,
+        640
+      ],
+      "size": [
+        290,
+        168
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "title": "Color -> BGR CV",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_CVPreview",
+      "pos": [
+        1709,
+        635.3745997865528
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Depth map heatmap",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        false
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_CVInspect",
+      "pos": [
+        2050,
+        640
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "title": "Inspect 3D points",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "CV_CVInspect",
+      "pos": [
+        1347,
+        886.2540021344716
+      ],
+      "size": [
+        297.703125,
+        80.453125
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "Inspect camera matrix K",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "PreviewAny",
+      "pos": [
+        2037,
+        768.9505514051939
+      ],
+      "size": [
+        328.5625,
+        176.65625
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ],
+      "title": "Preview as Text: Inspect 3D points"
+    },
+    {
+      "id": 14,
+      "type": "PreviewAny",
+      "pos": [
+        1347,
+        1012.681607968694
+      ],
+      "size": [
+        310,
+        152
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ],
+      "title": "Preview as Text: Inspect camera matrix K"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        340
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            22
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load depth map",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "nyu_depth_map.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ImageToCV",
+      "pos": [
+        1000,
+        240
+      ],
+      "size": [
+        290,
+        168
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            134
+          ]
+        }
+      ],
+      "title": "Depth -> BGR float32",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "float32 (0-1)",
+        0
+      ]
+    },
+    {
+      "id": 5,
+      "type": "cv2_extractChannel",
+      "pos": [
+        1715,
+        191.34815703361383
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 135
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            4,
+            9
+          ]
+        }
+      ],
+      "title": "Extract depth channel",
+      "properties": {
+        "Node name for S&R": "cv2_extractChannel"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_DepthTo3D",
+      "pos": [
+        1720,
+        351.20421249459673
+      ],
+      "size": [
+        290,
+        152
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "depth",
+          "type": "NPARRAY",
+          "link": 4
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 5
+        },
+        {
+          "name": "colors",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            7,
+            10
+          ]
+        },
+        {
+          "name": "colors",
+          "type": "NPARRAY",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "[CV Depth to 3D Points]",
+      "properties": {
+        "Node name for S&R": "CV_DepthTo3D"
+      },
+      "widgets_values": [
+        65.535
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CV_WritePly",
+      "pos": [
+        2074,
+        189.1961180545146
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "name": "colors",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "ply",
+          "type": "FILE_3D_PLY",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "Write PLY (point cloud)",
+      "properties": {
+        "Node name for S&R": "CV_WritePly"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CV_CameraPoseTo3DView",
+      "pos": [
+        2073,
+        341.0620561256587
+      ],
+      "size": [
+        500,
+        200
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "rvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "tvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "orbit_anchor",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "fov_y_deg",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "[CV Camera Pose To 3D View] OpenCV camera -> 3D viewer camera",
+      "properties": {
+        "Node name for S&R": "CV_CameraPoseTo3DView"
+      },
+      "widgets_values": [
+        640,
+        480,
+        1
+      ]
+    },
+    {
+      "id": 16,
+      "type": "PreviewPointCloud",
+      "pos": [
+        2583,
+        187.02479288862278
+      ],
+      "size": [
+        400,
+        550
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_POINT_CLOUD_ANY,FILE_3D_PLY",
+          "link": 14
+        },
+        {
+          "name": "model_3d_info",
+          "shape": 7,
+          "type": "LOAD3D_MODEL_INFO",
+          "link": null
+        },
+        {
+          "name": "camera_info",
+          "shape": 7,
+          "type": "LOAD3D_CAMERA",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_POINT_CLOUD_ANY",
+          "links": null
+        },
+        {
+          "name": "model_3d_info",
+          "type": "LOAD3D_MODEL_INFO",
+          "links": null
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": null
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewPointCloud",
+        "Camera Config": {
+          "cameraType": "perspective",
+          "fov": 35,
+          "state": {
+            "position": {
+              "x": 0.4662119708847937,
+              "y": 0.7128542199319684,
+              "z": 2.455626183345976
+            },
+            "target": {
+              "x": -0.13551276581923677,
+              "y": -0.015947195218104993,
+              "z": -0.004264029089718543
+            },
+            "zoom": 1,
+            "cameraType": "perspective"
+          }
+        },
+        "Last Time Model File": "preview_pointcloud_17a4433e0f994f0593ae835ad18e51a2.ply",
+        "Scene Config": {
+          "showGrid": true,
+          "backgroundColor": "#282828",
+          "backgroundImage": "",
+          "backgroundRenderMode": "tiled",
+          "models": [
+            {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "quaternion": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            }
+          ]
+        },
+        "Light Config": {
+          "intensity": 3,
+          "hdri": {
+            "enabled": false,
+            "hdriPath": "",
+            "showAsBackground": false,
+            "intensity": 1
+          }
+        },
+        "Model Config": {
+          "upDirection": "original",
+          "materialMode": "pointCloud",
+          "showSkeleton": false,
+          "gizmo": {
+            "enabled": false,
+            "mode": "translate",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        }
+      },
+      "widgets_values": [
+        "",
+        640,
+        480
+      ]
+    },
+    {
+      "id": 112,
+      "type": "55bfe435-3d91-4544-85b2-fa32ad81cd31",
+      "pos": [
+        1417,
+        236.44581443360795
+      ],
+      "size": [
+        225,
+        173.546875
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 134
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            135
+          ]
+        }
+      ],
+      "title": "Invert",
+      "properties": {
+        "proxyWidgets": [],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        47,
+        -27.46632150553861
+      ],
+      "size": [
+        979.71875,
+        228.28125
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Exercise: depth map to 3D point cloud\n\nTakes a depth map (from any source) and back-projects to a colored 3D point cloud using camera intrinsics:\n1. Load depth as BGR float32, extract channel 0 (no weighted formula).\n2. 'CV Depth to 3D Points' computes X=(u-cx)*Z/fx, Y=-(v-cy)*Z/fy.\n3. 'CV Write PLY' exports the cloud for PreviewPointCloud.\n\nImages: NYU Depth V2 sample 10 (indoor hallway, 1-9.5 m depth).\n  Dataset: https://huggingface.co/datasets/jagennath-hari/nyuv2\n  Camera intrinsics: https://huggingface.co/datasets/jagennath-hari/nyuv2/blob/main/camera_params.json\ndepth_scale converts raw float 0-1 to meters: 65535/1000 = 65.535."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 113,
+      "type": "Note",
+      "pos": [
+        370,
+        610
+      ],
+      "size": [
+        620,
+        164
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "nyu_depth_rgb.jpg / nyu_depth_map.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   NYU Depth V2 (indoor RGB-D scene, sample 10)\nCreator: Nathan Silberman et al. (NYU), redistributed via jagennath-hari/nyuv2\nLicense: MIT (NYU Depth V2 preprocessed dataset)\n         https://opensource.org/license/mit\nSource:  https://huggingface.co/datasets/jagennath-hari/nyuv2 (train split, sample 10)\nSize:    640x480 each; depth map is uint16 in millimeters (range ~1-9.5 m)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      3,
+      3,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      5,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      6,
+      0,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      6,
+      7,
+      0,
+      8,
+      2,
+      "NPARRAY"
+    ],
+    [
+      7,
+      8,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      8,
+      8,
+      1,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      9,
+      5,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      8,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      6,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      11,
+      0,
+      13,
+      0,
+      "STRING"
+    ],
+    [
+      13,
+      12,
+      0,
+      14,
+      0,
+      "STRING"
+    ],
+    [
+      14,
+      9,
+      0,
+      16,
+      0,
+      "FILE_3D_PLY"
+    ],
+    [
+      15,
+      6,
+      0,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      17,
+      0,
+      16,
+      2,
+      "LOAD3D_CAMERA"
+    ],
+    [
+      22,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      134,
+      4,
+      0,
+      112,
+      0,
+      "NPARRAY"
+    ],
+    [
+      135,
+      112,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "55bfe435-3d91-4544-85b2-fa32ad81cd31",
+        "version": 1,
+        "state": {
+          "lastGroupId": 6,
+          "lastNodeId": 112,
+          "lastLinkId": 135,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Invert",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            562.8090355611329,
+            288.63677850333335,
+            128,
+            68
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            1083.2265505328191,
+            288.63677850333335,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "921b2e15-e68c-4450-b250-43ec1a88795b",
+            "name": "src2",
+            "type": "NPARRAY,IMAGE,MASK,LATENT",
+            "linkIds": [
+              133,
+              23
+            ],
+            "localized_name": "src2",
+            "pos": [
+              666.8090355611329,
+              312.63677850333335
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "758b4162-2a4f-4a35-966c-04afb8cef7f5",
+            "name": "result",
+            "type": "NPARRAY",
+            "linkIds": [
+              43
+            ],
+            "localized_name": "result",
+            "pos": [
+              1107.2265505328191,
+              312.63677850333335
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 23,
+            "type": "cv2_subtract",
+            "pos": [
+              753.2265505328191,
+              239.9434978732671
+            ],
+            "size": [
+              270,
+              98
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 42
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 133
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  40
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ]
+          },
+          {
+            "id": 21,
+            "type": "CV_ArrayStat",
+            "pos": [
+              750.8090355611329,
+              117.59124299277413
+            ],
+            "size": [
+              270,
+              78
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 23
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "NPARRAY",
+                "links": [
+                  42
+                ]
+              },
+              {
+                "localized_name": "text",
+                "name": "text",
+                "type": "STRING",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ArrayStat"
+            },
+            "widgets_values": [
+              "max"
+            ]
+          },
+          {
+            "id": 24,
+            "type": "cv2_threshold",
+            "pos": [
+              758.0160190825015,
+              383.68231401389255
+            ],
+            "size": [
+              259.36399103981614,
+              174
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 40
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  43
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0,
+              0,
+              "THRESH_TOZERO"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 42,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 23,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 40,
+            "origin_id": 23,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 133,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 23,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 23,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 21,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 43,
+            "origin_id": 24,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.713451776649751,
+      "offset": [
+        593.4998410857211,
+        411.58710427750634
+      ]
+    },
+    "frontendVersion": "1.45.20"
+  },
+  "version": 0.4
+}

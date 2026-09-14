@@ -1,0 +1,2528 @@
+{
+  "id": "5e59dfe2-4f64-410c-b04e-8a286a65bd58",
+  "revision": 0,
+  "last_node_id": 49,
+  "last_link_id": 58,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        553,
+        294.3668144843573
+      ],
+      "size": [
+        759.984375,
+        271.34375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Omnidirectional cameras (CMei's model). A catadioptric rig - a camera pointed at a curved mirror - sees PAST 180 degrees, which no pinhole and no fisheye model can express, so cv2.omnidir adds a mirror parameter 'xi' on top of K and four (k1, k2, p1, p2) coefficients. Three things this workflow shows. (1) The calibration fits these eight views to 0.05 px - and still reports fx 327 / xi 0.96 for a camera whose truth is 300 / 0.80. Focal length and xi are strongly correlated, so a low RMS says the parameter SET is self-consistent, not that either number is right; only boards spread into the periphery separate them. The principal point does come out right (399.9 against 400). (2) There is no single 'undistorted' image: the view is wider than a plane holds, so you pick a projection. The four 'Omnidir Undistort' instances render the SAME frame as a flat photo of the middle, two unrolled panorama strips and a conformal stereographic view. Note the two unrolled modes need a width/height-over-pi camera matrix, which the node builds for you - a perspective-style K there renders black and cv2 says nothing. (3) The bottom half reconstructs depth from an omnidir STEREO pair in one call: rectifying a catadioptric pair is not a homography, so cv2.omnidir.stereoReconstruct does rectify + SGBM + back-projection together. It is fed the known camera parameters as literals, on purpose - the two halves are independent, so a calibration miss cannot take the depth half down. The last row calibrates blank frames: no board, found=false, no raise."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "Note",
+      "pos": [
+        -566,
+        458.52280807335745
+      ],
+      "size": [
+        914.609375,
+        164.578125
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "omnidir_board_00..07.png + omnidir_scene_L/R.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Synthetic CATADIOPTRIC chessboard views + stereo room pair (CMei model)\nCreator: generated (this repo)\nLicense: no third-party rights (synthetic renders)\nSource:  synthetic; rendered through a KNOWN omnidirectional camera (fx = fy = 300, cx,cy = 400,300, xi = 0.8, k1,k2,p1,p2 = -0.12, 0.04, 0.001, -0.0008)\nSize:    800x600 each\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        406,
+        615.2953000588882
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            12,
+            17,
+            22,
+            27,
+            32
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir board view 0",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_board_00.png",
+        "image"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        -604,
+        660.1732427012145
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir board view 1",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_board_01.png",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "LoadImage",
+      "pos": [
+        -274,
+        667.1866996625522
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir board view 2",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_board_02.png",
+        "image"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LoadImage",
+      "pos": [
+        56,
+        675.585197278851
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir board view 3",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_board_03.png",
+        "image"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "LoadImage",
+      "pos": [
+        -615,
+        1054.5948172245123
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir board view 4",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_board_04.png",
+        "image"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "LoadImage",
+      "pos": [
+        -285,
+        1061.1630326316051
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir board view 5",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_board_05.png",
+        "image"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "LoadImage",
+      "pos": [
+        45,
+        1077.6453707469407
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir board view 6",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_board_06.png",
+        "image"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "LoadImage",
+      "pos": [
+        375,
+        1084.381206653949
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir board view 7",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_board_07.png",
+        "image"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "BatchImagesNode",
+      "pos": [
+        763,
+        840
+      ],
+      "size": [
+        290,
+        236
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images.image0",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 2
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 3
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 4
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 5
+        },
+        {
+          "label": "image5",
+          "name": "images.image5",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 6
+        },
+        {
+          "label": "image6",
+          "name": "images.image6",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 7
+        },
+        {
+          "label": "image7",
+          "name": "images.image7",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "label": "image8",
+          "name": "images.image8",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "Batch the eight views",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "BatchImagesNode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "CV_OmnidirCalibrate",
+      "pos": [
+        1113,
+        640
+      ],
+      "size": [
+        540,
+        590
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            10,
+            13,
+            18,
+            23,
+            28
+          ]
+        },
+        {
+          "name": "xi",
+          "type": "FLOAT",
+          "links": [
+            15,
+            20,
+            25,
+            30
+          ]
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "links": [
+            11,
+            14,
+            19,
+            24,
+            29
+          ]
+        },
+        {
+          "name": "rms_error",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "views_used",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Omnidir Calibrate (Chessboard)] Omnidir calibrate (CMei: K, xi, D)",
+      "properties": {
+        "Node name for S&R": "CV_OmnidirCalibrate"
+      },
+      "widgets_values": [
+        9,
+        6,
+        "none (0) | CALIB_FIX_SKEW",
+        1,
+        7
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_CVInspect",
+      "pos": [
+        1591,
+        240
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            52
+          ]
+        }
+      ],
+      "title": "Recovered K",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "CV_CVInspect",
+      "pos": [
+        1591,
+        440
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            53
+          ]
+        }
+      ],
+      "title": "Recovered dist (k1,k2,p1,p2)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 15,
+      "type": "CV_OmnidirUndistort",
+      "pos": [
+        1719,
+        731.5813577607657
+      ],
+      "size": [
+        510,
+        248
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 12
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 13
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "link": 14
+        },
+        {
+          "name": "view_rotation",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "xi",
+          "type": "FLOAT",
+          "widget": {
+            "name": "xi"
+          },
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "new_camera_matrix",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Omnidir Undistort] Undistort view 0: RECTIFY_PERSPECTIVE",
+      "properties": {
+        "Node name for S&R": "CV_OmnidirUndistort"
+      },
+      "widgets_values": [
+        0.8,
+        "RECTIFY_PERSPECTIVE",
+        200
+      ]
+    },
+    {
+      "id": 16,
+      "type": "PreviewImage",
+      "pos": [
+        2239,
+        731.5813577607657
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: RECTIFY_PERSPECTIVE",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CV_OmnidirUndistort",
+      "pos": [
+        1719,
+        1069.7156841414476
+      ],
+      "size": [
+        510,
+        248
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 17
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 18
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "link": 19
+        },
+        {
+          "name": "view_rotation",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "xi",
+          "type": "FLOAT",
+          "widget": {
+            "name": "xi"
+          },
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            21
+          ]
+        },
+        {
+          "name": "new_camera_matrix",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Omnidir Undistort] Undistort view 0: RECTIFY_CYLINDRICAL",
+      "properties": {
+        "Node name for S&R": "CV_OmnidirUndistort"
+      },
+      "widgets_values": [
+        0.8,
+        "RECTIFY_CYLINDRICAL",
+        200
+      ]
+    },
+    {
+      "id": 18,
+      "type": "PreviewImage",
+      "pos": [
+        2239,
+        1069.7156841414476
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: RECTIFY_CYLINDRICAL",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 19,
+      "type": "CV_OmnidirUndistort",
+      "pos": [
+        2859,
+        748.3427358275959
+      ],
+      "size": [
+        530,
+        248
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 22
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 23
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "link": 24
+        },
+        {
+          "name": "view_rotation",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "xi",
+          "type": "FLOAT",
+          "widget": {
+            "name": "xi"
+          },
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            26
+          ]
+        },
+        {
+          "name": "new_camera_matrix",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Omnidir Undistort] Undistort view 0: RECTIFY_STEREOGRAPHIC",
+      "properties": {
+        "Node name for S&R": "CV_OmnidirUndistort"
+      },
+      "widgets_values": [
+        0.8,
+        "RECTIFY_STEREOGRAPHIC",
+        200
+      ]
+    },
+    {
+      "id": 20,
+      "type": "PreviewImage",
+      "pos": [
+        3399,
+        748.3427358275959
+      ],
+      "size": [
+        300,
+        290
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: RECTIFY_STEREOGRAPHIC",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "CV_OmnidirUndistort",
+      "pos": [
+        2859,
+        1073.660475224503
+      ],
+      "size": [
+        480,
+        248
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 27
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 28
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "link": 29
+        },
+        {
+          "name": "view_rotation",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "xi",
+          "type": "FLOAT",
+          "widget": {
+            "name": "xi"
+          },
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            31
+          ]
+        },
+        {
+          "name": "new_camera_matrix",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Omnidir Undistort] Undistort view 0: RECTIFY_LONGLATI",
+      "properties": {
+        "Node name for S&R": "CV_OmnidirUndistort"
+      },
+      "widgets_values": [
+        0.8,
+        "RECTIFY_LONGLATI",
+        200
+      ]
+    },
+    {
+      "id": 22,
+      "type": "PreviewImage",
+      "pos": [
+        3399,
+        1073.660475224503
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: RECTIFY_LONGLATI",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "PreviewImage",
+      "pos": [
+        2553,
+        875.90807362651
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "The omnidir frame as shot",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 24,
+      "type": "LoadImage",
+      "pos": [
+        -10,
+        1856.0401433691802
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            33
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir scene, left",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_scene_L.png",
+        "image"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "LoadImage",
+      "pos": [
+        -10,
+        2240.8838089796163
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            34
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Omnidir scene, right",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "omnidir_scene_R.png",
+        "image"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        347,
+        1856.0401433691802
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            35,
+            37
+          ]
+        }
+      ],
+      "title": "Known K (both cameras)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "300  0  400\n0  300  300\n0  0  1",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 27,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        347,
+        2056.0401433691804
+      ],
+      "size": [
+        290,
+        177.078125
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            36,
+            38
+          ]
+        }
+      ],
+      "title": "Known distortion (k1, k2, p1, p2)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-0.12\n0.04\n0.001\n-0.0008",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 28,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        347,
+        2275.9770564550518
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "Known R (left -> right)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0.999200106661  0  -0.0399893341866\n0  1  0\n0.0399893341866  0  0.999200106661",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 29,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        347,
+        2481.6733173367297
+      ],
+      "size": [
+        310,
+        160
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "title": "Known T (baseline, sets the cloud scale)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-60\n0\n0",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 30,
+      "type": "CV_OmnidirStereoReconstruct",
+      "pos": [
+        703,
+        2056.0401433691804
+      ],
+      "size": [
+        680,
+        366
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "IMAGE",
+          "link": 33
+        },
+        {
+          "name": "right",
+          "type": "IMAGE",
+          "link": 34
+        },
+        {
+          "name": "K_left",
+          "type": "NPARRAY",
+          "link": 35
+        },
+        {
+          "name": "dist_left",
+          "type": "NPARRAY",
+          "link": 36
+        },
+        {
+          "name": "K_right",
+          "type": "NPARRAY",
+          "link": 37
+        },
+        {
+          "name": "dist_right",
+          "type": "NPARRAY",
+          "link": 38
+        },
+        {
+          "name": "R",
+          "type": "NPARRAY",
+          "link": 39
+        },
+        {
+          "name": "T",
+          "type": "NPARRAY",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "disparity",
+          "type": "NPARRAY",
+          "links": [
+            41
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": [
+            42
+          ]
+        },
+        {
+          "name": "left_rectified",
+          "type": "IMAGE",
+          "links": [
+            43
+          ]
+        },
+        {
+          "name": "right_rectified",
+          "type": "IMAGE",
+          "links": [
+            44
+          ]
+        },
+        {
+          "name": "point_cloud",
+          "type": "NPARRAY",
+          "links": [
+            45
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Omnidir Stereo Reconstruct] Omnidir stereo reconstruct (rectify + SGBM + back-project)",
+      "properties": {
+        "Node name for S&R": "CV_OmnidirStereoReconstruct"
+      },
+      "widgets_values": [
+        0.8,
+        0.8,
+        "RECTIFY_PERSPECTIVE",
+        64,
+        7
+      ]
+    },
+    {
+      "id": 31,
+      "type": "CV_CVPreview",
+      "pos": [
+        1393,
+        1856.0401433691802
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Disparity (rectified frame)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 32,
+      "type": "CV_CVPreview",
+      "pos": [
+        1699,
+        1852.3988168492067
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Where it matched",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        true
+      ]
+    },
+    {
+      "id": 33,
+      "type": "PreviewImage",
+      "pos": [
+        1393,
+        2256.0401433691804
+      ],
+      "size": [
+        354.859375,
+        290
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 43
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Left rectified (what the disparity is aligned with)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 34,
+      "type": "PreviewImage",
+      "pos": [
+        1780,
+        2254.081803018794
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Right rectified",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 35,
+      "type": "CV_FilterPointCloud",
+      "pos": [
+        1393,
+        2619.0144476382766
+      ],
+      "size": [
+        290,
+        156
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 45
+        },
+        {
+          "name": "colors",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            46
+          ]
+        },
+        {
+          "name": "colors",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "Cloud, 1 to 15 m of room",
+      "properties": {
+        "Node name for S&R": "CV_FilterPointCloud"
+      },
+      "widgets_values": [
+        100,
+        1500
+      ]
+    },
+    {
+      "id": 36,
+      "type": "CV_CVInspect",
+      "pos": [
+        1743,
+        2619.0144476382766
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            54
+          ]
+        }
+      ],
+      "title": "Reconstructed cloud",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 37,
+      "type": "SolidMask",
+      "pos": [
+        -10,
+        3156.77628231882
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            47
+          ]
+        }
+      ],
+      "title": "Blank frame (no board)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "SolidMask"
+      },
+      "widgets_values": [
+        0.5,
+        800,
+        600
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 38,
+      "type": "CV_MaskToCV",
+      "pos": [
+        347,
+        3156.77628231882
+      ],
+      "size": [
+        290,
+        134
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            48
+          ]
+        }
+      ],
+      "title": "Blank as uint8",
+      "properties": {
+        "Node name for S&R": "CV_MaskToCV"
+      },
+      "widgets_values": [
+        "uint8 (0-255)",
+        0
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 39,
+      "type": "cv2_cvtColor",
+      "pos": [
+        703,
+        3156.77628231882
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            49
+          ]
+        }
+      ],
+      "title": "Blank to BGR",
+      "properties": {
+        "Node name for S&R": "cv2_cvtColor"
+      },
+      "widgets_values": [
+        "COLOR_GRAY2BGR",
+        0,
+        "ALGO_HINT_DEFAULT"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 40,
+      "type": "CV_CVToImage",
+      "pos": [
+        1053,
+        3156.77628231882
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 49
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            50
+          ]
+        },
+        {
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Blank as IMAGE",
+      "properties": {
+        "Node name for S&R": "CV_CVToImage"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 41,
+      "type": "CV_OmnidirCalibrate",
+      "pos": [
+        1532,
+        3156.77628231882
+      ],
+      "size": [
+        480,
+        590
+      ],
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            57
+          ]
+        },
+        {
+          "name": "xi",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "rms_error",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "views_used",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": [
+            58
+          ]
+        }
+      ],
+      "title": "[CV Omnidir Calibrate (Chessboard)] No board -> found=false",
+      "properties": {
+        "Node name for S&R": "CV_OmnidirCalibrate"
+      },
+      "widgets_values": [
+        9,
+        6,
+        "none (0) | CALIB_FIX_SKEW",
+        1,
+        7
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 43,
+      "type": "PreviewAny",
+      "pos": [
+        2061,
+        240
+      ],
+      "size": [
+        410.75,
+        158
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 52
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "title": "Preview as Text: Recovered K"
+    },
+    {
+      "id": 44,
+      "type": "PreviewAny",
+      "pos": [
+        2061,
+        440
+      ],
+      "size": [
+        410.625,
+        161.984375
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 53
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "title": "Preview as Text: Recovered dist (k1,k2,p1,p2)"
+    },
+    {
+      "id": 45,
+      "type": "PreviewAny",
+      "pos": [
+        2243,
+        2616.166317197438
+      ],
+      "size": [
+        469.921875,
+        161.953125
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 54
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "title": "Preview as Text: Reconstructed cloud"
+    },
+    {
+      "id": 46,
+      "type": "PreviewAny",
+      "pos": [
+        2022,
+        3155.803626611956
+      ],
+      "size": [
+        420.5,
+        162
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 57
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#322",
+      "bgcolor": "#533",
+      "title": "Preview as Text: camera_matrix - No board -> found=false"
+    },
+    {
+      "id": 49,
+      "type": "PreviewAny",
+      "pos": [
+        2025,
+        3358.228024590059
+      ],
+      "size": [
+        420.5,
+        162
+      ],
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 58
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#322",
+      "bgcolor": "#533",
+      "title": "Preview as Text: found - No board -> found=false"
+    }
+  ],
+  "links": [
+    [
+      1,
+      3,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      4,
+      0,
+      11,
+      1,
+      "IMAGE"
+    ],
+    [
+      3,
+      5,
+      0,
+      11,
+      2,
+      "IMAGE"
+    ],
+    [
+      4,
+      6,
+      0,
+      11,
+      3,
+      "IMAGE"
+    ],
+    [
+      5,
+      7,
+      0,
+      11,
+      4,
+      "IMAGE"
+    ],
+    [
+      6,
+      8,
+      0,
+      11,
+      5,
+      "IMAGE"
+    ],
+    [
+      7,
+      9,
+      0,
+      11,
+      6,
+      "IMAGE"
+    ],
+    [
+      8,
+      10,
+      0,
+      11,
+      7,
+      "IMAGE"
+    ],
+    [
+      9,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      12,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      12,
+      2,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      3,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      12,
+      0,
+      15,
+      1,
+      "NPARRAY"
+    ],
+    [
+      14,
+      12,
+      2,
+      15,
+      2,
+      "NPARRAY"
+    ],
+    [
+      15,
+      12,
+      1,
+      15,
+      4,
+      "FLOAT"
+    ],
+    [
+      16,
+      15,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      3,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      12,
+      0,
+      17,
+      1,
+      "NPARRAY"
+    ],
+    [
+      19,
+      12,
+      2,
+      17,
+      2,
+      "NPARRAY"
+    ],
+    [
+      20,
+      12,
+      1,
+      17,
+      4,
+      "FLOAT"
+    ],
+    [
+      21,
+      17,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      22,
+      3,
+      0,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      23,
+      12,
+      0,
+      19,
+      1,
+      "NPARRAY"
+    ],
+    [
+      24,
+      12,
+      2,
+      19,
+      2,
+      "NPARRAY"
+    ],
+    [
+      25,
+      12,
+      1,
+      19,
+      4,
+      "FLOAT"
+    ],
+    [
+      26,
+      19,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      27,
+      3,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      28,
+      12,
+      0,
+      21,
+      1,
+      "NPARRAY"
+    ],
+    [
+      29,
+      12,
+      2,
+      21,
+      2,
+      "NPARRAY"
+    ],
+    [
+      30,
+      12,
+      1,
+      21,
+      4,
+      "FLOAT"
+    ],
+    [
+      31,
+      21,
+      0,
+      22,
+      0,
+      "IMAGE"
+    ],
+    [
+      32,
+      3,
+      0,
+      23,
+      0,
+      "IMAGE"
+    ],
+    [
+      33,
+      24,
+      0,
+      30,
+      0,
+      "IMAGE"
+    ],
+    [
+      34,
+      25,
+      0,
+      30,
+      1,
+      "IMAGE"
+    ],
+    [
+      35,
+      26,
+      0,
+      30,
+      2,
+      "NPARRAY"
+    ],
+    [
+      36,
+      27,
+      0,
+      30,
+      3,
+      "NPARRAY"
+    ],
+    [
+      37,
+      26,
+      0,
+      30,
+      4,
+      "NPARRAY"
+    ],
+    [
+      38,
+      27,
+      0,
+      30,
+      5,
+      "NPARRAY"
+    ],
+    [
+      39,
+      28,
+      0,
+      30,
+      6,
+      "NPARRAY"
+    ],
+    [
+      40,
+      29,
+      0,
+      30,
+      7,
+      "NPARRAY"
+    ],
+    [
+      41,
+      30,
+      0,
+      31,
+      0,
+      "NPARRAY"
+    ],
+    [
+      42,
+      30,
+      1,
+      32,
+      0,
+      "NPARRAY"
+    ],
+    [
+      43,
+      30,
+      2,
+      33,
+      0,
+      "IMAGE"
+    ],
+    [
+      44,
+      30,
+      3,
+      34,
+      0,
+      "IMAGE"
+    ],
+    [
+      45,
+      30,
+      4,
+      35,
+      0,
+      "NPARRAY"
+    ],
+    [
+      46,
+      35,
+      0,
+      36,
+      0,
+      "NPARRAY"
+    ],
+    [
+      47,
+      37,
+      0,
+      38,
+      0,
+      "MASK"
+    ],
+    [
+      48,
+      38,
+      0,
+      39,
+      0,
+      "NPARRAY"
+    ],
+    [
+      49,
+      39,
+      0,
+      40,
+      0,
+      "NPARRAY"
+    ],
+    [
+      50,
+      40,
+      0,
+      41,
+      0,
+      "IMAGE"
+    ],
+    [
+      52,
+      13,
+      0,
+      43,
+      0,
+      "STRING"
+    ],
+    [
+      53,
+      14,
+      0,
+      44,
+      0,
+      "STRING"
+    ],
+    [
+      54,
+      36,
+      0,
+      45,
+      0,
+      "STRING"
+    ],
+    [
+      57,
+      41,
+      0,
+      46,
+      0,
+      "NPARRAY"
+    ],
+    [
+      58,
+      41,
+      5,
+      49,
+      0,
+      "BOOLEAN"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.2461220837751893,
+      "offset": [
+        2228.9913191289284,
+        -71.10432658662674
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

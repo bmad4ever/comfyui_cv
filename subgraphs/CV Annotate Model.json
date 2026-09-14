@@ -1,0 +1,592 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "a1b2c3d4-e5f6-4789-9abc-def012345602",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        360,
+        208
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        },
+        {
+          "name": "points_3d",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "K",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "scene_depth",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "depth_tolerance",
+          "type": "FLOAT",
+          "link": null,
+          "shape": 7,
+          "widget": {
+            "name": "depth_tolerance"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "points_2d",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "visible",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Annotate Model",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "a1b2c3d4-e5f6-4789-9abc-def012345602",
+        "name": "CV Annotate Model",
+        "revision": 0,
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 3,
+          "lastLinkId": 14,
+          "lastRerouteId": 0
+        },
+        "config": {},
+        "extra": {},
+        "groups": [],
+        "widgets": [],
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -360,
+            40,
+            128,
+            280
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2160,
+            40,
+            128,
+            130
+          ]
+        },
+        "inputs": [
+          {
+            "id": "59b82cf4-34cf-5d2d-8ff5-cec5e8bab4ee",
+            "name": "frame",
+            "type": "NPARRAY,IMAGE,MASK",
+            "linkIds": [
+              6
+            ],
+            "localized_name": "frame",
+            "pos": [
+              -212,
+              60
+            ]
+          },
+          {
+            "id": "1e4a2e3e-3f3e-5b02-a1e1-3af387b8ae11",
+            "name": "points_3d",
+            "type": "NPARRAY",
+            "linkIds": [
+              1
+            ],
+            "localized_name": "points_3d",
+            "pos": [
+              -212,
+              90
+            ]
+          },
+          {
+            "id": "f2e2b946-fc86-51dd-b6b3-1852ad3dd72d",
+            "name": "rvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              2
+            ],
+            "localized_name": "rvec",
+            "pos": [
+              -212,
+              120
+            ]
+          },
+          {
+            "id": "5d1947f2-d996-5c2a-ae45-a5495578f27e",
+            "name": "tvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              3
+            ],
+            "localized_name": "tvec",
+            "pos": [
+              -212,
+              150
+            ]
+          },
+          {
+            "id": "914f6f95-c53f-501a-a5ae-c5d3a437c53c",
+            "name": "K",
+            "type": "NPARRAY",
+            "linkIds": [
+              4
+            ],
+            "localized_name": "K",
+            "pos": [
+              -212,
+              180
+            ]
+          },
+          {
+            "id": "8f431574-7e73-5c42-a097-fdd93799622d",
+            "name": "scene_depth",
+            "type": "NPARRAY",
+            "linkIds": [
+              5
+            ],
+            "localized_name": "scene_depth",
+            "pos": [
+              -212,
+              210
+            ]
+          },
+          {
+            "id": "58682af6-afdc-5f89-9b55-cbcb951c56c6",
+            "name": "labels",
+            "type": "NPARRAY",
+            "linkIds": [
+              10
+            ],
+            "localized_name": "labels",
+            "pos": [
+              -212,
+              240
+            ]
+          },
+          {
+            "id": "c7d1e40a-7b62-5a3f-9c11-2f6b8a5d0e94",
+            "name": "depth_tolerance",
+            "type": "FLOAT",
+            "linkIds": [
+              14
+            ],
+            "localized_name": "depth_tolerance",
+            "pos": [
+              -212,
+              270
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "0af3bc99-5644-53f0-8198-696822280181",
+            "name": "overlay",
+            "type": "NPARRAY",
+            "linkIds": [
+              11
+            ],
+            "localized_name": "overlay",
+            "pos": [
+              2140,
+              60
+            ]
+          },
+          {
+            "id": "0c73ae37-001e-52a6-b24c-0d8ec71f381a",
+            "name": "points_2d",
+            "type": "NPARRAY",
+            "linkIds": [
+              12
+            ],
+            "localized_name": "points_2d",
+            "pos": [
+              2140,
+              90
+            ]
+          },
+          {
+            "id": "f3bedbe0-5d92-5c7a-afcb-a696d4d19878",
+            "name": "visible",
+            "type": "NPARRAY",
+            "linkIds": [
+              13
+            ],
+            "localized_name": "visible",
+            "pos": [
+              2140,
+              120
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_ProjectPointsSequence",
+            "pos": [
+              240,
+              40
+            ],
+            "size": [
+              340,
+              240
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points_3d",
+                "type": "NPARRAY",
+                "link": 1
+              },
+              {
+                "name": "rvecs",
+                "type": "NPARRAY",
+                "link": 2
+              },
+              {
+                "name": "tvecs",
+                "type": "NPARRAY",
+                "link": 3
+              },
+              {
+                "name": "K",
+                "type": "NPARRAY",
+                "link": 4
+              },
+              {
+                "name": "dist_coeffs",
+                "type": "NPARRAY",
+                "link": null,
+                "shape": 7
+              },
+              {
+                "name": "scene_depth",
+                "type": "NPARRAY",
+                "link": 5,
+                "shape": 7
+              },
+              {
+                "name": "depth_tolerance",
+                "type": "FLOAT",
+                "link": 14,
+                "shape": 7,
+                "widget": {
+                  "name": "depth_tolerance"
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points_2d",
+                "type": "NPARRAY",
+                "links": [
+                  7,
+                  9,
+                  12
+                ]
+              },
+              {
+                "name": "visible",
+                "type": "NPARRAY",
+                "links": [
+                  13
+                ]
+              },
+              {
+                "name": "depths",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ProjectPointsSequence"
+            },
+            "widgets_values": [
+              "blank out (NaN)",
+              0.02
+            ],
+            "title": "project the anchors, hide the far-side ones"
+          },
+          {
+            "id": 2,
+            "type": "CV_DrawPoints",
+            "pos": [
+              620,
+              40
+            ],
+            "size": [
+              320,
+              180
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 6
+              },
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 7
+              },
+              {
+                "name": "labels",
+                "type": "NPARRAY",
+                "link": null,
+                "shape": 7
+              }
+            ],
+            "outputs": [
+              {
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  8
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DrawPoints"
+            },
+            "widgets_values": [
+              6,
+              "(0, 255, 0)"
+            ],
+            "title": "markers (NaN anchors are skipped)"
+          },
+          {
+            "id": 3,
+            "type": "CV_DrawLabels",
+            "pos": [
+              1000,
+              40
+            ],
+            "size": [
+              320,
+              240
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 8
+              },
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 9
+              },
+              {
+                "name": "labels",
+                "type": "NPARRAY",
+                "link": 10,
+                "shape": 7
+              }
+            ],
+            "outputs": [
+              {
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  11
+                ]
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DrawLabels"
+            },
+            "widgets_values": [
+              0.7,
+              "(0, 255, 255)",
+              2,
+              8,
+              -8
+            ],
+            "title": "captions, still aligned with their anchors"
+          }
+        ],
+        "links": [
+          {
+            "id": 1,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 2,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 1,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 1,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 4,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 1,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 5,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 1,
+            "target_slot": 5,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 6,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK"
+          },
+          {
+            "id": 7,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 8,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 9,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 10,
+            "origin_id": -10,
+            "origin_slot": 6,
+            "target_id": 3,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 11,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 12,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 13,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 14,
+            "origin_id": -10,
+            "origin_slot": 7,
+            "target_id": 1,
+            "target_slot": 6,
+            "type": "FLOAT"
+          }
+        ]
+      }
+    ]
+  }
+}

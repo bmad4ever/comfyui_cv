@@ -1,0 +1,2493 @@
+{
+  "id": "be23c48e-8114-4bfc-bb5a-844984029c35",
+  "revision": 0,
+  "last_node_id": 46,
+  "last_link_id": 42,
+  "nodes": [
+    {
+      "id": 4,
+      "type": "CV_QRDetect",
+      "pos": [
+        793,
+        68.77954308603151
+      ],
+      "size": [
+        350,
+        388
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "qr_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "connections",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "texts",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "straight_codes",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "[CV QR Detect] Detect + decode (classic)",
+      "properties": {
+        "Node name for S&R": "CV_QRDetect"
+      },
+      "widgets_values": [
+        "classic (QRCodeDetector)",
+        "multi (all codes, flat)",
+        0.2,
+        0.1,
+        true
+      ]
+    },
+    {
+      "id": 5,
+      "type": "PreviewAny",
+      "pos": [
+        1153,
+        68.77954308603151
+      ],
+      "size": [
+        290,
+        112
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Decoded text",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        1153,
+        268.7795430860315
+      ],
+      "size": [
+        280,
+        246
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Rectified symbol (straight_code)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "Note",
+      "pos": [
+        40,
+        640
+      ],
+      "size": [
+        760,
+        140
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "B - small + warped: classic vs ArUco",
+      "properties": {},
+      "widgets_values": [
+        "B) Detector robustness. The code is shrunk to ~100 px and perspective-warped (BORDER_CONSTANT white - BORDER_DEFAULT would mirror the code into the empty canvas). At that size the CLASSIC scanline detector no longer finds the finder patterns (empty text, found = false), while the ARUCO-BASED detector still locates and reads it.\n\n'CV QR Decode At Points' closes the loop: hand the classic DECODER the quad the ArUco detector found and it reads the payload fine - detection and decoding stay composable, so any quad source (contour quad, homography, annotated points) can feed the decoder.\n\nTry: drag the destination quad in 'warped quad (small + skewed)' outwards - once the code is big enough the classic detector finds it too."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 8,
+      "type": "CV_QREncode",
+      "pos": [
+        40,
+        840
+      ],
+      "size": [
+        390,
+        308
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "qr_image",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "modules",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "version",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Encode] Encode a repo URL (version 3)",
+      "properties": {
+        "Node name for S&R": "CV_QREncode"
+      },
+      "widgets_values": [
+        "https://github.com/opencv/opencv",
+        "Q (~25% recovery)",
+        "auto (pick the densest that fits)",
+        3,
+        8,
+        2,
+        1
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CV_ImageToCV",
+      "pos": [
+        440,
+        840
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "Image -> CV Array (uint8 BGR)",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_PointsLiteral",
+      "pos": [
+        440,
+        1040
+      ],
+      "size": [
+        290,
+        156
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "source quad (the whole code)",
+      "properties": {
+        "Node name for S&R": "CV_PointsLiteral"
+      },
+      "widgets_values": [
+        "[[0, 0], [296, 0], [296, 296], [0, 296]]",
+        "float32"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_PointsLiteral",
+      "pos": [
+        440,
+        1240
+      ],
+      "size": [
+        290,
+        156
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "warped quad (small + skewed)",
+      "properties": {
+        "Node name for S&R": "CV_PointsLiteral"
+      },
+      "widgets_values": [
+        "[[200, 140], [300, 160], [295, 255], [195, 235]]",
+        "float32"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "cv2_warpPerspective",
+      "pos": [
+        790,
+        840
+      ],
+      "size": [
+        290,
+        312
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 8
+        },
+        {
+          "name": "M",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            10,
+            12,
+            14,
+            21
+          ]
+        }
+      ],
+      "title": "Warp onto a white page",
+      "properties": {
+        "Node name for S&R": "cv2_warpPerspective"
+      },
+      "widgets_values": [
+        "(360, 340)",
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(255, 255, 255, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "CV_QREncode",
+      "pos": [
+        2801,
+        63.775483870979286
+      ],
+      "size": [
+        330,
+        308
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "qr_image",
+          "type": "IMAGE",
+          "links": [
+            25,
+            26
+          ]
+        },
+        {
+          "name": "modules",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "version",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Encode] Encode over 3 codes",
+      "properties": {
+        "Node name for S&R": "CV_QREncode"
+      },
+      "widgets_values": [
+        "OpenCV Structured Append: this message is longer than one small QR code can carry, so it is split over three symbols that a decoder joins back together.",
+        "L (~7% recovery)",
+        "auto (pick the densest that fits)",
+        4,
+        6,
+        2,
+        3
+      ]
+    },
+    {
+      "id": 34,
+      "type": "CV_QREncode",
+      "pos": [
+        2784,
+        1006.2767103183517
+      ],
+      "size": [
+        300,
+        308
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "qr_image",
+          "type": "IMAGE",
+          "links": [
+            32
+          ]
+        },
+        {
+          "name": "modules",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "version",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Encode] Encode at level L",
+      "properties": {
+        "Node name for S&R": "CV_QREncode"
+      },
+      "widgets_values": [
+        "Error correction level H survives damage",
+        "L (~7% recovery)",
+        "auto (pick the densest that fits)",
+        0,
+        8,
+        2,
+        1
+      ]
+    },
+    {
+      "id": 35,
+      "type": "CV_ImageToCV",
+      "pos": [
+        3148,
+        1006.2767103183517
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            33
+          ]
+        }
+      ],
+      "title": "Image -> CV Array (L)",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 36,
+      "type": "cv2_rectangle_1",
+      "pos": [
+        3498,
+        1006.2767103183517
+      ],
+      "size": [
+        290,
+        368
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            34,
+            35
+          ]
+        }
+      ],
+      "title": "Stamp a 90x90 patch (L)",
+      "properties": {
+        "Node name for S&R": "cv2_rectangle_1"
+      },
+      "widgets_values": [
+        103,
+        103,
+        90,
+        90,
+        "(0, 0, 255, 0)",
+        -1,
+        "LINE_AA",
+        0
+      ]
+    },
+    {
+      "id": 41,
+      "type": "CV_ImageToCV",
+      "pos": [
+        3145,
+        1439.758218862322
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "title": "Image -> CV Array (H)",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        43,
+        -131.22045691396832
+      ],
+      "size": [
+        760,
+        140
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "A - encode / decode round trip",
+      "properties": {},
+      "widgets_values": [
+        "QR codes with OpenCV's OWN objdetect implementation - no model files, unlike 'CV WeChat QR Detect' (workflow 37, cv2.dnn).\n\nA) Round trip: 'CV QR Encode' (cv2.QRCodeEncoder) writes the code, 'CV QR Detect' (cv2.QRCodeDetector) reads it back. 'straight_codes' is the rectified, binarized symbol the decoder actually read - preview it to see what the detector saw. Every knob is a named dropdown: error correction level, encoding mode, version (symbol size).\n\nTry: raise 'version' to make the symbol bigger, drop 'module_size' to 1 to see the raw bitmap, or type a longer payload and watch the auto-picked version grow (the 'version' output reports it)."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 12,
+      "type": "cv2_getPerspectiveTransform",
+      "pos": [
+        788,
+        1216.4048008430734
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 6
+        },
+        {
+          "name": "dst",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "4 points -> homography",
+      "properties": {
+        "Node name for S&R": "cv2_getPerspectiveTransform"
+      },
+      "widgets_values": [
+        "DECOMP_LU"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_QRDetect",
+      "pos": [
+        1140,
+        840
+      ],
+      "size": [
+        430,
+        314
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "qr_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "connections",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "texts",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "straight_codes",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Detect] Classic detector (locates, cannot read)",
+      "properties": {
+        "Node name for S&R": "CV_QRDetect"
+      },
+      "widgets_values": [
+        "classic (QRCodeDetector)",
+        "multi (all codes, flat)",
+        0.2,
+        0.1,
+        true
+      ]
+    },
+    {
+      "id": 15,
+      "type": "PreviewAny",
+      "pos": [
+        1580,
+        878.8964888243827
+      ],
+      "size": [
+        290,
+        112
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Classic: decoded text (empty)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_DrawConnections",
+      "pos": [
+        1222,
+        1646.6584009123299
+      ],
+      "size": [
+        290,
+        200
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 14
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "edges",
+          "type": "NPARRAY",
+          "link": 16
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            17
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Outline the code (exact quad)",
+      "properties": {
+        "Node name for S&R": "CV_DrawConnections"
+      },
+      "widgets_values": [
+        3,
+        "(0, 0, 255)"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_DrawLabels",
+      "pos": [
+        1623,
+        1644.8518968306798
+      ],
+      "size": [
+        290,
+        256
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 17
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 18
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Write the payload on it",
+      "properties": {
+        "Node name for S&R": "CV_DrawLabels"
+      },
+      "widgets_values": [
+        0.5,
+        "(0, 128, 255)",
+        1,
+        4,
+        -4
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_CVPreview",
+      "pos": [
+        1964,
+        1605.515862123985
+      ],
+      "size": [
+        290,
+        294
+      ],
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Warped code + outline + text",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_QRDetect",
+      "pos": [
+        1156,
+        1220.9181271405998
+      ],
+      "size": [
+        380,
+        367.21816168525834
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "qr_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "links": [
+            15,
+            18,
+            22
+          ]
+        },
+        {
+          "name": "connections",
+          "type": "NPARRAY",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "texts",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": [
+            19
+          ]
+        },
+        {
+          "name": "straight_codes",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Detect] ArUco-based detector (finds it)",
+      "properties": {
+        "Node name for S&R": "CV_QRDetect"
+      },
+      "widgets_values": [
+        "ArUco-based (QRCodeDetectorAruco)",
+        "multi (all codes, flat)",
+        0.2,
+        0.1,
+        true
+      ]
+    },
+    {
+      "id": 21,
+      "type": "CV_QRDecodeAtPoints",
+      "pos": [
+        1608,
+        1254.185916244658
+      ],
+      "size": [
+        500,
+        162
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 21
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "decoded_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            23
+          ]
+        },
+        {
+          "name": "texts",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "straight_codes",
+          "type": "IMAGE",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "title": "[CV QR Decode At Points] Classic DECODER on the ArUco quad",
+      "properties": {
+        "Node name for S&R": "CV_QRDecodeAtPoints"
+      },
+      "widgets_values": [
+        "classic (QRCodeDetector)",
+        "straight (flat surface)"
+      ]
+    },
+    {
+      "id": 23,
+      "type": "PreviewImage",
+      "pos": [
+        2119,
+        1305.0456648094575
+      ],
+      "size": [
+        280,
+        246
+      ],
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Rectified symbol",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "PreviewAny",
+      "pos": [
+        2118,
+        1152.7216468256308
+      ],
+      "size": [
+        290,
+        112
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Decoded from supplied corners",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": 17,
+      "type": "PreviewAny",
+      "pos": [
+        1613,
+        1457.272419216311
+      ],
+      "size": [
+        318.1166047787683,
+        112
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "ArUco: decoded text",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": 3,
+      "type": "PreviewImage",
+      "pos": [
+        468,
+        133.56998018493232
+      ],
+      "size": [
+        280,
+        246
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "The QR code",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 2,
+      "type": "CV_QREncode",
+      "pos": [
+        43,
+        68.77954308603151
+      ],
+      "size": [
+        370,
+        308
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "qr_image",
+          "type": "IMAGE",
+          "links": [
+            1,
+            2
+          ]
+        },
+        {
+          "name": "modules",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "version",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Encode] Encode 'https://opencv.org'",
+      "properties": {
+        "Node name for S&R": "CV_QREncode"
+      },
+      "widgets_values": [
+        "https://opencv.org",
+        "M (~15% recovery)",
+        "auto (pick the densest that fits)",
+        0,
+        8,
+        2,
+        1
+      ]
+    },
+    {
+      "id": 24,
+      "type": "Note",
+      "pos": [
+        2801,
+        -136.22451612902157
+      ],
+      "size": [
+        760,
+        140
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "C - Structured Append (one message, three codes)",
+      "properties": {},
+      "widgets_values": [
+        "C) Structured Append. 'structure_number' = 3 splits one long message over three codes; the encoder emits them as an IMAGE BATCH. A decoder only reassembles the message when it sees ALL the parts in ONE image, so the batch is tiled vertically ('Image Batch -> CV Batch' + 'CV Reshape Array': a (3, H, W, 3) batch reshaped to (3*H, W, 3) IS the vertical concatenation - the parts are equal-sized and each carries its own quiet zone).\n\nThe detector then reports 3 codes and writes the WHOLE joined message on the first one; the other two decode to empty strings.\n\nTry: raise 'structure_number' to 4 (and set cols on the reshape node to the new frame width) or delete one part and watch the message disappear."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 44,
+      "type": "CV_QRDetect",
+      "pos": [
+        4210,
+        1438.5443150125204
+      ],
+      "size": [
+        290,
+        388
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "qr_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            41
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "connections",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "texts",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "straight_codes",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Detect] H: still decodes",
+      "properties": {
+        "Node name for S&R": "CV_QRDetect"
+      },
+      "widgets_values": [
+        "classic (QRCodeDetector)",
+        "multi (all codes, flat)",
+        0.2,
+        0.1,
+        true
+      ]
+    },
+    {
+      "id": 45,
+      "type": "PreviewAny",
+      "pos": [
+        4561,
+        1477.6630694873318
+      ],
+      "size": [
+        290,
+        112
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Level H: decoded text",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": 39,
+      "type": "PreviewAny",
+      "pos": [
+        4560,
+        1046.6179258704994
+      ],
+      "size": [
+        290,
+        112
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Level L: decoded text",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": 43,
+      "type": "CV_CVPreview",
+      "pos": [
+        3897,
+        1527.783973658181
+      ],
+      "size": [
+        290,
+        294.0000000000001
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Damaged code (H)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 37,
+      "type": "CV_CVPreview",
+      "pos": [
+        3896,
+        1093.0714468093317
+      ],
+      "size": [
+        290,
+        294
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Damaged code (L)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 38,
+      "type": "CV_QRDetect",
+      "pos": [
+        4207,
+        1006.2767103183517
+      ],
+      "size": [
+        330,
+        388
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 35
+        }
+      ],
+      "outputs": [
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "qr_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            36
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "connections",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "texts",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "straight_codes",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Detect] L: dies under the patch",
+      "properties": {
+        "Node name for S&R": "CV_QRDetect"
+      },
+      "widgets_values": [
+        "classic (QRCodeDetector)",
+        "multi (all codes, flat)",
+        0.2,
+        0.1,
+        true
+      ]
+    },
+    {
+      "id": 42,
+      "type": "cv2_rectangle_1",
+      "pos": [
+        3498,
+        1438.4135116772504
+      ],
+      "size": [
+        290,
+        368
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            39,
+            40
+          ]
+        }
+      ],
+      "title": "Stamp a 90x90 patch (H)",
+      "properties": {
+        "Node name for S&R": "cv2_rectangle_1"
+      },
+      "widgets_values": [
+        135,
+        135,
+        90,
+        90,
+        "(0, 0, 255, 0)",
+        -1,
+        "LINE_AA",
+        0
+      ]
+    },
+    {
+      "id": 27,
+      "type": "CV_ImageBatchToCV",
+      "pos": [
+        3141,
+        65.79568973962331
+      ],
+      "size": [
+        290,
+        65.10384079621872
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "IMAGE,MASK,LATENT,NPARRAY",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "batch",
+          "type": "NPARRAY",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "title": "Image Batch -> CV Batch",
+      "properties": {
+        "Node name for S&R": "CV_ImageBatchToCV"
+      },
+      "widgets_values": [
+        "uint8 (0-255, standard cv2)"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "PreviewImage",
+      "pos": [
+        3141,
+        188.24424810900504
+      ],
+      "size": [
+        280,
+        246.00000000000006
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "The 3 parts (batch)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 28,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        3470,
+        67.91536009766882
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            28,
+            29
+          ]
+        }
+      ],
+      "title": "Tile the parts vertically",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        0,
+        246,
+        3
+      ]
+    },
+    {
+      "id": 30,
+      "type": "CV_QRDetect",
+      "pos": [
+        3792,
+        69.82808980610756
+      ],
+      "size": [
+        310,
+        388
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "qr_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            30
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "connections",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "texts",
+          "type": "NPARRAY",
+          "links": [
+            31
+          ]
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "straight_codes",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Detect] Detect all 3 + rejoin",
+      "properties": {
+        "Node name for S&R": "CV_QRDetect"
+      },
+      "widgets_values": [
+        "classic (QRCodeDetector)",
+        "multi (all codes, flat)",
+        0.2,
+        0.1,
+        true
+      ]
+    },
+    {
+      "id": 31,
+      "type": "PreviewAny",
+      "pos": [
+        4112,
+        72.66610988798111
+      ],
+      "size": [
+        292.75535930278966,
+        152.41193644091737
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Reassembled message",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": 29,
+      "type": "CV_CVPreview",
+      "pos": [
+        3472,
+        280.69338999010864
+      ],
+      "size": [
+        290,
+        294.0000000000001
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "All 3 parts in one image",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 32,
+      "type": "CV_CVInspect",
+      "pos": [
+        4119,
+        304.3275355355396
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "title": "Per-part strings",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 46,
+      "type": "PreviewAny",
+      "pos": [
+        4447,
+        304.0519996052608
+      ],
+      "size": [
+        260,
+        120
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ],
+      "title": "Preview as Text: Per-part strings"
+    },
+    {
+      "id": 40,
+      "type": "CV_QREncode",
+      "pos": [
+        2781,
+        1439.758218862322
+      ],
+      "size": [
+        300,
+        308
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "qr_image",
+          "type": "IMAGE",
+          "links": [
+            37
+          ]
+        },
+        {
+          "name": "modules",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "version",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV QR Encode] Encode at level H",
+      "properties": {
+        "Node name for S&R": "CV_QREncode"
+      },
+      "widgets_values": [
+        "Error correction level H survives damage",
+        "H (~30% recovery)",
+        "auto (pick the densest that fits)",
+        0,
+        8,
+        2,
+        1
+      ]
+    },
+    {
+      "id": 33,
+      "type": "Note",
+      "pos": [
+        2784,
+        806.2767103183492
+      ],
+      "size": [
+        760,
+        140
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "D - error correction level vs damage",
+      "properties": {},
+      "widgets_values": [
+        "D) What the error-correction level buys. The SAME payload is encoded at level L (~7% recovery) and level H (~30%), then both get the same 90x90 red patch stamped over their middle (cv2.rectangle, thickness -1 = filled).\n\nThe L code stops DECODING - the detector still locates the symbol, but the payload is unrecoverable, so 'text' comes out empty. The H code still reads: that redundancy is why H is the level to use for codes that get printed, scratched, or have a logo pasted on them. It costs symbol size: same text, 296 px at L vs 360 px at H.\n\nTry: shrink the patch (rec_w / rec_h) until L recovers, or grow it until H gives up."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      2,
+      5,
+      0,
+      "STRING"
+    ],
+    [
+      4,
+      4,
+      8,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      8,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      10,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      7,
+      11,
+      0,
+      12,
+      1,
+      "NPARRAY"
+    ],
+    [
+      8,
+      9,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      9,
+      12,
+      0,
+      13,
+      1,
+      "NPARRAY"
+    ],
+    [
+      10,
+      13,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      14,
+      2,
+      15,
+      0,
+      "STRING"
+    ],
+    [
+      12,
+      13,
+      0,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      16,
+      2,
+      17,
+      0,
+      "STRING"
+    ],
+    [
+      14,
+      13,
+      0,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      15,
+      16,
+      4,
+      18,
+      1,
+      "NPARRAY"
+    ],
+    [
+      16,
+      16,
+      5,
+      18,
+      2,
+      "NPARRAY"
+    ],
+    [
+      17,
+      18,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      18,
+      16,
+      4,
+      19,
+      1,
+      "NPARRAY"
+    ],
+    [
+      19,
+      16,
+      7,
+      19,
+      2,
+      "NPARRAY"
+    ],
+    [
+      20,
+      19,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      13,
+      0,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      22,
+      16,
+      4,
+      21,
+      1,
+      "NPARRAY"
+    ],
+    [
+      23,
+      21,
+      2,
+      22,
+      0,
+      "STRING"
+    ],
+    [
+      24,
+      21,
+      4,
+      23,
+      0,
+      "IMAGE"
+    ],
+    [
+      25,
+      25,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ],
+    [
+      26,
+      25,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ],
+    [
+      27,
+      27,
+      0,
+      28,
+      0,
+      "NPARRAY"
+    ],
+    [
+      28,
+      28,
+      0,
+      29,
+      0,
+      "NPARRAY"
+    ],
+    [
+      29,
+      28,
+      0,
+      30,
+      0,
+      "NPARRAY"
+    ],
+    [
+      30,
+      30,
+      2,
+      31,
+      0,
+      "STRING"
+    ],
+    [
+      31,
+      30,
+      6,
+      32,
+      0,
+      "NPARRAY"
+    ],
+    [
+      32,
+      34,
+      0,
+      35,
+      0,
+      "IMAGE"
+    ],
+    [
+      33,
+      35,
+      0,
+      36,
+      0,
+      "NPARRAY"
+    ],
+    [
+      34,
+      36,
+      0,
+      37,
+      0,
+      "NPARRAY"
+    ],
+    [
+      35,
+      36,
+      0,
+      38,
+      0,
+      "NPARRAY"
+    ],
+    [
+      36,
+      38,
+      2,
+      39,
+      0,
+      "STRING"
+    ],
+    [
+      37,
+      40,
+      0,
+      41,
+      0,
+      "IMAGE"
+    ],
+    [
+      38,
+      41,
+      0,
+      42,
+      0,
+      "NPARRAY"
+    ],
+    [
+      39,
+      42,
+      0,
+      43,
+      0,
+      "NPARRAY"
+    ],
+    [
+      40,
+      42,
+      0,
+      44,
+      0,
+      "NPARRAY"
+    ],
+    [
+      41,
+      44,
+      2,
+      45,
+      0,
+      "STRING"
+    ],
+    [
+      42,
+      32,
+      0,
+      46,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.21541074737492447,
+      "offset": [
+        1472.9824010736268,
+        1142.7367771689708
+      ]
+    },
+    "frontendVersion": "1.45.20"
+  },
+  "version": 0.4
+}

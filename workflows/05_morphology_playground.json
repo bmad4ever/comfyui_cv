@@ -1,0 +1,1452 @@
+{
+  "id": "92f391cb-f2b1-476f-ab2c-673e52143298",
+  "revision": 0,
+  "last_node_id": 46,
+  "last_link_id": 81,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        44.9712793600542,
+        6.921912056658371
+      ],
+      "size": [
+        855.515625,
+        189.765625
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Morphology playground\n\nEvery cv2.morphologyEx operation applied to the SAME Otsu binary (dark shapes on a light background become white blobs), with one shared structuring element - change its shape/ksize on the 'kernel' node and every tile follows. \n\nWhat to look for: open removes specks smaller than the kernel, close fills pinholes, gradient outlines each blob, top hat keeps what open removed, black hat keeps what close added. "
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_ImageToCV",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        290,
+        168
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "To grayscale CV array",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "GRAY",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "cv2_threshold",
+      "pos": [
+        740,
+        240
+      ],
+      "size": [
+        490.125,
+        264
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            5,
+            7,
+            9,
+            11,
+            13,
+            15,
+            17
+          ]
+        }
+      ],
+      "title": "Otsu binary (shapes = white)",
+      "properties": {
+        "Node name for S&R": "cv2_threshold"
+      },
+      "widgets_values": [
+        0,
+        255,
+        "THRESH_BINARY_INV | THRESH_OTSU"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "cv2_getStructuringElement",
+      "pos": [
+        740,
+        640
+      ],
+      "size": [
+        463.046875,
+        211.984375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16
+          ]
+        }
+      ],
+      "title": "Kernel: 27x5 ellipse",
+      "properties": {
+        "Node name for S&R": "cv2_getStructuringElement"
+      },
+      "widgets_values": [
+        "MORPH_ELLIPSE",
+        "(27, 5)",
+        "(-1, -1)"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        1646.0055517812289,
+        280.23525751701357
+      ],
+      "size": [
+        290,
+        338
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 3
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            18
+          ]
+        }
+      ],
+      "title": "Erode",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_ERODE",
+        "(-1, -1)",
+        1,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        1996.0055517812289,
+        280.23525751701357
+      ],
+      "size": [
+        290,
+        338
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 5
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "title": "Dilate",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_DILATE",
+        "(-1, -1)",
+        1,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        2346.0055517812293,
+        280.23525751701357
+      ],
+      "size": [
+        290,
+        338
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 7
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "Open",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_OPEN",
+        "(-1, -1)",
+        1,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        1308.7658568231745,
+        642.324314118221
+      ],
+      "size": [
+        290,
+        338
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 9
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            21
+          ]
+        }
+      ],
+      "title": "Close",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_CLOSE",
+        "(-1, -1)",
+        1,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        1652.9730981071953,
+        638.1663075722504
+      ],
+      "size": [
+        290,
+        338
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 11
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "title": "Gradient",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_GRADIENT",
+        "(-1, -1)",
+        1,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        2002.9730981071953,
+        638.1663075722504
+      ],
+      "size": [
+        290,
+        338
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 13
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "Tophat",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_TOPHAT",
+        "(-1, -1)",
+        1,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        2352.9730981071957,
+        638.1663075722504
+      ],
+      "size": [
+        290,
+        338
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 15
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "title": "Blackhat",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_BLACKHAT",
+        "(-1, -1)",
+        1,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_DrawText",
+      "pos": [
+        1312.54308764308,
+        1019.5295596749361
+      ],
+      "size": [
+        290,
+        300
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            69
+          ]
+        }
+      ],
+      "title": "Label: input (Otsu)",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "input (Otsu)",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_DrawText",
+      "pos": [
+        1652.2401125025794,
+        1026.6598112074184
+      ],
+      "size": [
+        290,
+        300
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            70
+          ]
+        }
+      ],
+      "title": "Label: erode",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "erode",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_DrawText",
+      "pos": [
+        2002.24011250258,
+        1026.6598112074184
+      ],
+      "size": [
+        290,
+        300
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            71
+          ]
+        }
+      ],
+      "title": "Label: dilate",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "dilate",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_DrawText",
+      "pos": [
+        2352.2401125025794,
+        1026.6598112074184
+      ],
+      "size": [
+        290,
+        300
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            72
+          ]
+        }
+      ],
+      "title": "Label: open",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "open",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 17,
+      "type": "CV_DrawText",
+      "pos": [
+        1312.709753863911,
+        1382.919045462971
+      ],
+      "size": [
+        290,
+        300
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            74
+          ]
+        }
+      ],
+      "title": "Label: close",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "close",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_DrawText",
+      "pos": [
+        1657.474933183245,
+        1377.6842247823051
+      ],
+      "size": [
+        290,
+        300
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            75
+          ]
+        }
+      ],
+      "title": "Label: gradient",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "gradient",
+        8,
+        24,
+        0.7,
+        "255",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_DrawText",
+      "pos": [
+        2007.4749331832454,
+        1377.6842247823051
+      ],
+      "size": [
+        290,
+        300
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            76
+          ]
+        }
+      ],
+      "title": "Label: top hat",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "top hat",
+        8,
+        24,
+        0.7,
+        "255",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_DrawText",
+      "pos": [
+        2357.4749331832454,
+        1377.6842247823051
+      ],
+      "size": [
+        290,
+        300
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            77
+          ]
+        }
+      ],
+      "title": "Label: black hat",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "black hat",
+        8,
+        24,
+        0.7,
+        "255",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 34,
+      "type": "CV_CVToImage",
+      "pos": [
+        3485.9461206266224,
+        1216.5957710137943
+      ],
+      "size": [
+        322.4375,
+        128
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 80
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            81
+          ]
+        },
+        {
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_CVToImage"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)"
+      ]
+    },
+    {
+      "id": 36,
+      "type": "PreviewImage",
+      "pos": [
+        2718.2436992316407,
+        287.98969712941044
+      ],
+      "size": [
+        1210.09375,
+        708.015625
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 81
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Morphology sheet",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 44,
+      "type": "CV_StackImages",
+      "pos": [
+        2794.5074967826667,
+        1059.378838935004
+      ],
+      "size": [
+        270,
+        232
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image0",
+          "name": "images.image0",
+          "type": "NPARRAY",
+          "link": 69
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 70
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 71
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 72
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            78
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_StackImages"
+      },
+      "widgets_values": [
+        "horizontal (a then b)",
+        0
+      ]
+    },
+    {
+      "id": 45,
+      "type": "CV_StackImages",
+      "pos": [
+        2785.7709723176577,
+        1413.5605983165553
+      ],
+      "size": [
+        270,
+        232
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image0",
+          "name": "images.image0",
+          "type": "NPARRAY",
+          "link": 74
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 75
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 76
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 77
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            79
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_StackImages"
+      },
+      "widgets_values": [
+        "horizontal (a then b)",
+        0
+      ]
+    },
+    {
+      "id": 46,
+      "type": "CV_StackImages",
+      "pos": [
+        3158.1500934994583,
+        1215.8015705644227
+      ],
+      "size": [
+        270,
+        184
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image0",
+          "name": "images.image0",
+          "type": "NPARRAY",
+          "link": 78
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 79
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            80
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_StackImages"
+      },
+      "widgets_values": [
+        "vertical (a above b)",
+        0
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      4,
+      1,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      5,
+      0,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      5,
+      4,
+      1,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      5,
+      0,
+      7,
+      1,
+      "NPARRAY"
+    ],
+    [
+      7,
+      4,
+      1,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      8,
+      5,
+      0,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      9,
+      4,
+      1,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      5,
+      0,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      11,
+      4,
+      1,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      5,
+      0,
+      10,
+      1,
+      "NPARRAY"
+    ],
+    [
+      13,
+      4,
+      1,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      5,
+      0,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      15,
+      4,
+      1,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      5,
+      0,
+      12,
+      1,
+      "NPARRAY"
+    ],
+    [
+      17,
+      4,
+      1,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      18,
+      6,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      7,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      20,
+      8,
+      0,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      9,
+      0,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      22,
+      10,
+      0,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      11,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      24,
+      12,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      69,
+      13,
+      0,
+      44,
+      0,
+      "NPARRAY"
+    ],
+    [
+      70,
+      14,
+      0,
+      44,
+      1,
+      "NPARRAY"
+    ],
+    [
+      71,
+      15,
+      0,
+      44,
+      2,
+      "NPARRAY"
+    ],
+    [
+      72,
+      16,
+      0,
+      44,
+      3,
+      "NPARRAY"
+    ],
+    [
+      74,
+      17,
+      0,
+      45,
+      0,
+      "NPARRAY"
+    ],
+    [
+      75,
+      18,
+      0,
+      45,
+      1,
+      "NPARRAY"
+    ],
+    [
+      76,
+      19,
+      0,
+      45,
+      2,
+      "NPARRAY"
+    ],
+    [
+      77,
+      20,
+      0,
+      45,
+      3,
+      "NPARRAY"
+    ],
+    [
+      78,
+      44,
+      0,
+      46,
+      0,
+      "NPARRAY"
+    ],
+    [
+      79,
+      45,
+      0,
+      46,
+      1,
+      "NPARRAY"
+    ],
+    [
+      80,
+      46,
+      0,
+      34,
+      0,
+      "NPARRAY"
+    ],
+    [
+      81,
+      34,
+      0,
+      36,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.3558410273836746,
+      "offset": [
+        423.5592112084146,
+        458.3340278052157
+      ]
+    },
+    "frontendVersion": "1.45.20"
+  },
+  "version": 0.4
+}

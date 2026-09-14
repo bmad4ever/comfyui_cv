@@ -1,0 +1,2981 @@
+{
+  "id": "2271ad12-feb1-4098-9219-b2bf41309d46",
+  "revision": 0,
+  "last_node_id": 108,
+  "last_link_id": 119,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        44,
+        115.11330867597562
+      ],
+      "size": [
+        991.890625,
+        281.671875
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "xphoto white balance + intensity_transform tone curves\n\nWHITE BALANCE (cv2.xphoto, wrapped by 'CV White Balance'): the three balancers are genuinely different algorithms, not presets. 'simple' clips the top/bottom clip_percent of each channel's histogram and rescales what is left, so it is driven by the EXTREMES and is fooled by a large saturated region. 'grayworld' assumes the scene averages to gray and only counts pixels below saturation_threshold, so it is driven by the BULK of the image and copes with a blown-out sky. 'learning-based' runs a small regression tree trained on real photos and usually wins on people/skin.\ncv2.xphoto.applyChannelGains is the manual escape hatch when you already know the multipliers (gains are per B/G/R, 1.0 = leave alone).\n\nTONE (cv2.intensity_transform): these four are the classic point operations. The cv2 functions write their result into an output argument instead of returning it; the nodes allocate that buffer for you and hand back the finished image.\n  gammaCorrection  gamma < 1 lifts shadows, > 1 deepens them.\n  logTransform     compresses highlights hard; good for HDR-ish data.\n  autoscaling      pure min/max stretch to the full 0-255 range.\n  contrastStretching  a piecewise-linear curve through (r1,s1)-(r2,s2)."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        440
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            117
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load a colour-cast photo",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "color_cast_posters.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "cv2_resize",
+      "pos": [
+        390,
+        440
+      ],
+      "size": [
+        290,
+        258
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 117
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "Downscale (fx/fy, dsize 0x0)",
+      "properties": {
+        "Node name for S&R": "cv2_resize"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "0.35",
+        "0.35",
+        "INTER_AREA"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ImageToCV",
+      "pos": [
+        740,
+        440
+      ],
+      "size": [
+        290,
+        168
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            4,
+            5,
+            6,
+            43,
+            84,
+            118,
+            119
+          ]
+        }
+      ],
+      "title": "-> BGR ndarray",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_XPhotoWhiteBalance",
+      "pos": [
+        1141,
+        107.88099999999999
+      ],
+      "size": [
+        520.5625,
+        132
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "balanced",
+          "type": "NPARRAY",
+          "links": [
+            85
+          ]
+        }
+      ],
+      "title": "[CV White Balance (xphoto)] White balance: simple (histogram clip)",
+      "properties": {
+        "Node name for S&R": "CV_XPhotoWhiteBalance"
+      },
+      "widgets_values": [
+        "simple",
+        2,
+        0.9
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_XPhotoWhiteBalance",
+      "pos": [
+        1079,
+        282.5920000000001
+      ],
+      "size": [
+        605.515625,
+        132
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "balanced",
+          "type": "NPARRAY",
+          "links": [
+            86
+          ]
+        }
+      ],
+      "title": "[CV White Balance (xphoto)] White balance: grayworld (scene averages to gray)",
+      "properties": {
+        "Node name for S&R": "CV_XPhotoWhiteBalance"
+      },
+      "widgets_values": [
+        "grayworld",
+        2,
+        0.9
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_XPhotoWhiteBalance",
+      "pos": [
+        1120,
+        454.4517384550005
+      ],
+      "size": [
+        584.625,
+        132
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "balanced",
+          "type": "NPARRAY",
+          "links": [
+            21,
+            22,
+            23,
+            24,
+            25,
+            44,
+            46,
+            87,
+            92
+          ]
+        }
+      ],
+      "title": "[CV White Balance (xphoto)] White balance: learning-based (regression tree)",
+      "properties": {
+        "Node name for S&R": "CV_XPhotoWhiteBalance"
+      },
+      "widgets_values": [
+        "learning-based",
+        2,
+        0.9
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 8,
+      "type": "cv2_xphoto_applyChannelGains",
+      "pos": [
+        1134,
+        629.0512888888892
+      ],
+      "size": [
+        500,
+        168
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            88
+          ]
+        }
+      ],
+      "title": "[cv2.xphoto.applyChannelGains] Manual gains (B 0.68 / G 0.8 / R 1.0)",
+      "properties": {
+        "Node name for S&R": "cv2_xphoto_applyChannelGains"
+      },
+      "widgets_values": [
+        0.68,
+        0.8,
+        1
+      ]
+    },
+    {
+      "id": 19,
+      "type": "cv2_intensity_transform_gammaCorrection",
+      "pos": [
+        2374,
+        70.97669487238002
+      ],
+      "size": [
+        534.46875,
+        103.984375
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            95
+          ]
+        }
+      ],
+      "title": "gamma 0.5 (lift shadows)",
+      "properties": {
+        "Node name for S&R": "cv2_intensity_transform_gammaCorrection"
+      },
+      "widgets_values": [
+        0.5
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 20,
+      "type": "cv2_intensity_transform_gammaCorrection",
+      "pos": [
+        2381,
+        221.99589487238018
+      ],
+      "size": [
+        528.703125,
+        88.046875
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            96
+          ]
+        }
+      ],
+      "title": "gamma 1.8 (deepen shadows)",
+      "properties": {
+        "Node name for S&R": "cv2_intensity_transform_gammaCorrection"
+      },
+      "widgets_values": [
+        1.8
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 21,
+      "type": "cv2_intensity_transform_logTransform",
+      "pos": [
+        2389,
+        368.95554487238024
+      ],
+      "size": [
+        521.671875,
+        71.984375
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            97
+          ]
+        }
+      ],
+      "title": "[cv2.intensity_transform.logTransform] logTransform (compress highlights)",
+      "properties": {
+        "Node name for S&R": "cv2_intensity_transform_logTransform"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 22,
+      "type": "cv2_intensity_transform_autoscaling",
+      "pos": [
+        2388,
+        483.9711948723799
+      ],
+      "size": [
+        522.0625,
+        72
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            98
+          ]
+        }
+      ],
+      "title": "autoscaling (min/max stretch)",
+      "properties": {
+        "Node name for S&R": "cv2_intensity_transform_autoscaling"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 23,
+      "type": "cv2_intensity_transform_contrastStretching",
+      "pos": [
+        2391,
+        599.8244431723792
+      ],
+      "size": [
+        520.296875,
+        200
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            47,
+            100
+          ]
+        }
+      ],
+      "title": "contrastStretching (70,20)-(180,235)",
+      "properties": {
+        "Node name for S&R": "cv2_intensity_transform_contrastStretching"
+      },
+      "widgets_values": [
+        70,
+        20,
+        180,
+        235
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 35,
+      "type": "CV_CVPreview",
+      "pos": [
+        2929,
+        100.36697482177338
+      ],
+      "size": [
+        577.515625,
+        694.140625
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 101
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Tone-curve sheet",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 36,
+      "type": "CV_ImageQuality",
+      "pos": [
+        1573,
+        877.7334911100018
+      ],
+      "size": [
+        295.5,
+        152
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "reference",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 43
+        },
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "score",
+          "type": "FLOAT",
+          "links": [
+            63
+          ]
+        },
+        {
+          "name": "higher_is_better",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "quality_map",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "SSIM: balanced vs original",
+      "properties": {
+        "Node name for S&R": "CV_ImageQuality"
+      },
+      "widgets_values": [
+        "SSIM (structural similarity)"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 38,
+      "type": "CV_ImageQuality",
+      "pos": [
+        2409,
+        855.8277602500006
+      ],
+      "size": [
+        498.859375,
+        151.984375
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "reference",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 46
+        },
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "name": "score",
+          "type": "FLOAT",
+          "links": [
+            103
+          ]
+        },
+        {
+          "name": "higher_is_better",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "quality_map",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "PSNR: stretched vs balanced",
+      "properties": {
+        "Node name for S&R": "CV_ImageQuality"
+      },
+      "widgets_values": [
+        "PSNR (dB)"
+      ]
+    },
+    {
+      "id": 40,
+      "type": "PreviewAny",
+      "pos": [
+        1710,
+        1113.6717239700051
+      ],
+      "size": [
+        294.328125,
+        162
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 63
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "White-balance SSIM",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 41,
+      "type": "PreviewAny",
+      "pos": [
+        2412,
+        1042.0230772500008
+      ],
+      "size": [
+        493.859375,
+        162
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 103
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Tone PSNR (dB)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 49,
+      "type": "0acb0599-4e1f-4bbe-9991-5e812d9734fd",
+      "pos": [
+        1572,
+        -202.3530936488705
+      ],
+      "size": [
+        225,
+        240
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "input0",
+          "name": "inputs.input0",
+          "type": "NPARRAY",
+          "link": 84
+        },
+        {
+          "label": "input1",
+          "name": "inputs.input1",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 85
+        },
+        {
+          "label": "input2",
+          "name": "inputs.input2",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 86
+        },
+        {
+          "label": "input3",
+          "name": "inputs.input3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 87
+        },
+        {
+          "label": "input4",
+          "name": "inputs.input4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 88
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            89,
+            102
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "previewExposures": []
+      },
+      "widgets_values": [
+        "original;simple;grayworld;learning-based;manual gains"
+      ],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 55,
+      "type": "9dfc35e5-a59b-4eda-b55a-4f063cba7c9f",
+      "pos": [
+        2930,
+        -227.64827958516068
+      ],
+      "size": [
+        225,
+        264
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "input0",
+          "name": "inputs.input0",
+          "type": "NPARRAY",
+          "link": 92
+        },
+        {
+          "label": "input1",
+          "name": "inputs.input1",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 95
+        },
+        {
+          "label": "input2",
+          "name": "inputs.input2",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 96
+        },
+        {
+          "label": "input3",
+          "name": "inputs.input3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 97
+        },
+        {
+          "label": "input4",
+          "name": "inputs.input4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 98
+        },
+        {
+          "label": "input5",
+          "name": "inputs.input5",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 100
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            101
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "previewExposures": []
+      },
+      "widgets_values": [
+        "balanced;gamma 0.5;gamma 1.8;log;autoscale;strech"
+      ],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 56,
+      "type": "CV_CVPreview",
+      "pos": [
+        1710,
+        105.95735316837983
+      ],
+      "size": [
+        624.890625,
+        688.640625
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 102
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Tone-curve sheet",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 57,
+      "type": "Note",
+      "pos": [
+        42,
+        833.9759999999998
+      ],
+      "size": [
+        520,
+        192.921875
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "color_cast_posters.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Art posters wall with synthetic ColorChecker + tungsten color cast\nCreator: generated (this repo) - composite of art_posters_wall.png + synthetic ColorChecker chart\nLicense: no third-party rights (synthetic composite)\nSource:  synthetic; posters from art_posters_wall.png, chart from synthetic_color_checker.png, scaled to 40% width and centered bottom\nSize:    1500x1050 (same as art_posters_wall.png)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 58,
+      "type": "cv2_intensity_transform_BIMEF",
+      "pos": [
+        3652,
+        361.37403329480685
+      ],
+      "size": [
+        299.953125,
+        166
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 2,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 118
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            114
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "cv2_intensity_transform_BIMEF"
+      },
+      "widgets_values": [
+        0.5,
+        -0.3293,
+        1.1258
+      ]
+    },
+    {
+      "id": 59,
+      "type": "CV_CVPreview",
+      "pos": [
+        3995,
+        330.178080632367
+      ],
+      "size": [
+        650.1875,
+        408.765625
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 116
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Eigen gated  sheet",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 60,
+      "type": "cv2_intensity_transform_BIMEF2",
+      "pos": [
+        3651,
+        577.5224932335195
+      ],
+      "size": [
+        308.484375,
+        170
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 2,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 119
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            115
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "cv2_intensity_transform_BIMEF2"
+      },
+      "widgets_values": [
+        0,
+        0.5,
+        -0.3293,
+        1.1258
+      ]
+    },
+    {
+      "id": 66,
+      "type": "94e5b74e-a844-499c-aac0-89b341bdded8",
+      "pos": [
+        3720,
+        73.37882658905392
+      ],
+      "size": [
+        225,
+        240
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 18,
+      "mode": 2,
+      "inputs": [
+        {
+          "label": "input0",
+          "name": "inputs.input0",
+          "type": "NPARRAY",
+          "link": 114
+        },
+        {
+          "label": "input1",
+          "name": "inputs.input1",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 115
+        },
+        {
+          "label": "input2",
+          "name": "inputs.input2",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "label": "input3",
+          "name": "inputs.input3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "label": "input4",
+          "name": "inputs.input4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            116
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "previewExposures": []
+      },
+      "widgets_values": [
+        "BIMEF (default params);BIMEF2"
+      ],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      4,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      4,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      4,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      7,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      22,
+      7,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      7,
+      0,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      24,
+      7,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      7,
+      0,
+      23,
+      0,
+      "NPARRAY"
+    ],
+    [
+      43,
+      4,
+      0,
+      36,
+      0,
+      "NPARRAY"
+    ],
+    [
+      44,
+      7,
+      0,
+      36,
+      1,
+      "NPARRAY"
+    ],
+    [
+      46,
+      7,
+      0,
+      38,
+      0,
+      "NPARRAY"
+    ],
+    [
+      47,
+      23,
+      0,
+      38,
+      1,
+      "NPARRAY"
+    ],
+    [
+      63,
+      36,
+      0,
+      40,
+      0,
+      "FLOAT"
+    ],
+    [
+      84,
+      4,
+      0,
+      49,
+      0,
+      "NPARRAY"
+    ],
+    [
+      85,
+      5,
+      0,
+      49,
+      1,
+      "NPARRAY"
+    ],
+    [
+      86,
+      6,
+      0,
+      49,
+      2,
+      "NPARRAY"
+    ],
+    [
+      87,
+      7,
+      0,
+      49,
+      3,
+      "NPARRAY"
+    ],
+    [
+      88,
+      8,
+      0,
+      49,
+      4,
+      "NPARRAY"
+    ],
+    [
+      89,
+      49,
+      0,
+      42,
+      6,
+      "NPARRAY"
+    ],
+    [
+      92,
+      7,
+      0,
+      55,
+      0,
+      "NPARRAY"
+    ],
+    [
+      95,
+      19,
+      0,
+      55,
+      1,
+      "NPARRAY"
+    ],
+    [
+      96,
+      20,
+      0,
+      55,
+      2,
+      "NPARRAY"
+    ],
+    [
+      97,
+      21,
+      0,
+      55,
+      3,
+      "NPARRAY"
+    ],
+    [
+      98,
+      22,
+      0,
+      55,
+      4,
+      "NPARRAY"
+    ],
+    [
+      100,
+      23,
+      0,
+      55,
+      5,
+      "NPARRAY"
+    ],
+    [
+      101,
+      55,
+      0,
+      35,
+      0,
+      "NPARRAY"
+    ],
+    [
+      102,
+      49,
+      0,
+      56,
+      0,
+      "NPARRAY"
+    ],
+    [
+      103,
+      38,
+      0,
+      41,
+      0,
+      "FLOAT"
+    ],
+    [
+      114,
+      58,
+      0,
+      66,
+      0,
+      "NPARRAY"
+    ],
+    [
+      115,
+      60,
+      0,
+      66,
+      1,
+      "NPARRAY"
+    ],
+    [
+      116,
+      66,
+      0,
+      59,
+      0,
+      "NPARRAY"
+    ],
+    [
+      117,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      118,
+      4,
+      0,
+      58,
+      0,
+      "NPARRAY"
+    ],
+    [
+      119,
+      4,
+      0,
+      60,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "0acb0599-4e1f-4bbe-9991-5e812d9734fd",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 108,
+          "lastLinkId": 119,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "AddLabels",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            1417.77309534082,
+            144.78063359112994,
+            128,
+            147.99999999999997
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2050.6348068850793,
+            184.78063359112994,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "29735b21-9a04-483e-8efb-5c713c753512",
+            "name": "inputs.input0",
+            "type": "NPARRAY",
+            "linkIds": [
+              77
+            ],
+            "localized_name": "inputs.input0",
+            "label": "input0",
+            "pos": [
+              1521.77309534082,
+              168.78063359112994
+            ]
+          },
+          {
+            "id": "520c6906-95ec-422d-8050-3919b7aaf593",
+            "name": "inputs.input1",
+            "type": "NPARRAY",
+            "linkIds": [
+              78
+            ],
+            "localized_name": "inputs.input1",
+            "label": "input1",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              188.78063359112994
+            ]
+          },
+          {
+            "id": "6b6489d3-39d8-432a-933a-5b7aeb116193",
+            "name": "inputs.input2",
+            "type": "NPARRAY",
+            "linkIds": [
+              79
+            ],
+            "localized_name": "inputs.input2",
+            "label": "input2",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              208.78063359112994
+            ]
+          },
+          {
+            "id": "139121ae-db3f-472e-8884-bef2d2d142bb",
+            "name": "inputs.input3",
+            "type": "NPARRAY",
+            "linkIds": [
+              80
+            ],
+            "localized_name": "inputs.input3",
+            "label": "input3",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              228.78063359112994
+            ]
+          },
+          {
+            "id": "950176af-5406-45a7-98f2-5681369409e9",
+            "name": "inputs.input4",
+            "type": "NPARRAY",
+            "linkIds": [
+              81
+            ],
+            "localized_name": "inputs.input4",
+            "label": "input4",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              248.78063359112994
+            ]
+          },
+          {
+            "id": "88dad804-79cc-4314-af39-6979e99c1729",
+            "name": "value",
+            "type": "STRING",
+            "linkIds": [
+              106
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "fd15d59f-51bd-440d-bdd5-d234a5e63d3d",
+            "name": "image",
+            "type": "NPARRAY",
+            "linkIds": [
+              68
+            ],
+            "localized_name": "image",
+            "pos": [
+              2074.6348068850793,
+              208.78063359112994
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 44,
+            "type": "PrimitiveStringMultiline",
+            "pos": [
+              1768.9807691073036,
+              -80.33532986306548
+            ],
+            "size": [
+              210,
+              88
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "STRING",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 106
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "STRING",
+                "name": "STRING",
+                "type": "STRING",
+                "links": [
+                  73
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "PrimitiveStringMultiline"
+            },
+            "widgets_values": [
+              "original;simple;grayworld;learning-based;manual gains"
+            ]
+          },
+          {
+            "id": 9,
+            "type": "CV_DrawText",
+            "pos": [
+              1617.5094444444433,
+              348.37766666666727
+            ],
+            "size": [
+              369.7121111111112,
+              202
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 82
+              },
+              {
+                "localized_name": "text",
+                "name": "text",
+                "type": "STRING",
+                "widget": {
+                  "name": "text"
+                },
+                "link": 104
+              },
+              {
+                "localized_name": "color",
+                "name": "color",
+                "type": "STRING",
+                "widget": {
+                  "name": "color"
+                },
+                "link": 83
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  68
+                ]
+              }
+            ],
+            "title": "Label: original",
+            "properties": {
+              "Node name for S&R": "CV_DrawText"
+            },
+            "widgets_values": [
+              "original",
+              8,
+              26,
+              0.7,
+              "(0, 255, 0)",
+              2,
+              true
+            ]
+          },
+          {
+            "id": 48,
+            "type": "CV_ColorFromHex",
+            "pos": [
+              1618.8584286741518,
+              195.36260051559256
+            ],
+            "size": [
+              270,
+              106
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "tuple_string",
+                "name": "tuple_string",
+                "type": "STRING",
+                "links": [
+                  83
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ColorFromHex"
+            },
+            "widgets_values": [
+              "#00ff00",
+              "COLOR_RGB2BGR",
+              false
+            ]
+          },
+          {
+            "id": 47,
+            "type": "CreateList",
+            "pos": [
+              1603.7600004865994,
+              -81.80985205729706
+            ],
+            "size": [
+              140,
+              146
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "input0",
+                "localized_name": "inputs.input0",
+                "name": "inputs.input0",
+                "type": "NPARRAY",
+                "link": 77
+              },
+              {
+                "label": "input1",
+                "localized_name": "inputs.input1",
+                "name": "inputs.input1",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 78
+              },
+              {
+                "label": "input2",
+                "localized_name": "inputs.input2",
+                "name": "inputs.input2",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 79
+              },
+              {
+                "label": "input3",
+                "localized_name": "inputs.input3",
+                "name": "inputs.input3",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 80
+              },
+              {
+                "label": "input4",
+                "localized_name": "inputs.input4",
+                "name": "inputs.input4",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 81
+              },
+              {
+                "label": "input5",
+                "localized_name": "inputs.input5",
+                "name": "inputs.input5",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "list",
+                "name": "list",
+                "shape": 6,
+                "type": "NPARRAY",
+                "links": [
+                  82
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "CreateList"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 46,
+            "type": "Basic data handling: RegexSplitDataList",
+            "pos": [
+              1780.6348068850791,
+              57.71820902582261
+            ],
+            "size": [
+              210,
+              82
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "string",
+                "name": "string",
+                "type": "STRING",
+                "widget": {
+                  "name": "string"
+                },
+                "link": 73
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "STRING",
+                "name": "STRING",
+                "shape": 6,
+                "type": "STRING",
+                "links": [
+                  104
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "basic_data_handling",
+              "ver": "1.5.1",
+              "Node name for S&R": "Basic data handling: RegexSplitDataList"
+            },
+            "widgets_values": [
+              "",
+              ";"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 73,
+            "origin_id": 44,
+            "origin_slot": 0,
+            "target_id": 46,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 82,
+            "origin_id": 47,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 83,
+            "origin_id": 48,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 2,
+            "type": "STRING"
+          },
+          {
+            "id": 77,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 47,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 78,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 47,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 79,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 47,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 80,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 47,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 81,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 47,
+            "target_slot": 4,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 68,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 46,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 1,
+            "type": "STRING"
+          },
+          {
+            "id": 106,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 44,
+            "target_slot": 0,
+            "type": "STRING"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "9dfc35e5-a59b-4eda-b55a-4f063cba7c9f",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 108,
+          "lastLinkId": 119,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "AddLabels",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            1417.77309534082,
+            144.78063359112994,
+            128,
+            167.99999999999997
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2050.6348068850793,
+            184.78063359112994,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "29735b21-9a04-483e-8efb-5c713c753512",
+            "name": "inputs.input0",
+            "type": "NPARRAY",
+            "linkIds": [
+              77
+            ],
+            "localized_name": "inputs.input0",
+            "label": "input0",
+            "pos": [
+              1521.77309534082,
+              168.78063359112994
+            ]
+          },
+          {
+            "id": "520c6906-95ec-422d-8050-3919b7aaf593",
+            "name": "inputs.input1",
+            "type": "NPARRAY",
+            "linkIds": [
+              78
+            ],
+            "localized_name": "inputs.input1",
+            "label": "input1",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              188.78063359112994
+            ]
+          },
+          {
+            "id": "6b6489d3-39d8-432a-933a-5b7aeb116193",
+            "name": "inputs.input2",
+            "type": "NPARRAY",
+            "linkIds": [
+              79
+            ],
+            "localized_name": "inputs.input2",
+            "label": "input2",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              208.78063359112994
+            ]
+          },
+          {
+            "id": "139121ae-db3f-472e-8884-bef2d2d142bb",
+            "name": "inputs.input3",
+            "type": "NPARRAY",
+            "linkIds": [
+              80
+            ],
+            "localized_name": "inputs.input3",
+            "label": "input3",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              228.78063359112994
+            ]
+          },
+          {
+            "id": "950176af-5406-45a7-98f2-5681369409e9",
+            "name": "inputs.input4",
+            "type": "NPARRAY",
+            "linkIds": [
+              81
+            ],
+            "localized_name": "inputs.input4",
+            "label": "input4",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              248.78063359112994
+            ]
+          },
+          {
+            "id": "a877d500-103b-4c59-985d-4ac0d7e5d841",
+            "name": "inputs.input5",
+            "type": "NPARRAY",
+            "linkIds": [
+              99
+            ],
+            "label": "input5",
+            "pos": [
+              1521.77309534082,
+              268.7806335911299
+            ]
+          },
+          {
+            "id": "7ed9f3a2-ff12-44fb-9a4e-938cf2a156df",
+            "name": "value",
+            "type": "STRING",
+            "linkIds": [
+              107
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "fd15d59f-51bd-440d-bdd5-d234a5e63d3d",
+            "name": "image",
+            "type": "NPARRAY",
+            "linkIds": [
+              68
+            ],
+            "localized_name": "image",
+            "pos": [
+              2074.6348068850793,
+              208.78063359112994
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 50,
+            "type": "PrimitiveStringMultiline",
+            "pos": [
+              1768.9807691073036,
+              -80.33532986306548
+            ],
+            "size": [
+              210,
+              88
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "STRING",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 107
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "STRING",
+                "name": "STRING",
+                "type": "STRING",
+                "links": [
+                  73
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "PrimitiveStringMultiline"
+            },
+            "widgets_values": [
+              "balanced;gamma 0.5;gamma 1.8;log;autoscale;strech"
+            ]
+          },
+          {
+            "id": 52,
+            "type": "CV_DrawText",
+            "pos": [
+              1617.5094444444433,
+              348.37766666666727
+            ],
+            "size": [
+              369.7121111111112,
+              202
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 82
+              },
+              {
+                "localized_name": "text",
+                "name": "text",
+                "type": "STRING",
+                "widget": {
+                  "name": "text"
+                },
+                "link": 105
+              },
+              {
+                "localized_name": "color",
+                "name": "color",
+                "type": "STRING",
+                "widget": {
+                  "name": "color"
+                },
+                "link": 83
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  68
+                ]
+              }
+            ],
+            "title": "Label: original",
+            "properties": {
+              "Node name for S&R": "CV_DrawText"
+            },
+            "widgets_values": [
+              "original",
+              8,
+              26,
+              0.7,
+              "(0, 255, 0)",
+              2,
+              true
+            ]
+          },
+          {
+            "id": 53,
+            "type": "CV_ColorFromHex",
+            "pos": [
+              1618.8584286741518,
+              195.36260051559256
+            ],
+            "size": [
+              270,
+              106
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "tuple_string",
+                "name": "tuple_string",
+                "type": "STRING",
+                "links": [
+                  83
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ColorFromHex"
+            },
+            "widgets_values": [
+              "#00ff00",
+              "COLOR_RGB2BGR",
+              false
+            ]
+          },
+          {
+            "id": 54,
+            "type": "CreateList",
+            "pos": [
+              1603.7600004865994,
+              -81.80985205729706
+            ],
+            "size": [
+              140,
+              166
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "input0",
+                "localized_name": "inputs.input0",
+                "name": "inputs.input0",
+                "type": "NPARRAY",
+                "link": 77
+              },
+              {
+                "label": "input1",
+                "localized_name": "inputs.input1",
+                "name": "inputs.input1",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 78
+              },
+              {
+                "label": "input2",
+                "localized_name": "inputs.input2",
+                "name": "inputs.input2",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 79
+              },
+              {
+                "label": "input3",
+                "localized_name": "inputs.input3",
+                "name": "inputs.input3",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 80
+              },
+              {
+                "label": "input4",
+                "localized_name": "inputs.input4",
+                "name": "inputs.input4",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 81
+              },
+              {
+                "label": "input5",
+                "localized_name": "inputs.input5",
+                "name": "inputs.input5",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 99
+              },
+              {
+                "label": "input6",
+                "localized_name": "inputs.input6",
+                "name": "inputs.input6",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "list",
+                "name": "list",
+                "shape": 6,
+                "type": "NPARRAY",
+                "links": [
+                  82
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "CreateList"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 51,
+            "type": "Basic data handling: RegexSplitDataList",
+            "pos": [
+              1780.6348068850791,
+              57.71820902582261
+            ],
+            "size": [
+              210,
+              82
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "string",
+                "name": "string",
+                "type": "STRING",
+                "widget": {
+                  "name": "string"
+                },
+                "link": 73
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "STRING",
+                "name": "STRING",
+                "shape": 6,
+                "type": "STRING",
+                "links": [
+                  105
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "basic_data_handling",
+              "ver": "1.5.1",
+              "Node name for S&R": "Basic data handling: RegexSplitDataList"
+            },
+            "widgets_values": [
+              "",
+              ";"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 73,
+            "origin_id": 50,
+            "origin_slot": 0,
+            "target_id": 51,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 82,
+            "origin_id": 54,
+            "origin_slot": 0,
+            "target_id": 52,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 83,
+            "origin_id": 53,
+            "origin_slot": 0,
+            "target_id": 52,
+            "target_slot": 2,
+            "type": "STRING"
+          },
+          {
+            "id": 77,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 54,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 78,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 54,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 79,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 54,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 80,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 54,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 81,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 54,
+            "target_slot": 4,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 68,
+            "origin_id": 52,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 99,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 54,
+            "target_slot": 5,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 51,
+            "origin_slot": 0,
+            "target_id": 52,
+            "target_slot": 1,
+            "type": "STRING"
+          },
+          {
+            "id": 107,
+            "origin_id": -10,
+            "origin_slot": 6,
+            "target_id": 50,
+            "target_slot": 0,
+            "type": "STRING"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "94e5b74e-a844-499c-aac0-89b341bdded8",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 108,
+          "lastLinkId": 119,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "AddLabels",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            1417.77309534082,
+            144.78063359112994,
+            128,
+            147.99999999999997
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2050.6348068850793,
+            184.78063359112994,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "29735b21-9a04-483e-8efb-5c713c753512",
+            "name": "inputs.input0",
+            "type": "NPARRAY",
+            "linkIds": [
+              77
+            ],
+            "localized_name": "inputs.input0",
+            "label": "input0",
+            "pos": [
+              1521.77309534082,
+              168.78063359112994
+            ]
+          },
+          {
+            "id": "520c6906-95ec-422d-8050-3919b7aaf593",
+            "name": "inputs.input1",
+            "type": "NPARRAY",
+            "linkIds": [
+              78
+            ],
+            "localized_name": "inputs.input1",
+            "label": "input1",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              188.78063359112994
+            ]
+          },
+          {
+            "id": "6b6489d3-39d8-432a-933a-5b7aeb116193",
+            "name": "inputs.input2",
+            "type": "NPARRAY",
+            "linkIds": [
+              79
+            ],
+            "localized_name": "inputs.input2",
+            "label": "input2",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              208.78063359112994
+            ]
+          },
+          {
+            "id": "139121ae-db3f-472e-8884-bef2d2d142bb",
+            "name": "inputs.input3",
+            "type": "NPARRAY",
+            "linkIds": [
+              80
+            ],
+            "localized_name": "inputs.input3",
+            "label": "input3",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              228.78063359112994
+            ]
+          },
+          {
+            "id": "950176af-5406-45a7-98f2-5681369409e9",
+            "name": "inputs.input4",
+            "type": "NPARRAY",
+            "linkIds": [
+              81
+            ],
+            "localized_name": "inputs.input4",
+            "label": "input4",
+            "shape": 7,
+            "pos": [
+              1521.77309534082,
+              248.78063359112994
+            ]
+          },
+          {
+            "id": "88dad804-79cc-4314-af39-6979e99c1729",
+            "name": "value",
+            "type": "STRING",
+            "linkIds": [
+              106
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "fd15d59f-51bd-440d-bdd5-d234a5e63d3d",
+            "name": "image",
+            "type": "NPARRAY",
+            "linkIds": [
+              68
+            ],
+            "localized_name": "image",
+            "pos": [
+              2074.6348068850793,
+              208.78063359112994
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 61,
+            "type": "PrimitiveStringMultiline",
+            "pos": [
+              1768.9807691073036,
+              -80.33532986306548
+            ],
+            "size": [
+              210,
+              88
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "STRING",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 106
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "STRING",
+                "name": "STRING",
+                "type": "STRING",
+                "links": [
+                  73
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "PrimitiveStringMultiline"
+            },
+            "widgets_values": [
+              "original;simple;grayworld;learning-based;manual gains"
+            ]
+          },
+          {
+            "id": 62,
+            "type": "CV_DrawText",
+            "pos": [
+              1617.5094444444433,
+              348.37766666666727
+            ],
+            "size": [
+              369.7121111111112,
+              202
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 82
+              },
+              {
+                "localized_name": "text",
+                "name": "text",
+                "type": "STRING",
+                "widget": {
+                  "name": "text"
+                },
+                "link": 104
+              },
+              {
+                "localized_name": "color",
+                "name": "color",
+                "type": "STRING",
+                "widget": {
+                  "name": "color"
+                },
+                "link": 83
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  68
+                ]
+              }
+            ],
+            "title": "Label: original",
+            "properties": {
+              "Node name for S&R": "CV_DrawText"
+            },
+            "widgets_values": [
+              "original",
+              8,
+              26,
+              0.7,
+              "(0, 255, 0)",
+              2,
+              true
+            ]
+          },
+          {
+            "id": 63,
+            "type": "CV_ColorFromHex",
+            "pos": [
+              1618.8584286741518,
+              195.36260051559256
+            ],
+            "size": [
+              270,
+              106
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "tuple_string",
+                "name": "tuple_string",
+                "type": "STRING",
+                "links": [
+                  83
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ColorFromHex"
+            },
+            "widgets_values": [
+              "#00ff00",
+              "COLOR_RGB2BGR",
+              false
+            ]
+          },
+          {
+            "id": 64,
+            "type": "CreateList",
+            "pos": [
+              1603.7600004865994,
+              -81.80985205729706
+            ],
+            "size": [
+              140,
+              146
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "input0",
+                "localized_name": "inputs.input0",
+                "name": "inputs.input0",
+                "type": "NPARRAY",
+                "link": 77
+              },
+              {
+                "label": "input1",
+                "localized_name": "inputs.input1",
+                "name": "inputs.input1",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 78
+              },
+              {
+                "label": "input2",
+                "localized_name": "inputs.input2",
+                "name": "inputs.input2",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 79
+              },
+              {
+                "label": "input3",
+                "localized_name": "inputs.input3",
+                "name": "inputs.input3",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 80
+              },
+              {
+                "label": "input4",
+                "localized_name": "inputs.input4",
+                "name": "inputs.input4",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 81
+              },
+              {
+                "label": "input5",
+                "localized_name": "inputs.input5",
+                "name": "inputs.input5",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "list",
+                "name": "list",
+                "shape": 6,
+                "type": "NPARRAY",
+                "links": [
+                  82
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "CreateList"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 65,
+            "type": "Basic data handling: RegexSplitDataList",
+            "pos": [
+              1780.6348068850791,
+              57.71820902582261
+            ],
+            "size": [
+              210,
+              82
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "string",
+                "name": "string",
+                "type": "STRING",
+                "widget": {
+                  "name": "string"
+                },
+                "link": 73
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "STRING",
+                "name": "STRING",
+                "shape": 6,
+                "type": "STRING",
+                "links": [
+                  104
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "basic_data_handling",
+              "ver": "1.5.1",
+              "Node name for S&R": "Basic data handling: RegexSplitDataList"
+            },
+            "widgets_values": [
+              "",
+              ";"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 73,
+            "origin_id": 61,
+            "origin_slot": 0,
+            "target_id": 65,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 82,
+            "origin_id": 64,
+            "origin_slot": 0,
+            "target_id": 62,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 83,
+            "origin_id": 63,
+            "origin_slot": 0,
+            "target_id": 62,
+            "target_slot": 2,
+            "type": "STRING"
+          },
+          {
+            "id": 77,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 64,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 78,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 64,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 79,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 64,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 80,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 64,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 81,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 64,
+            "target_slot": 4,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 68,
+            "origin_id": 62,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 65,
+            "origin_slot": 0,
+            "target_id": 62,
+            "target_slot": 1,
+            "type": "STRING"
+          },
+          {
+            "id": 106,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 61,
+            "target_slot": 0,
+            "type": "STRING"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.2633312543060801,
+      "offset": [
+        1001.9647518412775,
+        1274.826752609623
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

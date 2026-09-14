@@ -1,0 +1,2138 @@
+{
+  "id": "e3a18c5d-7f42-4b96-a1d8-2c64f9b07e31",
+  "revision": 0,
+  "last_node_id": 54,
+  "last_link_id": 98,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        53,
+        85.93174583126597
+      ],
+      "size": [
+        974.546875,
+        269.9375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Remap playground - composable coordinate maps\n\ncv2.remap renders dst(p) = src(map_x(p), map_y(p)) from two HxW float32 coordinate arrays, and ANY geometric warp can be expressed this way. 'CV Identity Map' emits the do-nothing grid; every distortion node (Radial Lens, Cylinder, Pinch/Stretch, Wave, Displacement, Homography) REWRITES the coordinates flowing through it, so chaining nodes composes distortions - see the 'composed' branch, where a wave runs through the barrel map and both warps land in ONE resampling pass (no double interpolation loss). The maps are plain arrays: inspect them, or feed them through any NPARRAY math.\n\nTips: use borderMode=BORDER_CONSTANT on cv2_remap - BORDER_DEFAULT reflects image content into out-of-frame samples. The low-level registry also has cv2_warpPolar / cv2_linearPolar / cv2_logPolar (polar unwrap of dials and irises), cv2_initUndistortRectifyMap (calibrated camera undistortion) and cv2_convertMaps (fixed-point maps for speed). 'CV Homography Map' turns a 'Find Homography' matrix into a map so perspective + lens effects combine in one pass."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        55,
+        400.4435171794296
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2,
+            3,
+            8,
+            48,
+            85
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load photo",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_IdentityMap",
+      "pos": [
+        800,
+        400
+      ],
+      "size": [
+        300,
+        96
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            49
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            11,
+            13,
+            15,
+            17,
+            19,
+            21,
+            50
+          ]
+        }
+      ],
+      "title": "Identity grid (start of every chain)",
+      "properties": {
+        "Node name for S&R": "CV_IdentityMap"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "CV_RadialLensMap",
+      "pos": [
+        1415,
+        1983.027096299407
+      ],
+      "size": [
+        320,
+        252
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 10
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            22,
+            36
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            23,
+            37
+          ]
+        }
+      ],
+      "title": "[CV Radial Lens Map] Barrel",
+      "properties": {
+        "Node name for S&R": "CV_RadialLensMap"
+      },
+      "widgets_values": [
+        0.1,
+        0.18,
+        0.1,
+        "polynomial: r * (a r^3 + b r^2 + c r + d)",
+        0.72,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": 6,
+      "type": "cv2_remap",
+      "pos": [
+        1418,
+        2276.546512792521
+      ],
+      "size": [
+        320,
+        290
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 3
+        },
+        {
+          "name": "map1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 22
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            40,
+            51
+          ]
+        }
+      ],
+      "title": "[cv2.remap] Apply (barrel)",
+      "properties": {
+        "Node name for S&R": "cv2_remap"
+      },
+      "widgets_values": [
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_CVPreview",
+      "pos": [
+        1426,
+        2613.5353836511304
+      ],
+      "size": [
+        300,
+        364
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (barrel: center bulges)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_RadialLensMap",
+      "pos": [
+        1256,
+        405.64280764750845
+      ],
+      "size": [
+        370,
+        252
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            69,
+            98
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            70
+          ]
+        }
+      ],
+      "title": "[CV Radial Lens Map] Pincushion (b = -0.18)",
+      "properties": {
+        "Node name for S&R": "CV_RadialLensMap"
+      },
+      "widgets_values": [
+        0,
+        -0.18,
+        0,
+        "polynomial: r * (a r^3 + b r^2 + c r + d)",
+        0,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_CylinderMap",
+      "pos": [
+        1255,
+        712.5708522138095
+      ],
+      "size": [
+        320,
+        188
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 14
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            71
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            72
+          ]
+        }
+      ],
+      "title": "Cylinder wrap (pano pre-warp)",
+      "properties": {
+        "Node name for S&R": "CV_CylinderMap"
+      },
+      "widgets_values": [
+        110,
+        "wrap around the cylinder (pano pre-warp)",
+        "vertical axis (curves the left/right edges)"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_PinchStretchMap",
+      "pos": [
+        1246,
+        958.5687068155723
+      ],
+      "size": [
+        320,
+        188
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 16
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            73
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            74
+          ]
+        }
+      ],
+      "title": "Pinch toward the center",
+      "properties": {
+        "Node name for S&R": "CV_PinchStretchMap"
+      },
+      "widgets_values": [
+        2.5,
+        2.5,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": 17,
+      "type": "CV_WaveMap",
+      "pos": [
+        1249,
+        1189.2993373428915
+      ],
+      "size": [
+        320,
+        252
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 18
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            75
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            76
+          ]
+        }
+      ],
+      "title": "[CV Wave Map] Wave (flag ripple)",
+      "properties": {
+        "Node name for S&R": "CV_WaveMap"
+      },
+      "widgets_values": [
+        6,
+        48,
+        3,
+        96,
+        0
+      ]
+    },
+    {
+      "id": 20,
+      "type": "cv2_cvtColor",
+      "pos": [
+        571,
+        1526.38023804562
+      ],
+      "size": [
+        272.484375,
+        132
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "title": "Luminance as the control image",
+      "properties": {
+        "Node name for S&R": "cv2_cvtColor"
+      },
+      "widgets_values": [
+        "COLOR_BGR2GRAY",
+        0,
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 21,
+      "type": "cv2_GaussianBlur",
+      "pos": [
+        868,
+        1525.8680649195537
+      ],
+      "size": [
+        310,
+        196
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            33
+          ]
+        }
+      ],
+      "title": "Smooth it (gentle refraction)",
+      "properties": {
+        "Node name for S&R": "cv2_GaussianBlur"
+      },
+      "widgets_values": [
+        "(21, 21)",
+        0,
+        0,
+        "BORDER_DEFAULT",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CV_DisplacementMap",
+      "pos": [
+        1251,
+        1490.1328632065247
+      ],
+      "size": [
+        320,
+        184
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 20
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 21
+        },
+        {
+          "name": "displacement",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            77
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            78
+          ]
+        }
+      ],
+      "title": "Displace by brightness",
+      "properties": {
+        "Node name for S&R": "CV_DisplacementMap"
+      },
+      "widgets_values": [
+        14,
+        14
+      ]
+    },
+    {
+      "id": 25,
+      "type": "CV_WaveMap",
+      "pos": [
+        1959,
+        2691.176731339914
+      ],
+      "size": [
+        420,
+        252
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 36
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            38
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "[CV Wave Map] Wave CHAINED onto the barrel map",
+      "properties": {
+        "Node name for S&R": "CV_WaveMap"
+      },
+      "widgets_values": [
+        6,
+        48,
+        0,
+        96,
+        0
+      ]
+    },
+    {
+      "id": 26,
+      "type": "cv2_remap",
+      "pos": [
+        2389,
+        2671.3145131355213
+      ],
+      "size": [
+        350,
+        290
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 48
+        },
+        {
+          "name": "map1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 38
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            46
+          ]
+        }
+      ],
+      "title": "[cv2.remap] Apply (barrel + wave in ONE pass)",
+      "properties": {
+        "Node name for S&R": "cv2_remap"
+      },
+      "widgets_values": [
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "CV_CVPreview",
+      "pos": [
+        2769,
+        2671.3145131355213
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (composed: wave through barrel)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 28,
+      "type": "CV_CVInspect",
+      "pos": [
+        1665,
+        408.78519034778867
+      ],
+      "size": [
+        304.046875,
+        72
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 98
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            55
+          ]
+        }
+      ],
+      "title": "a map is just an HxW float32 array",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 29,
+      "type": "CV_RadialLensMap",
+      "pos": [
+        2004,
+        2233.072455390647
+      ],
+      "size": [
+        320,
+        252
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 49
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            52
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            53
+          ]
+        }
+      ],
+      "title": "[CV Radial Lens Map] Revers Barrel",
+      "properties": {
+        "Node name for S&R": "CV_RadialLensMap"
+      },
+      "widgets_values": [
+        0.1,
+        0.18,
+        0.1,
+        "inverse: undoes the polynomial (same coefficients)",
+        0.72,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": 31,
+      "type": "cv2_remap",
+      "pos": [
+        2421,
+        2234.3612010700194
+      ],
+      "size": [
+        320,
+        290
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 51
+        },
+        {
+          "name": "map1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 52
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 53
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            54
+          ]
+        }
+      ],
+      "title": "[cv2.remap] Apply (reverse barrel)",
+      "properties": {
+        "Node name for S&R": "cv2_remap"
+      },
+      "widgets_values": [
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 32,
+      "type": "CV_CVPreview",
+      "pos": [
+        2778,
+        2234.285960269596
+      ],
+      "size": [
+        300,
+        364
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 54
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (barrel: center bulges)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 33,
+      "type": "PreviewAny",
+      "pos": [
+        2008,
+        409.5608810090406
+      ],
+      "size": [
+        380,
+        176
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ],
+      "title": "Preview as Text: a map is just an HxW float32 array"
+    },
+    {
+      "id": 35,
+      "type": "Basic data handling: DataListCreate",
+      "pos": [
+        2050,
+        643.0980091504455
+      ],
+      "size": [
+        225,
+        288
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "item_0",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_0"
+          },
+          "link": 79
+        },
+        {
+          "name": "item_1",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_1"
+          },
+          "link": 80
+        },
+        {
+          "name": "item_2",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_2"
+          },
+          "link": 81
+        },
+        {
+          "name": "item_3",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_3"
+          },
+          "link": 82
+        },
+        {
+          "name": "item_4",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_4"
+          },
+          "link": 83
+        }
+      ],
+      "outputs": [
+        {
+          "name": "list",
+          "shape": 6,
+          "type": "*",
+          "links": [
+            86,
+            87
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: DataListCreate"
+      },
+      "widgets_values": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 38,
+      "type": "Basic data handling: ListCreate",
+      "pos": [
+        1770,
+        698.2270874573039
+      ],
+      "size": [
+        225,
+        8
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "item_0",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_0"
+          },
+          "link": 69
+        },
+        {
+          "name": "item_1",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_1"
+          },
+          "link": 70
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LIST",
+          "type": "LIST",
+          "links": [
+            79
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: ListCreate"
+      },
+      "widgets_values": [
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 39,
+      "type": "Basic data handling: ListCreate",
+      "pos": [
+        1770,
+        739.2966711754025
+      ],
+      "size": [
+        225,
+        8
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "item_0",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_0"
+          },
+          "link": 71
+        },
+        {
+          "name": "item_1",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_1"
+          },
+          "link": 72
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LIST",
+          "type": "LIST",
+          "links": [
+            80
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: ListCreate"
+      },
+      "widgets_values": [
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 40,
+      "type": "Basic data handling: ListCreate",
+      "pos": [
+        1773,
+        781.1148998135022
+      ],
+      "size": [
+        225,
+        8
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "item_0",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_0"
+          },
+          "link": 73
+        },
+        {
+          "name": "item_1",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_1"
+          },
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LIST",
+          "type": "LIST",
+          "links": [
+            81
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: ListCreate"
+      },
+      "widgets_values": [
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 41,
+      "type": "Basic data handling: ListCreate",
+      "pos": [
+        1773,
+        822.1270650635859
+      ],
+      "size": [
+        225,
+        8
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "item_0",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_0"
+          },
+          "link": 75
+        },
+        {
+          "name": "item_1",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_1"
+          },
+          "link": 76
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LIST",
+          "type": "LIST",
+          "links": [
+            82
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: ListCreate"
+      },
+      "widgets_values": [
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 42,
+      "type": "Basic data handling: ListCreate",
+      "pos": [
+        1773,
+        863.3494750736689
+      ],
+      "size": [
+        225,
+        8
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "item_0",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_0"
+          },
+          "link": 77
+        },
+        {
+          "name": "item_1",
+          "shape": 7,
+          "type": "*",
+          "widget": {
+            "name": "item_1"
+          },
+          "link": 78
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LIST",
+          "type": "LIST",
+          "links": [
+            83
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: ListCreate"
+      },
+      "widgets_values": [
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 45,
+      "type": "cv2_remap",
+      "pos": [
+        2551,
+        612.2924372787832
+      ],
+      "size": [
+        283.515625,
+        288
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 85
+        },
+        {
+          "name": "map1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 88
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 89
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            96
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "cv2_remap"
+      },
+      "widgets_values": [
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "0",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 46,
+      "type": "Basic data handling: ListGetItem",
+      "pos": [
+        2328,
+        649.13446117233
+      ],
+      "size": [
+        225,
+        8
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "list",
+          "type": "LIST",
+          "link": 86
+        }
+      ],
+      "outputs": [
+        {
+          "name": "item",
+          "type": "*",
+          "links": [
+            88
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: ListGetItem"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 47,
+      "type": "Basic data handling: ListGetItem",
+      "pos": [
+        2327,
+        695.3517325216426
+      ],
+      "size": [
+        225,
+        8
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "list",
+          "type": "LIST",
+          "link": 87
+        }
+      ],
+      "outputs": [
+        {
+          "name": "item",
+          "type": "*",
+          "links": [
+            89
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: ListGetItem"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 48,
+      "type": "PreviewImage",
+      "pos": [
+        1996,
+        991.7576289159416
+      ],
+      "size": [
+        1089.703125,
+        809.8125
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 95
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 50,
+      "type": "CV_DrawText",
+      "pos": [
+        3096,
+        724.3438019603838
+      ],
+      "size": [
+        270,
+        324
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 96
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 94
+        },
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            95
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "",
+        235,
+        461.5,
+        2.6,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 51,
+      "type": "PrimitiveStringMultiline",
+      "pos": [
+        3135,
+        378.2333803033837
+      ],
+      "size": [
+        225,
+        140
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            93
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PrimitiveStringMultiline"
+      },
+      "widgets_values": [
+        "Pincushion;cylinder;pinch;wave;displacement"
+      ]
+    },
+    {
+      "id": 52,
+      "type": "Basic data handling: RegexSplitDataList",
+      "pos": [
+        3137,
+        548.4712364953839
+      ],
+      "size": [
+        225,
+        144
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "string",
+          "type": "STRING",
+          "widget": {
+            "name": "string"
+          },
+          "link": 93
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": [
+            94
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: RegexSplitDataList"
+      },
+      "widgets_values": [
+        "",
+        ";"
+      ]
+    }
+  ],
+  "links": [
+    [
+      2,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      2,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      2,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      4,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      4,
+      1,
+      5,
+      1,
+      "NPARRAY"
+    ],
+    [
+      12,
+      4,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      4,
+      1,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      14,
+      4,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      15,
+      4,
+      1,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      16,
+      4,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      17,
+      4,
+      1,
+      14,
+      1,
+      "NPARRAY"
+    ],
+    [
+      18,
+      4,
+      0,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      4,
+      1,
+      17,
+      1,
+      "NPARRAY"
+    ],
+    [
+      20,
+      4,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      4,
+      1,
+      22,
+      1,
+      "NPARRAY"
+    ],
+    [
+      22,
+      5,
+      0,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      23,
+      5,
+      1,
+      6,
+      2,
+      "NPARRAY"
+    ],
+    [
+      32,
+      20,
+      0,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      33,
+      21,
+      0,
+      22,
+      2,
+      "IMAGE"
+    ],
+    [
+      36,
+      5,
+      0,
+      25,
+      0,
+      "NPARRAY"
+    ],
+    [
+      37,
+      5,
+      1,
+      25,
+      1,
+      "NPARRAY"
+    ],
+    [
+      38,
+      25,
+      0,
+      26,
+      1,
+      "NPARRAY"
+    ],
+    [
+      39,
+      25,
+      1,
+      26,
+      2,
+      "NPARRAY"
+    ],
+    [
+      40,
+      6,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      46,
+      26,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ],
+    [
+      48,
+      2,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ],
+    [
+      49,
+      4,
+      0,
+      29,
+      0,
+      "NPARRAY"
+    ],
+    [
+      50,
+      4,
+      1,
+      29,
+      1,
+      "NPARRAY"
+    ],
+    [
+      51,
+      6,
+      0,
+      31,
+      0,
+      "IMAGE"
+    ],
+    [
+      52,
+      29,
+      0,
+      31,
+      1,
+      "NPARRAY"
+    ],
+    [
+      53,
+      29,
+      1,
+      31,
+      2,
+      "NPARRAY"
+    ],
+    [
+      54,
+      31,
+      0,
+      32,
+      0,
+      "IMAGE"
+    ],
+    [
+      55,
+      28,
+      0,
+      33,
+      0,
+      "STRING"
+    ],
+    [
+      69,
+      8,
+      0,
+      38,
+      0,
+      "NPARRAY"
+    ],
+    [
+      70,
+      8,
+      1,
+      38,
+      1,
+      "NPARRAY"
+    ],
+    [
+      71,
+      11,
+      0,
+      39,
+      0,
+      "NPARRAY"
+    ],
+    [
+      72,
+      11,
+      1,
+      39,
+      1,
+      "NPARRAY"
+    ],
+    [
+      73,
+      14,
+      0,
+      40,
+      0,
+      "NPARRAY"
+    ],
+    [
+      74,
+      14,
+      1,
+      40,
+      1,
+      "NPARRAY"
+    ],
+    [
+      75,
+      17,
+      0,
+      41,
+      0,
+      "NPARRAY"
+    ],
+    [
+      76,
+      17,
+      1,
+      41,
+      1,
+      "NPARRAY"
+    ],
+    [
+      77,
+      22,
+      0,
+      42,
+      0,
+      "NPARRAY"
+    ],
+    [
+      78,
+      22,
+      1,
+      42,
+      1,
+      "NPARRAY"
+    ],
+    [
+      79,
+      38,
+      0,
+      35,
+      0,
+      "LIST"
+    ],
+    [
+      80,
+      39,
+      0,
+      35,
+      1,
+      "LIST"
+    ],
+    [
+      81,
+      40,
+      0,
+      35,
+      2,
+      "LIST"
+    ],
+    [
+      82,
+      41,
+      0,
+      35,
+      3,
+      "LIST"
+    ],
+    [
+      83,
+      42,
+      0,
+      35,
+      4,
+      "LIST"
+    ],
+    [
+      85,
+      2,
+      0,
+      45,
+      0,
+      "IMAGE"
+    ],
+    [
+      86,
+      35,
+      0,
+      46,
+      0,
+      "LIST"
+    ],
+    [
+      87,
+      35,
+      0,
+      47,
+      0,
+      "LIST"
+    ],
+    [
+      88,
+      46,
+      0,
+      45,
+      1,
+      "NPARRAY,IMAGE,MASK,LATENT"
+    ],
+    [
+      89,
+      47,
+      0,
+      45,
+      2,
+      "NPARRAY,IMAGE,MASK,LATENT"
+    ],
+    [
+      93,
+      51,
+      0,
+      52,
+      0,
+      "STRING"
+    ],
+    [
+      94,
+      52,
+      0,
+      50,
+      1,
+      "STRING"
+    ],
+    [
+      95,
+      50,
+      0,
+      48,
+      0,
+      "IMAGE"
+    ],
+    [
+      96,
+      45,
+      0,
+      50,
+      0,
+      "IMAGE"
+    ],
+    [
+      98,
+      8,
+      0,
+      28,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.7513148009015781,
+      "offset": [
+        -1785.2797462087694,
+        -1471.2364551391872
+      ]
+    },
+    "frontendVersion": "1.45.20"
+  },
+  "version": 0.4
+}

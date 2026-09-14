@@ -1,0 +1,363 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "1f6c0a92-8d47-4be3-95a0-6c2e7b31d840",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        320,
+        132
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "statistic",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "denoise_ksize",
+          "type": "INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "plate",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "plate_image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Background Plate (Video)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "1f6c0a92-8d47-4be3-95a0-6c2e7b31d840",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 3,
+          "lastLinkId": 107,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Background Plate (Video)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "c067e868-275c-55a5-b0d0-aa36ed6e8e15",
+            "name": "frames",
+            "type": "IMAGE",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "frames",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "957f4ff1-ba86-57fd-a363-74679700e369",
+            "name": "statistic",
+            "type": "COMBO",
+            "linkIds": [
+              102
+            ],
+            "localized_name": "statistic",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "4197d132-e446-5a68-a040-427f3f881383",
+            "name": "denoise_ksize",
+            "type": "INT",
+            "linkIds": [
+              104
+            ],
+            "localized_name": "denoise_ksize",
+            "pos": [
+              140,
+              260
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "2eccf442-9eab-5eb8-8fe9-00f03dd0424d",
+            "name": "plate",
+            "type": "NPARRAY",
+            "linkIds": [
+              106
+            ],
+            "localized_name": "plate",
+            "pos": [
+              2100,
+              220
+            ]
+          },
+          {
+            "id": "949fcc63-9ae1-5689-a783-e33a38db897c",
+            "name": "plate_image",
+            "type": "IMAGE",
+            "linkIds": [
+              107
+            ],
+            "localized_name": "plate_image",
+            "pos": [
+              2100,
+              240
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_TemporalReduce",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "images",
+                "type": "NPARRAY",
+                "link": 101
+              },
+              {
+                "name": "statistic",
+                "type": "COMBO",
+                "widget": {
+                  "name": "statistic"
+                },
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "name": "plate",
+                "type": "NPARRAY",
+                "links": [
+                  103
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_TemporalReduce"
+            },
+            "widgets_values": [
+              "median (robust static background)"
+            ],
+            "title": "Median over time = the empty scene"
+          },
+          {
+            "id": 2,
+            "type": "cv2_medianBlur",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "name": "ksize",
+                "type": "INT",
+                "widget": {
+                  "name": "ksize"
+                },
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  105,
+                  106
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_medianBlur"
+            },
+            "widgets_values": [
+              1
+            ],
+            "title": "Despeckle the plate (1 = off)"
+          },
+          {
+            "id": 3,
+            "type": "CV_CVToImage",
+            "pos": [
+              1090,
+              40
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 105
+              }
+            ],
+            "outputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "links": [
+                  107
+                ]
+              },
+              {
+                "name": "alpha",
+                "type": "MASK",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVToImage"
+            },
+            "widgets_values": [
+              "BGR (OpenCV default)"
+            ],
+            "title": "plate -> IMAGE"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 1,
+            "target_slot": 1,
+            "type": "COMBO"
+          },
+          {
+            "id": 103,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 2,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 105,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "IMAGE"
+          }
+        ]
+      }
+    ]
+  }
+}

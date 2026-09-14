@@ -1,0 +1,3015 @@
+{
+  "id": "9e34f3d2-3511-483a-9a63-479c5f43bf73",
+  "revision": 0,
+  "last_node_id": 126,
+  "last_link_id": 114,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        1214.2209807342651,
+        10.510685365068412
+      ],
+      "size": [
+        473.28125,
+        2097.125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Exercise: calibrated stereo to 3D point cloud\n\nFull calibrated stereo pipeline producing a colored 3D point cloud:\n1. Load a stereo pair (left + right driving scene).\n2. 'Stereo Calibration From CSV' reads per-image calibration:\n   intrinsics K from vertical FOV, R and T from CSV columns.\n3. 'cv2.stereoRectify' computes rectification transforms.\n4. 'cv2.initUndistortRectifyMap' + 'cv2.remap' rectifies both views.\n5. 'CV Stereo Disparity (SGBM)' computes per-pixel disparity.\n6. 'CV Disparity Interpolate (Edge-Aware)' makes it dense.\n7. 'cv2.reprojectImageTo3D' converts disparity to 3D points using Q.\n8. The 'Sky Mask' subgraph discards the sky points.\n9. 'CV Filter Point Cloud' prunes extreme-distance outliers.\n10. 'CV Write PLY' exports the colored point cloud.\n\nWHY THE INTERPOLATOR AND NOT cv2.inpaint. SGBM leaves ~40% of this\nscene without a disparity (texture-less road, occlusions, the left\nstrip that is only visible to one camera). Filling those holes with\n'cv2.inpaint' works on the ground and RUINS the objects: inpainting\nis image-blind, so it diffuses disparity straight across every\nsilhouette - measured on this pair, only 15% of the strong disparity\ngradients it produces land within 2 px of an image edge, against 85%\nfor the interpolator. The other tempting fix, letting the WLS filter\ndo the filling (see exercise_stereo_multiview), keeps the silhouettes\nbut bends the road: its smoothness prior is fronto-parallel, and a\nplane fit through the road band degrades from 0.06 m RMS / 98%\ninliers to 0.36 m / 33%. The interpolator fits a local PLANE per\nsuperpixel instead - which is what a road IS - and keeps 0.06 m at\n~100% coverage.\n\nWHY THE SKY HAS TO BE MASKED OUT. Making the disparity dense also\nfills the sky, and those points are NOT catchable downstream: they\nland at a median 18 m, i.e. right inside the 0.5..50 m range filter,\nand before this step they were 26% of the whole cloud (30% on frame\n000001). Two things that look like they should work do not:\n  - The WLS confidence map is HIGHER in the sky (mean 207) than on\n    real content (163). A uniform region gives the same wrong match\n    in both directions, so the left-right check is satisfied.\n  - Gating the sky out of the interpolator's SEEDS makes it WORSE\n    (25.7% -> 31.7% sky points): with no seeds to argue with, RIC\n    extrapolates the neighbouring planes across the whole region.\n    The mask has to be applied to the POINTS, which is what the\n    'CV Filter Points 3D By Mask' node here does (it filters the\n    per-vertex colours in lockstep).\nNor is the sky evidence-free: raw SGBM answers on 18.8% of it, so a\n'only keep pixels near a seed' rule removes at most ~79% of the sky\nand costs ~19% of the real content. A height cut ('keep what is\nbelow the camera') removes 100% of it but also every building top,\ntree top and lamp arm - 26% of the real content.\n\nTHE SKY MASK IS A HEURISTIC TUNED TO THIS DATASET. It is 'flat\n(|Laplacian| < 2), opened, and connected to the TOP image edge',\nwhich fits CARLA: cloudless, overexposed, noise-free, camera level,\nsky always touching the top border. Expect it to fail on textured\nclouds, a noisy real sensor (raise the blur, or make the threshold\na percentile), sun glare, a camera that looks down, or an indoor\nscene. It covers 29% of the rectified frame here, 21% on 000001.\nFour details in the composition are load-bearing:\n  - the OPEN runs BEFORE the connectivity test. Without it the flat\n    region leaks through the gaps between leaves, the component\n    test follows the leak, and the mask swallows the tree and the\n    facade behind it. Measured on the rectified frames, dropping\n    the opening and relaxing the threshold to 3 marks 70% of frame\n    000001 - the road included. With the opening the same threshold\n    gives 21%, i.e. the result stops depending on the exact number.\n  - 'Keep Largest Component' would pick the ROAD, not the sky - the\n    road is flat too and, at 71344 px, larger than any single sky\n    component. Touching the TOP edge is what separates them.\n  - 'Select Component At Point' would not work either: the lamp\n    post cuts the sky into 18 components here (13 on frame 000001),\n    and one probe point catches one of them. Hence 'OpenCV\n    Components Touching Border', which keeps all of them.\n  - the border margin is 4 px, and it has to be. cv2.remap with\n    BORDER_CONSTANT leaves a DARK SEAM one row deep at the top of a\n    rectified frame (row 0 reads ~130-160 against ~220 for row 1),\n    and the Gaussian + Laplacian smear that seam over another three\n    rows, so the flat mask only starts answering at row 4. At\n    margin 2 the sky to the right of the lamp post in frame 000001\n    is never seen and half that frame's sky stays in the cloud.\n    Margins 3, 4, 6 and 8 all give the identical mask, so 4 is not\n    a tuned number - it is just clear of the artefact. The tempting\n    wrong answer is that the OPENING ate the frame edge: it does\n    not, OpenCV pads erosion with +inf so morphology never shrinks\n    a region at the image border.\nCOLOUR SAMPLING WAS TRIED AND IS WORSE, which is worth knowing\nbecause it is the obvious idea. Sampling the sky colour and\nflood-filling from the top row (cv2.floodFill, fixed range) does\nreach 100% of the sky - and also swallows the tree tops, a building\ncorner and the distant facades, because in this washed-out scene\neverything far away is nearly the sky's colour: 18-36% of the\nhand-labelled CONTENT boxes get masked, and 4-10% of the masked\npixels are strongly textured (for the shipped mask both numbers are\n0.0%). A plain Lab colour-distance mask under-covers until the\ntolerance is so wide it has the same problem, and growing the\nconfirmed sky into colour-similar neighbours (morphological\nreconstruction) lands between the two. The failure mode is not the\nroad - mid-ground objects stop the flood before it gets there - it\nis everything hazy at distance. Texture plus connectivity separates\nthose; colour does not.\nFor real footage the durable replacement is a semantic segmentation\nONNX with a sky class (Cityscapes / ADE20K) through the existing\n'DNN Forward All' -> 'Pick Output' -> 'Seg Masks' pipeline: a model\nfile in models/onnx, no new nodes.\n\nnum_disparities is 64, not the usual 32: f*baseline is 117 px*m here,\nso a 32 px search cannot see anything closer than 3.7 m - which is\nexactly the ground in front of the car.\n\nTHE FAR LIMIT IS 30 m, NOT 50, and that is physics rather than\ntaste. Depth error grows with Z squared: with f*baseline = 117 px*m\none 1/16-px disparity step is 0.05 m at 10 m, 0.21 m at 20 m,\n0.48 m at 30 m, 0.85 m at 40 m and 1.34 m at 50 m. Past ~30 m the\npoints cannot be better than half a metre no matter what the\nmatcher does. Measured against the second stereo pair (project the\ncloud into that view and compare colours), cutting at 30 m drops\n11% of the points and takes agreement from 74% to 77%.\nBoth limits are PRIMITIVE nodes on the canvas rather than widgets\non 'CV Filter Point Cloud', so the far one can be turned while\nwatching the 3D preview - that trade (coverage against how much\nyou trust the far field) is a judgement call, not a constant.\n\nThe trailing 'Flip X' is not decoration: with this calibration\nstereoRectify returns a Q whose last row is negative, so\nreprojectImageTo3D hands back the NEGATION of the camera frame and\nthe cloud would be mirrored in the viewer without it.\n\nDataset: StereoGeo-CARLA (CC BY 4.0, HuggingFace)\nImages are 640x480 driving scenes from the CARLA simulator.\n\nDebug: raw + interpolated disparity heatmaps, seed mask, sky mask,\n3D point inspection, calibration output."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        1718.1688910359,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load scene left",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "stereo_scene_L_000000.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        1718.1688910359,
+        640
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load scene right",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "stereo_scene_R_000000.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ImageToCV",
+      "pos": [
+        2140,
+        240
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            24
+          ]
+        }
+      ],
+      "title": "Left -> BGR",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_ImageToCV",
+      "pos": [
+        2140,
+        640
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "title": "Right -> BGR",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_CVSize",
+      "pos": [
+        2490,
+        240
+      ],
+      "size": [
+        290,
+        126
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "dsize",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "size",
+          "type": "CV_TUPLE",
+          "links": [
+            8,
+            16,
+            22
+          ]
+        }
+      ],
+      "title": "Image size (left)",
+      "properties": {
+        "Node name for S&R": "CV_CVSize"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "CV_StereoCalibrationFromCSV",
+      "pos": [
+        2490,
+        640
+      ],
+      "size": [
+        300,
+        344
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "K_left",
+          "type": "NPARRAY",
+          "links": [
+            4,
+            12
+          ]
+        },
+        {
+          "name": "dist_left",
+          "type": "NPARRAY",
+          "links": [
+            5,
+            13
+          ]
+        },
+        {
+          "name": "K_right",
+          "type": "NPARRAY",
+          "links": [
+            6,
+            18
+          ]
+        },
+        {
+          "name": "dist_right",
+          "type": "NPARRAY",
+          "links": [
+            7,
+            19
+          ]
+        },
+        {
+          "name": "R",
+          "type": "NPARRAY",
+          "links": [
+            10,
+            58
+          ]
+        },
+        {
+          "name": "T",
+          "type": "NPARRAY",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Stereo Calibration From CSV]",
+      "properties": {
+        "Node name for S&R": "CV_StereoCalibrationFromCSV"
+      },
+      "widgets_values": [
+        "left_images.csv",
+        "right_images.csv",
+        "000000.png",
+        640,
+        480
+      ]
+    },
+    {
+      "id": 8,
+      "type": "cv2_stereoRectify",
+      "pos": [
+        2981.0712013281627,
+        629.498628649771
+      ],
+      "size": [
+        290,
+        392
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "cameraMatrix1",
+          "type": "NPARRAY",
+          "link": 4
+        },
+        {
+          "name": "distCoeffs1",
+          "type": "NPARRAY",
+          "link": 5
+        },
+        {
+          "name": "cameraMatrix2",
+          "type": "NPARRAY",
+          "link": 6
+        },
+        {
+          "name": "distCoeffs2",
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "name": "R",
+          "type": "NPARRAY",
+          "link": 10
+        },
+        {
+          "name": "T",
+          "type": "NPARRAY",
+          "link": 11
+        },
+        {
+          "name": "imageSize",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "imageSize"
+          },
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "R1",
+          "type": "NPARRAY",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "R2",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        },
+        {
+          "name": "P1",
+          "type": "NPARRAY",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "P2",
+          "type": "NPARRAY",
+          "links": [
+            21
+          ]
+        },
+        {
+          "name": "Q",
+          "type": "NPARRAY",
+          "links": [
+            36
+          ]
+        },
+        {
+          "name": "roi1",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "roi2",
+          "type": "BOUNDING_BOX",
+          "links": null
+        }
+      ],
+      "title": "Stereo Rectify (calibrated)",
+      "properties": {
+        "Node name for S&R": "cv2_stereoRectify"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "CALIB_ZERO_DISPARITY",
+        -1,
+        "(0, 0)"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "cv2_initUndistortRectifyMap",
+      "pos": [
+        3331.0712013281627,
+        429.49862864977104
+      ],
+      "size": [
+        290,
+        270
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "distCoeffs",
+          "type": "NPARRAY",
+          "link": 13
+        },
+        {
+          "name": "R",
+          "type": "NPARRAY",
+          "link": 14
+        },
+        {
+          "name": "newCameraMatrix",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "size",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "size"
+          },
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map1",
+          "type": "NPARRAY",
+          "links": [
+            25
+          ]
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "title": "Init rectify map (left)",
+      "properties": {
+        "Node name for S&R": "cv2_initUndistortRectifyMap"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "CV_32FC1 (float32, standard)"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "cv2_initUndistortRectifyMap",
+      "pos": [
+        3331.0712013281627,
+        829.498628649771
+      ],
+      "size": [
+        290,
+        270
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 18
+        },
+        {
+          "name": "distCoeffs",
+          "type": "NPARRAY",
+          "link": 19
+        },
+        {
+          "name": "R",
+          "type": "NPARRAY",
+          "link": 20
+        },
+        {
+          "name": "newCameraMatrix",
+          "type": "NPARRAY",
+          "link": 21
+        },
+        {
+          "name": "size",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "size"
+          },
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map1",
+          "type": "NPARRAY",
+          "links": [
+            28
+          ]
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "title": "Init rectify map (right)",
+      "properties": {
+        "Node name for S&R": "cv2_initUndistortRectifyMap"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "CV_32FC1 (float32, standard)"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "cv2_remap",
+      "pos": [
+        3681.0712013281627,
+        429.49862864977104
+      ],
+      "size": [
+        290,
+        282
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 24
+        },
+        {
+          "name": "map1",
+          "type": "NPARRAY",
+          "link": 25
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            30,
+            32,
+            38,
+            40
+          ]
+        }
+      ],
+      "title": "Remap left (rectified)",
+      "properties": {
+        "Node name for S&R": "cv2_remap"
+      },
+      "widgets_values": [
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "cv2_remap",
+      "pos": [
+        3681.0712013281627,
+        829.498628649771
+      ],
+      "size": [
+        290,
+        282
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 27
+        },
+        {
+          "name": "map1",
+          "type": "NPARRAY",
+          "link": 28
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            31,
+            33
+          ]
+        }
+      ],
+      "title": "Remap right (rectified)",
+      "properties": {
+        "Node name for S&R": "cv2_remap"
+      },
+      "widgets_values": [
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_StereoDisparity",
+      "pos": [
+        4031.0712013281627,
+        629.498628649771
+      ],
+      "size": [
+        290,
+        312
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY,IMAGE",
+          "link": 30
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY,IMAGE",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "disparity",
+          "type": "NPARRAY",
+          "links": [
+            34,
+            53
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Stereo Disparity (SGBM)]",
+      "properties": {
+        "Node name for S&R": "CV_StereoDisparity"
+      },
+      "widgets_values": [
+        64,
+        5,
+        0,
+        "HH (full-scale, slow)",
+        10,
+        100,
+        2,
+        1
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_DisparityInterpolate",
+      "pos": [
+        4381.071201328163,
+        629.498628649771
+      ],
+      "size": [
+        290,
+        330
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY,IMAGE",
+          "link": 32
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY,IMAGE",
+          "link": 33
+        },
+        {
+          "name": "disparity",
+          "type": "NPARRAY",
+          "link": 34
+        },
+        {
+          "name": "confidence",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "disparity",
+          "type": "NPARRAY",
+          "links": [
+            35,
+            54
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "seeds",
+          "type": "NPARRAY",
+          "links": [
+            55
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "Interpolate disparity (RIC)",
+      "properties": {
+        "Node name for S&R": "CV_DisparityInterpolate"
+      },
+      "widgets_values": [
+        "RIC (superpixel plane fit)",
+        0.05,
+        128,
+        32,
+        15,
+        "global smoother (recommended)",
+        30000
+      ]
+    },
+    {
+      "id": 15,
+      "type": "cv2_reprojectImageTo3D",
+      "pos": [
+        4731.071201328163,
+        629.498628649771
+      ],
+      "size": [
+        380,
+        156
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "disparity",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 35
+        },
+        {
+          "name": "Q",
+          "type": "NPARRAY",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "title": "[cv2.reprojectImageTo3D] Reproject disparity to 3D",
+      "properties": {
+        "Node name for S&R": "cv2_reprojectImageTo3D"
+      },
+      "widgets_values": [
+        false,
+        "same as input"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        5144.84165369566,
+        629.498628649771
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            42,
+            57
+          ]
+        }
+      ],
+      "title": "Reshape points to Nx3",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        0,
+        3,
+        0
+      ]
+    },
+    {
+      "id": 17,
+      "type": "cv2_cvtColor",
+      "pos": [
+        4731.071201328163,
+        1029.498628649771
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "Left rectified -> RGB",
+      "properties": {
+        "Node name for S&R": "cv2_cvtColor"
+      },
+      "widgets_values": [
+        "COLOR_BGR2RGB",
+        0,
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        5121.071201328163,
+        1029.498628649771
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            44
+          ]
+        }
+      ],
+      "title": "Reshape colors to Nx3",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        0,
+        3,
+        0
+      ]
+    },
+    {
+      "id": 19,
+      "type": "c3e7b915-4a26-4d8f-9b03-6f1a2e7c5d48",
+      "pos": [
+        5121.071201328163,
+        1429.498628649771
+      ],
+      "size": [
+        557.734375,
+        132
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "sky",
+          "type": "NPARRAY",
+          "links": [
+            56
+          ]
+        },
+        {
+          "name": "keep",
+          "type": "NPARRAY",
+          "links": [
+            41
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[Sky Mask (Flat + Border-Connected)] Sky mask (flat + reaching the top edge)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 20,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        5785.331033898388,
+        1429.498628649771
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "title": "Keep mask -> Nx1 (one row per point)",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 21,
+      "type": "CV_FilterPoints3DByMask",
+      "pos": [
+        6292.623697114395,
+        629.498628649771
+      ],
+      "size": [
+        290,
+        126
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 42
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 43
+        },
+        {
+          "name": "colors",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            45
+          ]
+        },
+        {
+          "name": "colors",
+          "type": "NPARRAY",
+          "links": [
+            46
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Drop the sky points",
+      "properties": {
+        "Node name for S&R": "CV_FilterPoints3DByMask"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "PrimitiveFloat",
+      "pos": [
+        5785.331033898388,
+        1029.498628649771
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "links": [
+            47
+          ]
+        }
+      ],
+      "title": "Cloud range: nearest (m)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PrimitiveFloat"
+      },
+      "widgets_values": [
+        0.5
+      ]
+    },
+    {
+      "id": 23,
+      "type": "PrimitiveFloat",
+      "pos": [
+        5785.331033898388,
+        1229.498628649771
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "links": [
+            48
+          ]
+        }
+      ],
+      "title": "Cloud range: farthest (m)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PrimitiveFloat"
+      },
+      "widgets_values": [
+        30
+      ]
+    },
+    {
+      "id": 24,
+      "type": "CV_FilterPointCloud",
+      "pos": [
+        6642.623697114395,
+        629.498628649771
+      ],
+      "size": [
+        305.96875,
+        200
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 45
+        },
+        {
+          "name": "colors",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 46
+        },
+        {
+          "name": "min_distance",
+          "type": "FLOAT",
+          "widget": {
+            "name": "min_distance"
+          },
+          "link": 47
+        },
+        {
+          "name": "max_distance",
+          "type": "FLOAT",
+          "widget": {
+            "name": "max_distance"
+          },
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            49
+          ]
+        },
+        {
+          "name": "colors",
+          "type": "NPARRAY",
+          "links": [
+            51
+          ]
+        }
+      ],
+      "title": "Filter outliers (range from the primitives)",
+      "properties": {
+        "Node name for S&R": "CV_FilterPointCloud"
+      },
+      "widgets_values": [
+        0.5,
+        30
+      ]
+    },
+    {
+      "id": 25,
+      "type": "CV_FlipAxis",
+      "pos": [
+        6992.623697114395,
+        629.498628649771
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 49
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            50
+          ]
+        }
+      ],
+      "title": "Flip X (un-mirror baseline)",
+      "properties": {
+        "Node name for S&R": "CV_FlipAxis"
+      },
+      "widgets_values": [
+        "X"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "CV_WritePly",
+      "pos": [
+        7342.623697114395,
+        629.498628649771
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 50
+        },
+        {
+          "name": "colors",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 51
+        }
+      ],
+      "outputs": [
+        {
+          "name": "ply",
+          "type": "FILE_3D_PLY",
+          "links": [
+            52
+          ]
+        }
+      ],
+      "title": "Write PLY (colored point cloud)",
+      "properties": {
+        "Node name for S&R": "CV_WritePly"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 27,
+      "type": "PreviewPointCloud",
+      "pos": [
+        7692.623697114395,
+        629.498628649771
+      ],
+      "size": [
+        290,
+        398
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_POINT_CLOUD_ANY,FILE_3D_PLY",
+          "link": 52
+        },
+        {
+          "name": "model_3d_info",
+          "shape": 7,
+          "type": "LOAD3D_MODEL_INFO",
+          "link": null
+        },
+        {
+          "name": "camera_info",
+          "shape": 7,
+          "type": "LOAD3D_CAMERA",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_POINT_CLOUD_ANY",
+          "links": null
+        },
+        {
+          "name": "model_3d_info",
+          "type": "LOAD3D_MODEL_INFO",
+          "links": null
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": null
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Point cloud",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewPointCloud",
+        "Camera Config": {
+          "cameraType": "perspective",
+          "fov": 35,
+          "state": {
+            "position": {
+              "x": 1.3097750747044021,
+              "y": 1.8667623018303465,
+              "z": 4.514085163401405
+            },
+            "target": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "zoom": 1,
+            "cameraType": "perspective"
+          }
+        },
+        "Last Time Model File": "preview_pointcloud_5a0f5446bb4e4227887e834780a2dc9d.ply",
+        "Light Config": {
+          "intensity": 3,
+          "hdri": {
+            "enabled": false,
+            "hdriPath": "",
+            "showAsBackground": false,
+            "intensity": 1
+          }
+        },
+        "Model Config": {
+          "upDirection": "original",
+          "materialMode": "pointCloud",
+          "showSkeleton": false,
+          "gizmo": {
+            "enabled": false,
+            "mode": "translate",
+            "position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "scale": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            }
+          }
+        },
+        "Scene Config": {
+          "showGrid": true,
+          "backgroundColor": "#282828",
+          "backgroundImage": "",
+          "backgroundRenderMode": "tiled",
+          "models": [
+            {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "quaternion": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            }
+          ]
+        }
+      },
+      "widgets_values": [
+        "",
+        640,
+        480
+      ]
+    },
+    {
+      "id": 28,
+      "type": "CV_CVPreview",
+      "pos": [
+        4369.800956818204,
+        1685.0694233576842
+      ],
+      "size": [
+        290,
+        342
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 53
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Disparity heatmap (raw SGBM)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 29,
+      "type": "CV_CVPreview",
+      "pos": [
+        4719.800956818204,
+        1685.0694233576842
+      ],
+      "size": [
+        290,
+        342
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 54
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Disparity heatmap (interpolated)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 30,
+      "type": "CV_CVPreview",
+      "pos": [
+        5060.774131487449,
+        1687.2844447470134
+      ],
+      "size": [
+        290,
+        342
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Seeds handed to the interpolator",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 31,
+      "type": "CV_CVPreview",
+      "pos": [
+        5390.296558547924,
+        1691.7978574123908
+      ],
+      "size": [
+        290,
+        342
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Sky mask (red = discarded)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 32,
+      "type": "CV_CVInspect",
+      "pos": [
+        5485.710841031245,
+        434.61165899578396
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 57
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            59
+          ]
+        }
+      ],
+      "title": "Inspect 3D points (Nx3)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 33,
+      "type": "CV_CVInspect",
+      "pos": [
+        2972.982262587452,
+        1221.493451412939
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 58
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            60
+          ]
+        }
+      ],
+      "title": "Inspect calibration (K, R, T)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 34,
+      "type": "PreviewAny",
+      "pos": [
+        5810.6154334608855,
+        437.1593627809641
+      ],
+      "size": [
+        366.1875,
+        162
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 59
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 35,
+      "type": "PreviewAny",
+      "pos": [
+        3302.982262587452,
+        1221.493451412939
+      ],
+      "size": [
+        348.078125,
+        162
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 60
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 36,
+      "type": "Note",
+      "pos": [
+        1716.3909631873464,
+        9.095702157768187
+      ],
+      "size": [
+        527.015625,
+        182.609375
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "stereo_scene_L_000000.png / stereo_scene_R_000000.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   StereoGeo-CARLA (stereo driving scenes from the CARLA simulator)\nCreator: Meddourimane et al.\nLicense: CC BY 4.0\n         https://creativecommons.org/licenses/by/4.0/\nSource:  https://huggingface.co/datasets/meddourimane/StereoGeo-CARLA\nSize:    640x480 each - synthetic driving frames rendered in the CARLA simulator\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      7,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      7,
+      1,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      6,
+      7,
+      2,
+      8,
+      2,
+      "NPARRAY"
+    ],
+    [
+      7,
+      7,
+      3,
+      8,
+      3,
+      "NPARRAY"
+    ],
+    [
+      8,
+      6,
+      3,
+      8,
+      6,
+      "CV_TUPLE"
+    ],
+    [
+      10,
+      7,
+      4,
+      8,
+      4,
+      "NPARRAY"
+    ],
+    [
+      11,
+      7,
+      5,
+      8,
+      5,
+      "NPARRAY"
+    ],
+    [
+      12,
+      7,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      7,
+      1,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      14,
+      8,
+      0,
+      9,
+      2,
+      "NPARRAY"
+    ],
+    [
+      15,
+      8,
+      2,
+      9,
+      3,
+      "NPARRAY"
+    ],
+    [
+      16,
+      6,
+      3,
+      9,
+      4,
+      "CV_TUPLE"
+    ],
+    [
+      18,
+      7,
+      2,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      7,
+      3,
+      10,
+      1,
+      "NPARRAY"
+    ],
+    [
+      20,
+      8,
+      1,
+      10,
+      2,
+      "NPARRAY"
+    ],
+    [
+      21,
+      8,
+      3,
+      10,
+      3,
+      "NPARRAY"
+    ],
+    [
+      22,
+      6,
+      3,
+      10,
+      4,
+      "CV_TUPLE"
+    ],
+    [
+      24,
+      4,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      9,
+      0,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      26,
+      9,
+      1,
+      11,
+      2,
+      "NPARRAY"
+    ],
+    [
+      27,
+      5,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      28,
+      10,
+      0,
+      12,
+      1,
+      "NPARRAY"
+    ],
+    [
+      29,
+      10,
+      1,
+      12,
+      2,
+      "NPARRAY"
+    ],
+    [
+      30,
+      11,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      31,
+      12,
+      0,
+      13,
+      1,
+      "NPARRAY"
+    ],
+    [
+      32,
+      11,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      33,
+      12,
+      0,
+      14,
+      1,
+      "NPARRAY"
+    ],
+    [
+      34,
+      13,
+      0,
+      14,
+      2,
+      "NPARRAY"
+    ],
+    [
+      35,
+      14,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      36,
+      8,
+      4,
+      15,
+      1,
+      "NPARRAY"
+    ],
+    [
+      37,
+      15,
+      0,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      38,
+      11,
+      0,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      39,
+      17,
+      0,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      40,
+      11,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      41,
+      19,
+      1,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      42,
+      16,
+      0,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      43,
+      20,
+      0,
+      21,
+      1,
+      "NPARRAY"
+    ],
+    [
+      44,
+      18,
+      0,
+      21,
+      2,
+      "NPARRAY"
+    ],
+    [
+      45,
+      21,
+      0,
+      24,
+      0,
+      "NPARRAY"
+    ],
+    [
+      46,
+      21,
+      1,
+      24,
+      1,
+      "NPARRAY"
+    ],
+    [
+      47,
+      22,
+      0,
+      24,
+      2,
+      "FLOAT"
+    ],
+    [
+      48,
+      23,
+      0,
+      24,
+      3,
+      "FLOAT"
+    ],
+    [
+      49,
+      24,
+      0,
+      25,
+      0,
+      "NPARRAY"
+    ],
+    [
+      50,
+      25,
+      0,
+      26,
+      0,
+      "NPARRAY"
+    ],
+    [
+      51,
+      24,
+      1,
+      26,
+      1,
+      "NPARRAY"
+    ],
+    [
+      52,
+      26,
+      0,
+      27,
+      0,
+      "FILE_3D_PLY"
+    ],
+    [
+      53,
+      13,
+      0,
+      28,
+      0,
+      "NPARRAY"
+    ],
+    [
+      54,
+      14,
+      0,
+      29,
+      0,
+      "NPARRAY"
+    ],
+    [
+      55,
+      14,
+      2,
+      30,
+      0,
+      "NPARRAY"
+    ],
+    [
+      56,
+      19,
+      0,
+      31,
+      0,
+      "NPARRAY"
+    ],
+    [
+      57,
+      16,
+      0,
+      32,
+      0,
+      "NPARRAY"
+    ],
+    [
+      58,
+      7,
+      4,
+      33,
+      0,
+      "NPARRAY"
+    ],
+    [
+      59,
+      32,
+      0,
+      34,
+      0,
+      "STRING"
+    ],
+    [
+      60,
+      33,
+      0,
+      35,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "c3e7b915-4a26-4d8f-9b03-6f1a2e7c5d48",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 126,
+          "lastLinkId": 114,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Sky Mask (Flat + Border-Connected)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "c9d46a5b-cf2f-54ab-bd8b-a8784e4a09b7",
+            "name": "image",
+            "type": "NPARRAY",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "image",
+            "pos": [
+              140,
+              220
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "7e40663c-3ce3-5182-8d4a-9c3a73bf1726",
+            "name": "sky",
+            "type": "NPARRAY",
+            "linkIds": [
+              112
+            ],
+            "localized_name": "sky",
+            "pos": [
+              2100,
+              220
+            ]
+          },
+          {
+            "id": "87955071-b46e-59bf-ac32-5ea647b0e5a3",
+            "name": "keep",
+            "type": "NPARRAY",
+            "linkIds": [
+              113
+            ],
+            "localized_name": "keep",
+            "pos": [
+              2100,
+              240
+            ]
+          },
+          {
+            "id": "1fb66d7a-7edd-5362-ab6a-66680f667afd",
+            "name": "found",
+            "type": "BOOLEAN",
+            "linkIds": [
+              114
+            ],
+            "localized_name": "found",
+            "pos": [
+              2100,
+              260
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 116,
+            "type": "cv2_cvtColor",
+            "pos": [
+              40,
+              240
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  102
+                ]
+              }
+            ],
+            "title": "-> gray",
+            "properties": {
+              "Node name for S&R": "cv2_cvtColor"
+            },
+            "widgets_values": [
+              "COLOR_BGR2GRAY",
+              0,
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 117,
+            "type": "cv2_GaussianBlur",
+            "pos": [
+              390,
+              240
+            ],
+            "size": [
+              290,
+              238
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  103
+                ]
+              }
+            ],
+            "title": "Blur (drop sensor noise)",
+            "properties": {
+              "Node name for S&R": "cv2_GaussianBlur"
+            },
+            "widgets_values": [
+              "(5, 5)",
+              0,
+              0,
+              "BORDER_DEFAULT",
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 118,
+            "type": "cv2_Laplacian",
+            "pos": [
+              740,
+              240
+            ],
+            "size": [
+              290,
+              212
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              }
+            ],
+            "title": "Laplacian (texture)",
+            "properties": {
+              "Node name for S&R": "cv2_Laplacian"
+            },
+            "widgets_values": [
+              "CV_32F",
+              1,
+              1,
+              0,
+              "BORDER_DEFAULT"
+            ]
+          },
+          {
+            "id": 119,
+            "type": "cv2_convertScaleAbs",
+            "pos": [
+              1090,
+              240
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  105
+                ]
+              }
+            ],
+            "title": "|Laplacian| -> uint8",
+            "properties": {
+              "Node name for S&R": "cv2_convertScaleAbs"
+            },
+            "widgets_values": [
+              1,
+              0
+            ]
+          },
+          {
+            "id": 120,
+            "type": "cv2_threshold",
+            "pos": [
+              1440,
+              240
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 105
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  106
+                ]
+              }
+            ],
+            "title": "Flat = |Laplacian| < 2",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              2,
+              255,
+              "THRESH_BINARY_INV"
+            ]
+          },
+          {
+            "id": 121,
+            "type": "cv2_getStructuringElement",
+            "pos": [
+              1790,
+              640
+            ],
+            "size": [
+              290,
+              212
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "title": "Open kernel",
+            "properties": {
+              "Node name for S&R": "cv2_getStructuringElement"
+            },
+            "widgets_values": [
+              "MORPH_ELLIPSE",
+              "(5, 5)",
+              "(-1, -1)"
+            ]
+          },
+          {
+            "id": 122,
+            "type": "cv2_morphologyEx",
+            "pos": [
+              1790,
+              240
+            ],
+            "size": [
+              290,
+              338
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 106
+              },
+              {
+                "localized_name": "kernel",
+                "name": "kernel",
+                "type": "NPARRAY",
+                "link": 107
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  108
+                ]
+              }
+            ],
+            "title": "Open (sever leaks through foliage)",
+            "properties": {
+              "Node name for S&R": "cv2_morphologyEx"
+            },
+            "widgets_values": [
+              "MORPH_OPEN",
+              "(-1, -1)",
+              1,
+              "BORDER_DEFAULT",
+              "(0, 0, 0, 0)"
+            ]
+          },
+          {
+            "id": 123,
+            "type": "CV_ComponentsTouchingBorder",
+            "pos": [
+              2140,
+              240
+            ],
+            "size": [
+              340.011328125,
+              252
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "NPARRAY",
+                "links": [
+                  109
+                ]
+              },
+              {
+                "localized_name": "area",
+                "name": "area",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "found",
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": [
+                  114
+                ]
+              }
+            ],
+            "title": "Flat AND reaching the top edge (margin 4 px)",
+            "properties": {
+              "Node name for S&R": "CV_ComponentsTouchingBorder"
+            },
+            "widgets_values": [
+              "top",
+              "keep touching",
+              "8",
+              4
+            ]
+          },
+          {
+            "id": 124,
+            "type": "cv2_getStructuringElement",
+            "pos": [
+              2140,
+              640
+            ],
+            "size": [
+              290,
+              212
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  110
+                ]
+              }
+            ],
+            "title": "Close kernel",
+            "properties": {
+              "Node name for S&R": "cv2_getStructuringElement"
+            },
+            "widgets_values": [
+              "MORPH_ELLIPSE",
+              "(5, 5)",
+              "(-1, -1)"
+            ]
+          },
+          {
+            "id": 125,
+            "type": "cv2_morphologyEx",
+            "pos": [
+              2490,
+              240
+            ],
+            "size": [
+              290,
+              338
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 109
+              },
+              {
+                "localized_name": "kernel",
+                "name": "kernel",
+                "type": "NPARRAY",
+                "link": 110
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  111,
+                  112
+                ]
+              }
+            ],
+            "title": "Close (seal the skyline)",
+            "properties": {
+              "Node name for S&R": "cv2_morphologyEx"
+            },
+            "widgets_values": [
+              "MORPH_CLOSE",
+              "(-1, -1)",
+              1,
+              "BORDER_DEFAULT",
+              "(0, 0, 0, 0)"
+            ]
+          },
+          {
+            "id": 126,
+            "type": "cv2_bitwise_not",
+            "pos": [
+              2840,
+              240
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 111
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  113
+                ]
+              }
+            ],
+            "title": "keep = NOT sky",
+            "properties": {
+              "Node name for S&R": "cv2_bitwise_not"
+            },
+            "widgets_values": []
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 116,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": 116,
+            "origin_slot": 0,
+            "target_id": 117,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": 117,
+            "origin_slot": 0,
+            "target_id": 118,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 118,
+            "origin_slot": 0,
+            "target_id": 119,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 119,
+            "origin_slot": 0,
+            "target_id": 120,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 120,
+            "origin_slot": 1,
+            "target_id": 122,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 121,
+            "origin_slot": 0,
+            "target_id": 122,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": 122,
+            "origin_slot": 0,
+            "target_id": 123,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": 123,
+            "origin_slot": 0,
+            "target_id": 125,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": 124,
+            "origin_slot": 0,
+            "target_id": 125,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 125,
+            "origin_slot": 0,
+            "target_id": 126,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": 125,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 126,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": 123,
+            "origin_slot": 3,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.3925103090150846,
+      "offset": [
+        -755.4574615069362,
+        792.4496301146178
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

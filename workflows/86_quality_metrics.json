@@ -1,0 +1,1348 @@
+{
+  "id": "0ebf1c20-b2bc-43c2-b9fc-726423988904",
+  "revision": 0,
+  "last_node_id": 61,
+  "last_link_id": 158,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        -154.29170786305417
+      ],
+      "size": [
+        872.359375,
+        355.28125
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "cv2.quality: full-reference vs no-reference",
+      "properties": {},
+      "widgets_values": [
+        "Grading images with numbers instead of eyes (cv2.quality).\n\nFULL-REFERENCE (section A) needs the original. That is the situation whenever YOU made the degradation: denoiser settings, an upscaler, a codec, a resize. 'CV Quality Compare Batch' takes one reference and a BATCH of candidates, computes the reference's internal state ONCE and scores every frame against it - a parameter sweep in one node. Mind the direction: SSIM and PSNR are higher-is-better, MSE and GMSD are lower-is-better. 'best_index' has already applied it, and 'higher_is_better' comes out as a BOOLEAN so a graph can rank without hardcoding the metric.\nThe scores are a picture of NUMBERS - chart them, do not preview them as pixels. The quality MAPS are a picture of pixels: they show WHERE a candidate lost, which a single score cannot. (GMSD's map is half resolution - the metric works on a downsampled gradient map.)\n\nNO-REFERENCE (section B) is the case that matches a real capture: there is no ground truth, only the frame you got. BRISQUE fits an SVM over 36 natural-scene-statistics features and returns 0 (best) to 100 (worst) from the image ALONE - which is how you drop a soft frame out of a burst, or refuse to run a pipeline on a bad input. It needs two data files in ComfyUI/models/quality (brisque_model_live.yml and brisque_range_live.yml, from opencv_contrib modules/quality/samples). The node returns 'worst_index', and the batch is indexed with it here so the picture proves the number.\n\nSection C exposes the 36 features themselves. They need no model file, and they are a generic descriptor: wire 'features' into 'CV Train Classifier' to learn YOUR notion of quality (in-focus vs soft, clean vs compressed) instead of the LIVE database's.\n\nTry: switch the metric to PSNR and watch the winner stay the same but the scale change completely; blur the ORIGINAL too and see the full-reference scores stay high (it only knows 'close to the reference') while BRISQUE's rise - that difference IS the reason both families exist."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            2,
+            3,
+            5,
+            9
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Source image (the reference)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "art_ref_starry.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "cv2_GaussianBlur",
+      "pos": [
+        390,
+        440
+      ],
+      "size": [
+        290,
+        286
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "title": "Candidate 1: mild blur",
+      "properties": {
+        "Node name for S&R": "cv2_GaussianBlur"
+      },
+      "widgets_values": [
+        "(3, 3)",
+        0.8,
+        0,
+        "BORDER_DEFAULT",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "cv2_GaussianBlur",
+      "pos": [
+        390,
+        760.2151061202828
+      ],
+      "size": [
+        290,
+        286
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "Candidate 2: strong blur",
+      "properties": {
+        "Node name for S&R": "cv2_GaussianBlur"
+      },
+      "widgets_values": [
+        "(9, 9)",
+        0,
+        0,
+        "BORDER_DEFAULT",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "cv2_resize",
+      "pos": [
+        390,
+        1085.881827518113
+      ],
+      "size": [
+        290,
+        258
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "Candidate 3a: downscale x0.5",
+      "properties": {
+        "Node name for S&R": "cv2_resize"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        0.5,
+        0.5,
+        "INTER_AREA"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "cv2_resize",
+      "pos": [
+        740,
+        1084.6237624540638
+      ],
+      "size": [
+        290,
+        212
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "Candidate 3b: back to full size",
+      "properties": {
+        "Node name for S&R": "cv2_resize"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        2,
+        2,
+        "INTER_LINEAR"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "BatchImagesNode",
+      "pos": [
+        1090,
+        781.182857187774
+      ],
+      "size": [
+        370,
+        148
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images.image0",
+          "type": "IMAGE",
+          "link": 5
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 6
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 7
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            10,
+            19,
+            22,
+            26
+          ]
+        }
+      ],
+      "title": "One batch of 4 candidates (frame 0 = untouched)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "BatchImagesNode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "PrimitiveStringMultiline",
+      "pos": [
+        1689,
+        264.260207846684
+      ],
+      "size": [
+        310,
+        126
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            12,
+            21,
+            28
+          ]
+        }
+      ],
+      "title": "Candidate names (ONE list, three charts)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PrimitiveStringMultiline"
+      },
+      "widgets_values": [
+        "original;blur 3x3;blur 9x9;half-res upscaled"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CV_Quality_CompareBatch",
+      "pos": [
+        1710,
+        440
+      ],
+      "size": [
+        560,
+        222
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "reference",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        },
+        {
+          "name": "images",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "best_score",
+          "type": "FLOAT",
+          "links": [
+            18
+          ]
+        },
+        {
+          "name": "best_index",
+          "type": "INT",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "higher_is_better",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "scores",
+          "type": "NPARRAY",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "quality_maps",
+          "type": "NPARRAY",
+          "links": [
+            13,
+            16
+          ]
+        }
+      ],
+      "title": "[CV Quality Compare Batch (cv2.quality)] A: score all 4 against the original",
+      "properties": {
+        "Node name for S&R": "CV_Quality_CompareBatch"
+      },
+      "widgets_values": [
+        "SSIM (structural similarity)",
+        255
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_ChartSeries",
+      "pos": [
+        2517,
+        371.6982711677132
+      ],
+      "size": [
+        340,
+        630
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "values",
+          "type": "NPARRAY",
+          "link": 11
+        },
+        {
+          "name": "x_labels",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "x_labels"
+          },
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "spec",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Higher is better here - read 'higher_is_better'",
+      "properties": {
+        "Node name for S&R": "CV_ChartSeries"
+      },
+      "widgets_values": [
+        "bar",
+        "SSIM against the original (1.0 = identical)",
+        "",
+        "",
+        "",
+        "series color",
+        "vertical (bars go up)",
+        true,
+        "manual",
+        0,
+        1,
+        "",
+        "SSIM",
+        "colorblind-safe (Okabe-Ito)",
+        "viridis",
+        "dark",
+        4,
+        300
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_IndexBatch",
+      "pos": [
+        2935,
+        164.05746446386024
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 13
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "widget": {
+            "name": "index"
+          },
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "title": "Quality map of the WINNER",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_CVPreview",
+      "pos": [
+        2943,
+        336.03692264101016
+      ],
+      "size": [
+        292.296875,
+        346
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Where even the winner lost (heatmap)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_IndexBatch",
+      "pos": [
+        3266,
+        164.15335180718432
+      ],
+      "size": [
+        303.9375,
+        108
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            17,
+            152
+          ]
+        }
+      ],
+      "title": "Quality map of candidate 2 (strong blur)",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        2
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_CVPreview",
+      "pos": [
+        3270,
+        335.54594400404324
+      ],
+      "size": [
+        360,
+        346
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "A score says how much - the map says WHERE",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 15,
+      "type": "PreviewAny",
+      "pos": [
+        2522,
+        166.06412846724874
+      ],
+      "size": [
+        290,
+        162
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Best score (float)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 16,
+      "type": "CV_Quality_BRISQUE",
+      "pos": [
+        1735,
+        1253.8688942207991
+      ],
+      "size": [
+        580,
+        178
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "worst_score",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "worst_index",
+          "type": "INT",
+          "links": [
+            24
+          ]
+        },
+        {
+          "name": "scores",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "[CV Quality BRISQUE (no-reference)] B: grade the same 4 with NO reference",
+      "properties": {
+        "Node name for S&R": "CV_Quality_BRISQUE"
+      },
+      "widgets_values": [
+        "brisque_model_live.yml",
+        "brisque_range_live.yml"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 17,
+      "type": "CV_ChartSeries",
+      "pos": [
+        3237,
+        1305.766099796827
+      ],
+      "size": [
+        441.734375,
+        691.09375
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "values",
+          "type": "NPARRAY",
+          "link": 20
+        },
+        {
+          "name": "x_labels",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "x_labels"
+          },
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "spec",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "LOWER is better - the opposite direction to SSIM",
+      "properties": {
+        "Node name for S&R": "CV_ChartSeries"
+      },
+      "widgets_values": [
+        "bar",
+        "BRISQUE (0 = best, 100 = worst)",
+        "",
+        "",
+        "30=usually acceptable;60=clearly degraded",
+        "above/below first reference line",
+        "vertical (bars go up)",
+        true,
+        "manual",
+        0,
+        100,
+        "",
+        "BRISQUE",
+        "bright",
+        "viridis",
+        "dark",
+        1,
+        300
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_ImageBatchToCV",
+      "pos": [
+        1738,
+        1473.858150238474
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "IMAGE,MASK,LATENT,NPARRAY",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "batch",
+          "type": "NPARRAY",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "The same batch as arrays",
+      "properties": {
+        "Node name for S&R": "CV_ImageBatchToCV"
+      },
+      "widgets_values": [
+        "uint8 (0-255, standard cv2)"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_IndexBatch",
+      "pos": [
+        2568,
+        1362.7579507805888
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 23
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "widget": {
+            "name": "index"
+          },
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            25
+          ]
+        }
+      ],
+      "title": "Pull out the frame BRISQUE rejected",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_CVPreview",
+      "pos": [
+        2892,
+        1364.30367259482
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "No ground truth was used to find this",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 21,
+      "type": "CV_Quality_BRISQUEFeatures",
+      "pos": [
+        1733,
+        1632.3420031248415
+      ],
+      "size": [
+        560,
+        104
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "features",
+          "type": "NPARRAY",
+          "links": [
+            158
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "[CV Quality BRISQUE Features] C: the 36 features (no model file needed)",
+      "properties": {
+        "Node name for S&R": "CV_Quality_BRISQUEFeatures"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "CV_ChartMatrix",
+      "pos": [
+        2303,
+        1544.6968036627288
+      ],
+      "size": [
+        551.0625,
+        572.890625
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "matrix",
+          "type": "NPARRAY",
+          "link": 158
+        },
+        {
+          "name": "row_labels",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "row_labels"
+          },
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "spec",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Rows shift as the degradation grows",
+      "properties": {
+        "Node name for S&R": "CV_ChartMatrix"
+      },
+      "widgets_values": [
+        "BRISQUE features: one row per candidate",
+        "",
+        "",
+        false,
+        2,
+        "auto (data range)",
+        0,
+        1,
+        "coolwarm (diverging)",
+        "dark",
+        320
+      ]
+    },
+    {
+      "id": 23,
+      "type": "Note",
+      "pos": [
+        -98,
+        635.0973361184708
+      ],
+      "size": [
+        455.71875,
+        162.28125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "art_ref_starry.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   The Starry Night\nCreator: Vincent van Gogh\nLicense: Public domain via Wikimedia Commons\nSource:  https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 25,
+      "type": "MarkdownNote",
+      "pos": [
+        1696,
+        1077.3851912387645
+      ],
+      "size": [
+        420,
+        132
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Models: brisque_model_live.yml + brisque_range_live.yml",
+      "properties": {},
+      "widgets_values": [
+        "brisque_model_live.yml at\nhttps://github.com/opencv/opencv_contrib (modules/quality/samples/)\n\nbrisque_range_live.yml at\nhttps://github.com/opencv/opencv_contrib (modules/quality/samples/)\n\nBoth go in ComfyUI/models/quality."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 58,
+      "type": "CV_CVPreview",
+      "pos": [
+        3728,
+        340.5621228892129
+      ],
+      "size": [
+        381.259375,
+        364
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 152
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true,
+        "REDUCE_AVG"
+      ],
+      "title": "Preview CV Array: quality map, channel average + value bar"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      2,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      2,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      3,
+      0,
+      7,
+      1,
+      "IMAGE"
+    ],
+    [
+      7,
+      4,
+      0,
+      7,
+      2,
+      "IMAGE"
+    ],
+    [
+      8,
+      6,
+      0,
+      7,
+      3,
+      "IMAGE"
+    ],
+    [
+      9,
+      2,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      7,
+      0,
+      9,
+      1,
+      "IMAGE"
+    ],
+    [
+      11,
+      9,
+      3,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      8,
+      0,
+      10,
+      1,
+      "STRING"
+    ],
+    [
+      13,
+      9,
+      4,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      9,
+      1,
+      11,
+      1,
+      "INT"
+    ],
+    [
+      15,
+      11,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      9,
+      4,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      17,
+      13,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      18,
+      9,
+      0,
+      15,
+      0,
+      "FLOAT"
+    ],
+    [
+      19,
+      7,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      20,
+      16,
+      2,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      8,
+      0,
+      17,
+      1,
+      "STRING"
+    ],
+    [
+      22,
+      7,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      23,
+      18,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      24,
+      16,
+      1,
+      19,
+      1,
+      "INT"
+    ],
+    [
+      25,
+      19,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      26,
+      7,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      28,
+      8,
+      0,
+      22,
+      1,
+      "STRING"
+    ],
+    [
+      152,
+      13,
+      0,
+      58,
+      0,
+      "NPARRAY"
+    ],
+    [
+      158,
+      21,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": []
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5912266973684274,
+      "offset": [
+        -646.8087879624456,
+        -594.3883417991663
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

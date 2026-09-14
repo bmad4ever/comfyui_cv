@@ -1,0 +1,645 @@
+{
+  "id": "2834b9ad-b124-46cd-aa6d-b754756cccf1",
+  "revision": 0,
+  "last_node_id": 153,
+  "last_link_id": 161,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        0,
+        847.5852776915511
+      ],
+      "size": [
+        931.578125,
+        309.265625
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Chromatic aberration: simulation + correction round-trip\n\nChromatic aberration (CA) is lateral colour fringing caused by a lens refracting different wavelengths at slightly different angles -- red, green, and blue focus at slightly different lateral positions on the sensor.  A calibration file (YAML) encodes per-channel polynomial displacement fields in a format OpenCV 5.0 can read.\n\nPIPELINE: CreateCACalibration writes a degree-1 calibration YAML (+15 red, -10 blue) matching the image resolution (1500x1050) to input/calib/.  Then Load image -> ApplyChromaticAberration (simulates CA by shifting R and B via polynomial displacement maps) -> ChromaticAberrationCorrection (reads the same calibration file from the dropdown, resizes to calibration dimensions, calls cv2.correctChromaticAberration, resizes back) -> AbsDiff against the original to show the round-trip residual (edge artefacts from interpolation).\n\nWhen calibration size matches the image, both Apply and Correct operate at native resolution.  When they differ, both nodes internally resize to calibration size, apply the polynomial, and resize back (a warning is logged).  For best results, create calibration at your image's native resolution.\n\nIMPORTANT: CreateCACalibration must execute FIRST (it is a terminal node with no output). Run it, then run the rest."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "CV_CreateCACalibration",
+      "pos": [
+        12,
+        2076.130224248882
+      ],
+      "size": [
+        470,
+        276
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "[Create CA Calibration] Create calibration (degree-1, asymmetric)",
+      "properties": {
+        "Node name for S&R": "CV_CreateCACalibration"
+      },
+      "widgets_values": [
+        15,
+        0,
+        -10,
+        0,
+        1500,
+        1050,
+        "demo_ca.yaml"
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        10,
+        1686.9271203590072
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2,
+            6
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Step 2a: Load test image",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "art_posters_wall.png",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_ApplyChromaticAberration",
+      "pos": [
+        430,
+        1767.7353027052345
+      ],
+      "size": [
+        500,
+        136
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3,
+            4
+          ]
+        }
+      ],
+      "title": "[CV Apply Chromatic Aberration] Simulate CA (+15 red, -10 blue)",
+      "properties": {
+        "Node name for S&R": "CV_ApplyChromaticAberration"
+      },
+      "widgets_values": [
+        "demo_ca.yaml",
+        1
+      ]
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        492,
+        1966.576597176887
+      ],
+      "size": [
+        280,
+        294
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "With chromatic aberration",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "CV_ChromaticAberrationCorrection",
+      "pos": [
+        940,
+        1766.7353027052345
+      ],
+      "size": [
+        510,
+        132
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            5,
+            7
+          ]
+        }
+      ],
+      "title": "[CV Chromatic Aberration Correction] Correct chromatic aberration",
+      "properties": {
+        "Node name for S&R": "CV_ChromaticAberrationCorrection"
+      },
+      "widgets_values": [
+        "demo_ca.yaml",
+        "COLOR_BayerRGGB2BGR"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "pos": [
+        974,
+        1964.6729448587414
+      ],
+      "size": [
+        280,
+        294
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "After correction",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "cv2_absdiff",
+      "pos": [
+        1460,
+        1692.8452968967345
+      ],
+      "size": [
+        287,
+        96
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 6
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            152
+          ]
+        }
+      ],
+      "title": "Original vs corrected (residual)",
+      "properties": {
+        "Node name for S&R": "cv2_absdiff"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 58,
+      "type": "CV_CVPreview",
+      "pos": [
+        1465,
+        1842.2474405365456
+      ],
+      "size": [
+        460,
+        364
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 152
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            161
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true,
+        "REDUCE_MAX"
+      ],
+      "title": "Preview CV Array: residual, strongest channel (max) + value bar"
+    },
+    {
+      "id": 59,
+      "type": "LoadImage",
+      "pos": [
+        -1,
+        1198.499794224938
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            155,
+            160
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load synthetic radial CA image",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "synthetic_radial.png",
+        "image"
+      ]
+    },
+    {
+      "id": 61,
+      "type": "CV_ChromaticAberrationCorrection",
+      "pos": [
+        395,
+        1276.8986429607003
+      ],
+      "size": [
+        440,
+        134
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 155
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            159
+          ]
+        }
+      ],
+      "title": "[CV Chromatic Aberration Correction] Correct radial CA",
+      "properties": {
+        "Node name for S&R": "CV_ChromaticAberrationCorrection"
+      },
+      "widgets_values": [
+        "radial.yaml",
+        "COLOR_BayerRGGB2BGR"
+      ]
+    },
+    {
+      "id": 63,
+      "type": "ImageCompare",
+      "pos": [
+        845,
+        1195.8471025266806
+      ],
+      "size": [
+        400,
+        350
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 160
+        },
+        {
+          "name": "image_b",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 159
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "ImageCompare"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 64,
+      "type": "Note",
+      "pos": [
+        -379,
+        1202.471243910842
+      ],
+      "size": [
+        357.859375,
+        212.484375
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "synthetic_radial.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Synthetic radial chromatic aberration + calibration\nCreator: OpenCV project (opencv_extra test data)\nLicense: Apache-2.0 (OpenCV)\n         https://www.apache.org/licenses/LICENSE-2.0\nSource:  https://github.com/opencv/opencv_extra/tree/5.x/testdata/cv/cameracalibration/chromatic_aberration\nSize:    600x423\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 65,
+      "type": "Note",
+      "pos": [
+        -416,
+        1689.7226023391108
+      ],
+      "size": [
+        407.859375,
+        234.84375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "art_posters_wall.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Synthetic composite: three public-domain paintings on a generated plaster wall\nCreator: generated (this repo)\nLicense: source paintings public domain; wall texture synthetic (no third-party rights)\nSource:  synthetic; paintings: art_ref_starry.png (Van Gogh), art_ref_wave.png (Hokusai), art_ref_pearl.png (Vermeer)\nSize:    1500x1050\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 153,
+      "type": "PreviewImage",
+      "pos": [
+        1935,
+        1844.7233689425475
+      ],
+      "size": [
+        393.03125,
+        347.203125
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 161
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      2,
+      3,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      5,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      3,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      7,
+      0,
+      9,
+      1,
+      "IMAGE"
+    ],
+    [
+      152,
+      9,
+      0,
+      58,
+      0,
+      "IMAGE"
+    ],
+    [
+      155,
+      59,
+      0,
+      61,
+      0,
+      "IMAGE"
+    ],
+    [
+      159,
+      61,
+      0,
+      63,
+      1,
+      "IMAGE"
+    ],
+    [
+      160,
+      59,
+      0,
+      63,
+      0,
+      "IMAGE"
+    ],
+    [
+      161,
+      58,
+      0,
+      153,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": []
+  },
+  "config": {},
+  "extra": {
+    "frontendVersion": "1.48.7",
+    "ds": {
+      "scale": 0.5209868481924412,
+      "offset": [
+        1361.394774823174,
+        -564.1788880162362
+      ]
+    }
+  },
+  "version": 0.4
+}

@@ -1,0 +1,1637 @@
+{
+  "id": "fedd4958-3ddc-47e0-a622-eeea6d19f5e7",
+  "revision": 0,
+  "last_node_id": 37,
+  "last_link_id": 55,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        643,
+        106.83582513072119
+      ],
+      "size": [
+        669.796875,
+        338.984375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "Camera pose -> 3D previews (three fidelity tiers)\n\nA real (here: synthetic) camera is calibrated from six chessboard views; one view's pose is recovered with solvePnP; 'CV Camera Pose To 3D View' adapts K + dist + rvec/tvec to a LOAD3D_CAMERA dict (board square = 1 scene unit; the milk truck stands in for the board at the origin). \n\n'CV Preview 3D (Calibrated Camera)' (this pack, web/cv_preview3d.js): projection built directly from K (off-axis cx/cy, fx != fy), pose INCLUDING roll, and the lens distortion (k1,k2,p1,p2,k3) replicated by an overscanned render + Brown-Conrady warp shader. With the pose photo as bg_image the truck composites onto the photographed board in register - toggle 'distortion' to see the lens model bend the render. Pick a gizmo mode (move/rotate/scale) and drag the truck: the placement lands in the object_transform widget, so re-running renders it (and its silhouette MASK) where you left it.\n\nSwap 'Calibrate Camera' for 'CV Load Camera Params (JSON)' to reuse a saved calibration - the bridge takes the same inputs. Failure-tolerant: on found=false, Solve PnP emits zero vectors and the bridge falls back to a frontal default view (no control flow needed).\n\nThe 3D model must sit in ComfyUI/input/3d/MilkTruck.glb (copy it from example_inputs/, see sources.txt)."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        -293,
+        440
+      ],
+      "size": [
+        240,
+        346
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            41
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 0",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_00.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        291,
+        440.0536688816218
+      ],
+      "size": [
+        240,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            42
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 1",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_01.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        -43,
+        810.5418995313179
+      ],
+      "size": [
+        324.5625,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            53
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 2",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_02.png",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "LoadImage",
+      "pos": [
+        317,
+        879.3278543529611
+      ],
+      "size": [
+        240,
+        346
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            44
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 3",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_03.png",
+        "image"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LoadImage",
+      "pos": [
+        -19,
+        1192.9241731830764
+      ],
+      "size": [
+        240,
+        346
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            45
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 4",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_04.png",
+        "image"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "LoadImage",
+      "pos": [
+        312,
+        1255.353272422799
+      ],
+      "size": [
+        240,
+        346
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            46
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 5",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_05.png",
+        "image"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_CalibrateCamera",
+      "pos": [
+        896,
+        480
+      ],
+      "size": [
+        470,
+        218
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 51
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            16,
+            18,
+            34
+          ]
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "links": [
+            17,
+            22,
+            35
+          ]
+        },
+        {
+          "name": "rms_error",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "views_used",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": []
+        }
+      ],
+      "title": "[CV Calibrate Camera (Chessboard)] Calibrate from 6 views",
+      "properties": {
+        "Node name for S&R": "CV_CalibrateCamera"
+      },
+      "widgets_values": [
+        9,
+        6,
+        1
+      ]
+    },
+    {
+      "id": 14,
+      "type": "LoadImage",
+      "pos": [
+        946,
+        756.6291505072188
+      ],
+      "size": [
+        346.5625,
+        346
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            29
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Pose view (tilted)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_02.png",
+        "image"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_ImageToCV",
+      "pos": [
+        656,
+        1100
+      ],
+      "size": [
+        280,
+        142
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            13,
+            33
+          ]
+        }
+      ],
+      "title": "Pose view as BGR",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 16,
+      "type": "cv2_findChessboardCorners",
+      "pos": [
+        1302,
+        1100
+      ],
+      "size": [
+        290,
+        342
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bool",
+          "type": "BOOLEAN",
+          "links": []
+        },
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "title": "Find 9x6 inner corners",
+      "properties": {
+        "Node name for S&R": "cv2_findChessboardCorners"
+      },
+      "widgets_values": [
+        "(9, 6)",
+        "CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_NORMALIZE_IMAGE"
+      ]
+    },
+    {
+      "id": 17,
+      "type": "CV_GridPoints",
+      "pos": [
+        1302,
+        1320
+      ],
+      "size": [
+        290,
+        190
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Board object points (9x6 grid)",
+      "properties": {
+        "Node name for S&R": "CV_GridPoints"
+      },
+      "widgets_values": [
+        9,
+        6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_SolvePnPPose",
+      "pos": [
+        1632,
+        1100
+      ],
+      "size": [
+        380,
+        254
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "object_points",
+          "type": "NPARRAY",
+          "link": 14
+        },
+        {
+          "name": "image_points",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 16
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "links": [
+            19,
+            36
+          ]
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "links": [
+            20,
+            37
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": []
+        },
+        {
+          "name": "inliers",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "inlier_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "reproj_error",
+          "type": "FLOAT",
+          "links": null
+        }
+      ],
+      "title": "[CV Solve PnP (Pose)] Solve board pose (PnP)",
+      "properties": {
+        "Node name for S&R": "CV_SolvePnPPose"
+      },
+      "widgets_values": [
+        "SOLVEPNP_ITERATIVE",
+        "all points (least squares)",
+        3,
+        1000,
+        0.999
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_PointsLiteral",
+      "pos": [
+        1632,
+        1395.148209931496
+      ],
+      "size": [
+        290,
+        142
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            21
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Orbit anchor = board centre",
+      "properties": {
+        "Node name for S&R": "CV_PointsLiteral"
+      },
+      "widgets_values": [
+        "[[4.0, 2.5, 0.0]]",
+        "float32"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_CameraPoseTo3DView",
+      "pos": [
+        2022,
+        1100
+      ],
+      "size": [
+        500,
+        230
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 19,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 18
+        },
+        {
+          "name": "rvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 19
+        },
+        {
+          "name": "tvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 20
+        },
+        {
+          "name": "orbit_anchor",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 21
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": [
+            28,
+            39
+          ]
+        },
+        {
+          "name": "fov_y_deg",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "[CV Camera Pose To 3D View] OpenCV camera -> 3D viewer camera",
+      "properties": {
+        "Node name for S&R": "CV_CameraPoseTo3DView"
+      },
+      "widgets_values": [
+        800,
+        600,
+        1
+      ]
+    },
+    {
+      "id": 21,
+      "type": "Load3DAdvanced",
+      "pos": [
+        2022,
+        1380
+      ],
+      "size": [
+        330,
+        550
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D",
+          "links": [
+            27
+          ]
+        },
+        {
+          "name": "model_3d_info",
+          "type": "LOAD3D_MODEL_INFO",
+          "links": []
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": []
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Load truck (stands in for the board)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "Load3DAdvanced",
+        "Camera Config": {
+          "cameraType": "perspective",
+          "fov": 35,
+          "state": {
+            "position": {
+              "x": 9.737820177156895,
+              "y": 6.126699767506032,
+              "z": 9.74136501861749
+            },
+            "target": {
+              "x": 0,
+              "y": 1.2577896789275858,
+              "z": 0.0035448414605958605
+            },
+            "zoom": 1,
+            "cameraType": "perspective",
+            "quaternion": {
+              "x": -0.1562298570518912,
+              "y": 0.3771722397422857,
+              "z": 0.06471252563850326,
+              "w": 0.9105743365364628
+            },
+            "fov": 35,
+            "aspect": 1,
+            "near": 0.01,
+            "far": 10000,
+            "frustum": {
+              "left": -5,
+              "right": 5,
+              "top": 5,
+              "bottom": -5
+            }
+          }
+        },
+        "Light Config": {
+          "intensity": 3,
+          "hdri": {
+            "enabled": false,
+            "hdriPath": "",
+            "showAsBackground": false,
+            "intensity": 1
+          }
+        },
+        "Scene Config": {
+          "showGrid": true,
+          "backgroundColor": "#282828",
+          "backgroundImage": "",
+          "backgroundRenderMode": "tiled",
+          "models": [
+            {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "quaternion": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            }
+          ]
+        }
+      },
+      "widgets_values": [
+        "3d/MilkTruck.glb",
+        "",
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": 23,
+      "type": "cv2_drawFrameAxes",
+      "pos": [
+        1963,
+        466.30697135456006
+      ],
+      "size": [
+        300,
+        190
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 33
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 34
+        },
+        {
+          "name": "distCoeffs",
+          "type": "NPARRAY",
+          "link": 35
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 36
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "title": "Same pose in 2D (XYZ axes)",
+      "properties": {
+        "Node name for S&R": "cv2_drawFrameAxes"
+      },
+      "widgets_values": [
+        3,
+        2
+      ]
+    },
+    {
+      "id": 24,
+      "type": "CV_CVPreview",
+      "pos": [
+        2359,
+        466.30697135456
+      ],
+      "size": [
+        280,
+        346
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "AR axes overlay",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 25,
+      "type": "CV_CVInspect",
+      "pos": [
+        2370,
+        869.1845453454838
+      ],
+      "size": [
+        280,
+        90
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "title": "camera_info dict",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 26,
+      "type": "PreviewAny",
+      "pos": [
+        2807,
+        744.0148760722548
+      ],
+      "size": [
+        645.046875,
+        213.53125
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "camera_info as text",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 28,
+      "type": "CV_Preview3DCalibrated",
+      "pos": [
+        2532,
+        1119.884982647167
+      ],
+      "size": [
+        686.15625,
+        804.78125
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_GLB,FILE_3D_GLTF,FILE_3D",
+          "link": 27
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "link": 28
+        },
+        {
+          "name": "bg_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 29
+        },
+        {
+          "name": "scene_depth",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "render",
+          "type": "IMAGE",
+          "links": [
+            30
+          ]
+        },
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": [
+            31
+          ]
+        },
+        {
+          "name": "depth",
+          "type": "MASK",
+          "links": [
+            32
+          ]
+        },
+        {
+          "name": "occlusion",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "name": "depth_metric",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "Custom inspector with: full K + distortion",
+      "properties": {
+        "Node name for S&R": "CV_Preview3DCalibrated"
+      },
+      "widgets_values": [
+        "lambert (headlight)",
+        1,
+        "2x supersample",
+        "",
+        0
+      ]
+    },
+    {
+      "id": 29,
+      "type": "PreviewImage",
+      "pos": [
+        3274,
+        1120.2977842064697
+      ],
+      "size": [
+        300,
+        294
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Server-side render (IMAGE output)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 30,
+      "type": "MaskPreview",
+      "pos": [
+        3274,
+        1450.2977842064697
+      ],
+      "size": [
+        300,
+        294
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Model silhouette (MASK output)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "MaskPreview"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 31,
+      "type": "MaskPreview",
+      "pos": [
+        3274,
+        1780.2977842064697
+      ],
+      "size": [
+        303.4869140625,
+        294
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Object-relative depth (1 = nearest point)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "MaskPreview"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 32,
+      "type": "Note",
+      "pos": [
+        -301,
+        225.59525116026705
+      ],
+      "size": [
+        494.90625,
+        170.671875
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "calib_board_00.png .. calib_board_06.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Synthetic chessboard views with baked-in lens distortion\nCreator: generated (this repo)\nLicense: no third-party rights (synthetic renders)\nSource:  synthetic\nSize:    800x600 each\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 33,
+      "type": "Note",
+      "pos": [
+        2022,
+        1970
+      ],
+      "size": [
+        560,
+        330
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "MilkTruck.glb",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Milk Truck - de-branded derivative of the glTF-Binary\n         sample model \"Cesium Milk Truck\"\nCreator: Cesium (2017); logo removed 2026\nLicense: CC BY 4.0 International - attribution required\n         https://creativecommons.org/licenses/by/4.0/\n         Upstream carries a trademark limitation on the Cesium\n         logo texture (LicenseRef-LegalMark-Cesium); the four\n         logo roundels are painted out of this copy's baked\n         JPEG, so only the CC BY 4.0 terms apply. Geometry and\n         UVs are unmodified.\nSource:  https://github.com/KhronosGroup/glTF-Sample-Assets\n         (Models/CesiumMilkTruck)\nSize:    mesh bounds ~4.9 x 2.8 x 3.0 scene units\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 34,
+      "type": "BatchImagesNode",
+      "pos": [
+        647,
+        482.5172563113477
+      ],
+      "size": [
+        225,
+        178
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image0",
+          "name": "images.image0",
+          "type": "IMAGE",
+          "link": 41
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 42
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 54
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 44
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 45
+        },
+        {
+          "label": "image5",
+          "name": "images.image5",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 46
+        },
+        {
+          "label": "image6",
+          "name": "images.image6",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            51
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "BatchImagesNode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 36,
+      "type": "Reroute",
+      "pos": [
+        429,
+        820.3698793214603
+      ],
+      "size": [
+        82,
+        26
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 53
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            54,
+            55
+          ]
+        }
+      ],
+      "properties": {
+        "showOutputText": true,
+        "horizontal": false
+      }
+    }
+  ],
+  "links": [
+    [
+      13,
+      15,
+      0,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      17,
+      0,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      15,
+      16,
+      1,
+      18,
+      1,
+      "NPARRAY"
+    ],
+    [
+      16,
+      13,
+      0,
+      18,
+      2,
+      "NPARRAY"
+    ],
+    [
+      17,
+      13,
+      1,
+      18,
+      3,
+      "NPARRAY"
+    ],
+    [
+      18,
+      13,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      18,
+      0,
+      20,
+      1,
+      "NPARRAY"
+    ],
+    [
+      20,
+      18,
+      1,
+      20,
+      2,
+      "NPARRAY"
+    ],
+    [
+      21,
+      19,
+      0,
+      20,
+      3,
+      "NPARRAY"
+    ],
+    [
+      22,
+      13,
+      1,
+      20,
+      4,
+      "NPARRAY"
+    ],
+    [
+      27,
+      21,
+      0,
+      28,
+      0,
+      "FILE_3D"
+    ],
+    [
+      28,
+      20,
+      0,
+      28,
+      1,
+      "LOAD3D_CAMERA"
+    ],
+    [
+      29,
+      14,
+      0,
+      28,
+      2,
+      "IMAGE"
+    ],
+    [
+      30,
+      28,
+      0,
+      29,
+      0,
+      "IMAGE"
+    ],
+    [
+      31,
+      28,
+      1,
+      30,
+      0,
+      "MASK"
+    ],
+    [
+      32,
+      28,
+      2,
+      31,
+      0,
+      "MASK"
+    ],
+    [
+      33,
+      15,
+      0,
+      23,
+      0,
+      "NPARRAY"
+    ],
+    [
+      34,
+      13,
+      0,
+      23,
+      1,
+      "NPARRAY"
+    ],
+    [
+      35,
+      13,
+      1,
+      23,
+      2,
+      "NPARRAY"
+    ],
+    [
+      36,
+      18,
+      0,
+      23,
+      3,
+      "NPARRAY"
+    ],
+    [
+      37,
+      18,
+      1,
+      23,
+      4,
+      "NPARRAY"
+    ],
+    [
+      38,
+      23,
+      0,
+      24,
+      0,
+      "NPARRAY"
+    ],
+    [
+      39,
+      20,
+      0,
+      25,
+      0,
+      "LOAD3D_CAMERA"
+    ],
+    [
+      40,
+      25,
+      0,
+      26,
+      0,
+      "STRING"
+    ],
+    [
+      41,
+      2,
+      0,
+      34,
+      0,
+      "IMAGE"
+    ],
+    [
+      42,
+      3,
+      0,
+      34,
+      1,
+      "IMAGE"
+    ],
+    [
+      44,
+      5,
+      0,
+      34,
+      3,
+      "IMAGE"
+    ],
+    [
+      45,
+      6,
+      0,
+      34,
+      4,
+      "IMAGE"
+    ],
+    [
+      46,
+      7,
+      0,
+      34,
+      5,
+      "IMAGE"
+    ],
+    [
+      51,
+      34,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      53,
+      4,
+      0,
+      36,
+      0,
+      "IMAGE"
+    ],
+    [
+      54,
+      36,
+      0,
+      34,
+      2,
+      "IMAGE"
+    ],
+    [
+      55,
+      36,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.30337781484570947,
+      "offset": [
+        1301.9812957989268,
+        600.5924950490382
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

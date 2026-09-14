@@ -1,0 +1,1615 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "5a7c0d19-63b8-4e24-9f10-8d2b4e7a3c65",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        320,
+        156
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "take_a",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "background_a",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "take_b",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "background_b",
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "alpha",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "foreground",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "confidence",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Triangulation Matte",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "5a7c0d19-63b8-4e24-9f10-8d2b4e7a3c65",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 24,
+          "lastLinkId": 143,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Triangulation Matte",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "896d3c1c-ed46-5930-9619-176757089fce",
+            "name": "take_a",
+            "type": "NPARRAY",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "take_a",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "9b9f569e-38af-5ca9-aa66-8254b39aea7d",
+            "name": "background_a",
+            "type": "NPARRAY",
+            "linkIds": [
+              102
+            ],
+            "localized_name": "background_a",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "60157404-494e-5cef-8227-24d8b1e9ccfc",
+            "name": "take_b",
+            "type": "NPARRAY",
+            "linkIds": [
+              103
+            ],
+            "localized_name": "take_b",
+            "pos": [
+              140,
+              260
+            ]
+          },
+          {
+            "id": "6342f067-222a-5b71-8bc4-87b96ec4f3ad",
+            "name": "background_b",
+            "type": "NPARRAY",
+            "linkIds": [
+              104
+            ],
+            "localized_name": "background_b",
+            "pos": [
+              140,
+              280
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "67150e7f-2fb2-5949-be5f-66f2bf8df038",
+            "name": "alpha",
+            "type": "NPARRAY",
+            "linkIds": [
+              141
+            ],
+            "localized_name": "alpha",
+            "pos": [
+              2100,
+              220
+            ]
+          },
+          {
+            "id": "ea68dcc2-7f35-5ee5-b2c5-d0aa698c56cd",
+            "name": "foreground",
+            "type": "NPARRAY",
+            "linkIds": [
+              142
+            ],
+            "localized_name": "foreground",
+            "pos": [
+              2100,
+              240
+            ]
+          },
+          {
+            "id": "df3bf7e0-1ee5-54fe-a34d-9d7949d864e3",
+            "name": "confidence",
+            "type": "NPARRAY",
+            "linkIds": [
+              143
+            ],
+            "localized_name": "confidence",
+            "pos": [
+              2100,
+              260
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_CastArray",
+            "pos": [
+              40,
+              40
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  105,
+                  132
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ],
+            "title": "take A as float32"
+          },
+          {
+            "id": 2,
+            "type": "CV_CastArray",
+            "pos": [
+              40,
+              240
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  107,
+                  131
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ],
+            "title": "background A as float32"
+          },
+          {
+            "id": 3,
+            "type": "CV_CastArray",
+            "pos": [
+              40,
+              440
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  106,
+                  136
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ],
+            "title": "take B as float32"
+          },
+          {
+            "id": 4,
+            "type": "CV_CastArray",
+            "pos": [
+              40,
+              640
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  108,
+                  135
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ],
+            "title": "background B as float32"
+          },
+          {
+            "id": 5,
+            "type": "cv2_subtract",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 105
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 106
+              },
+              {
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ],
+            "title": "dC = take A - take B"
+          },
+          {
+            "id": 6,
+            "type": "cv2_subtract",
+            "pos": [
+              390,
+              440
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 107
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 108
+              },
+              {
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  110,
+                  111,
+                  112
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ],
+            "title": "dB = background A - background B"
+          },
+          {
+            "id": 7,
+            "type": "cv2_multiply",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 110
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  113
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "dC * dB (per channel)"
+          },
+          {
+            "id": 8,
+            "type": "cv2_multiply",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 111
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 112
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  115
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "dB * dB (per channel)"
+          },
+          {
+            "id": 9,
+            "type": "CV_ParseMatrix",
+            "pos": [
+              740,
+              840
+            ],
+            "size": [
+              290,
+              186
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  114,
+                  116
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ParseMatrix"
+            },
+            "widgets_values": [
+              "1 1 1",
+              "CV_32F",
+              false,
+              0
+            ],
+            "title": "1x3 ones (sum the channels)"
+          },
+          {
+            "id": 10,
+            "type": "cv2_transform",
+            "pos": [
+              1090,
+              40
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 113
+              },
+              {
+                "name": "m",
+                "type": "NPARRAY",
+                "link": 114
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  119
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_transform"
+            },
+            "widgets_values": [],
+            "title": "<dC, dB>"
+          },
+          {
+            "id": 11,
+            "type": "cv2_transform",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 115
+              },
+              {
+                "name": "m",
+                "type": "NPARRAY",
+                "link": 116
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  117,
+                  118,
+                  140
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_transform"
+            },
+            "widgets_values": [],
+            "title": "<dB, dB>"
+          },
+          {
+            "id": 12,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1440,
+              440
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 117
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 118
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  120
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              1.0,
+              0.0,
+              1.0,
+              "same as input"
+            ],
+            "title": "<dB, dB> + 1"
+          },
+          {
+            "id": 13,
+            "type": "cv2_divide_0",
+            "pos": [
+              1790,
+              240
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 119
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 120
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  121,
+                  122
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_divide_0"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "1 - alpha"
+          },
+          {
+            "id": 14,
+            "type": "cv2_addWeighted",
+            "pos": [
+              2140,
+              240
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 121
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 122
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  123
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              -1.0,
+              0.0,
+              1.0,
+              "same as input"
+            ],
+            "title": "alpha"
+          },
+          {
+            "id": 15,
+            "type": "cv2_threshold",
+            "pos": [
+              2490,
+              240
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 123
+              }
+            ],
+            "outputs": [
+              {
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  124
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0.0,
+              1.0,
+              "THRESH_TOZERO"
+            ],
+            "title": "alpha < 0 -> 0"
+          },
+          {
+            "id": 16,
+            "type": "cv2_threshold",
+            "pos": [
+              2840,
+              240
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 124
+              }
+            ],
+            "outputs": [
+              {
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  125,
+                  126,
+                  127,
+                  141
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              1.0,
+              1.0,
+              "THRESH_TRUNC"
+            ],
+            "title": "alpha > 1 -> 1"
+          },
+          {
+            "id": 17,
+            "type": "CV_ConcatArrays",
+            "pos": [
+              3190,
+              240
+            ],
+            "size": [
+              290,
+              174
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "array1",
+                "type": "NPARRAY",
+                "link": 125
+              },
+              {
+                "name": "array2",
+                "type": "NPARRAY",
+                "link": 126
+              },
+              {
+                "name": "array3",
+                "type": "NPARRAY",
+                "link": 127
+              },
+              {
+                "name": "array4",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  128,
+                  129
+                ]
+              },
+              {
+                "name": "length",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ConcatArrays"
+            },
+            "widgets_values": [
+              2
+            ],
+            "title": "alpha -> 3 channels"
+          },
+          {
+            "id": 18,
+            "type": "cv2_addWeighted",
+            "pos": [
+              3540,
+              240
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 128
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 129
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  130,
+                  134
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              -1.0,
+              0.0,
+              1.0,
+              "same as input"
+            ],
+            "title": "1 - alpha (3 channels)"
+          },
+          {
+            "id": 19,
+            "type": "cv2_multiply",
+            "pos": [
+              3890,
+              40
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 18,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 130
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 131
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  133
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "(1-alpha) * background A"
+          },
+          {
+            "id": 20,
+            "type": "cv2_subtract",
+            "pos": [
+              4240,
+              40
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 19,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 132
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 133
+              },
+              {
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  138
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ],
+            "title": "F from pair A"
+          },
+          {
+            "id": 21,
+            "type": "cv2_multiply",
+            "pos": [
+              3890,
+              640
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 20,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 134
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 135
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  137
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "(1-alpha) * background B"
+          },
+          {
+            "id": 22,
+            "type": "cv2_subtract",
+            "pos": [
+              4240,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 21,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 136
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 137
+              },
+              {
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  139
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ],
+            "title": "F from pair B"
+          },
+          {
+            "id": 23,
+            "type": "cv2_addWeighted",
+            "pos": [
+              4590,
+              240
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 22,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 138
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 139
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  142
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              0.5,
+              0.5,
+              0.0,
+              "same as input"
+            ],
+            "title": "Premultiplied foreground (both pairs)"
+          },
+          {
+            "id": 24,
+            "type": "cv2_sqrt",
+            "pos": [
+              1790,
+              640
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 23,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 140
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  143
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_sqrt"
+            },
+            "widgets_values": [],
+            "title": "Confidence = |dB| (gray levels)"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 117,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 118,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 12,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 122,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 123,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 124,
+            "origin_id": 15,
+            "origin_slot": 1,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 125,
+            "origin_id": 16,
+            "origin_slot": 1,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": 16,
+            "origin_slot": 1,
+            "target_id": 17,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 127,
+            "origin_id": 16,
+            "origin_slot": 1,
+            "target_id": 17,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 129,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 130,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": 19,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 131,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 19,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 132,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 133,
+            "origin_id": 19,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 134,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": 21,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 135,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 21,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 136,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 22,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 137,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 22,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 138,
+            "origin_id": 20,
+            "origin_slot": 0,
+            "target_id": 23,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 139,
+            "origin_id": 22,
+            "origin_slot": 0,
+            "target_id": 23,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 140,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 141,
+            "origin_id": 16,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 142,
+            "origin_id": 23,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 143,
+            "origin_id": 24,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          }
+        ]
+      }
+    ]
+  }
+}

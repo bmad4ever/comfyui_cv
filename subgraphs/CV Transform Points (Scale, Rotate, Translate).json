@@ -1,0 +1,1592 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "a1b2c3d4-e5f6-4789-9abc-def012345604",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        360,
+        232
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "scale",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "rotate_x_deg",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "rotate_y_deg",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "rotate_z_deg",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "translate_x",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "translate_y",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "translate_z",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "matrix",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Transform Points (Scale / Rotate / Translate)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "a1b2c3d4-e5f6-4789-9abc-def012345604",
+        "name": "CV Transform Points (Scale / Rotate / Translate)",
+        "revision": 0,
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 26,
+          "lastLinkId": 33,
+          "lastRerouteId": 0
+        },
+        "config": {},
+        "extra": {},
+        "groups": [],
+        "widgets": [],
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -360,
+            40,
+            128,
+            280
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2160,
+            40,
+            128,
+            100
+          ]
+        },
+        "inputs": [
+          {
+            "id": "4f8ed5fa-50e9-5336-a27e-b939e22b540f",
+            "name": "points",
+            "type": "NPARRAY",
+            "linkIds": [
+              26,
+              27
+            ],
+            "localized_name": "points",
+            "pos": [
+              -212,
+              60
+            ]
+          },
+          {
+            "id": "26fcdd27-f9f3-5ab7-91ef-cb8ada3eb698",
+            "name": "scale",
+            "type": "FLOAT",
+            "linkIds": [
+              28
+            ],
+            "localized_name": "scale",
+            "pos": [
+              -212,
+              90
+            ]
+          },
+          {
+            "id": "f689ece7-e1d0-5795-89fb-934203963857",
+            "name": "rotate_x_deg",
+            "type": "FLOAT",
+            "linkIds": [
+              1
+            ],
+            "localized_name": "rotate_x_deg",
+            "pos": [
+              -212,
+              120
+            ]
+          },
+          {
+            "id": "88a66c9d-b9a0-53fb-bfa7-b7a14d1a5532",
+            "name": "rotate_y_deg",
+            "type": "FLOAT",
+            "linkIds": [
+              5
+            ],
+            "localized_name": "rotate_y_deg",
+            "pos": [
+              -212,
+              150
+            ]
+          },
+          {
+            "id": "07980d71-2b40-5654-ad22-cf63962b62c8",
+            "name": "rotate_z_deg",
+            "type": "FLOAT",
+            "linkIds": [
+              9
+            ],
+            "localized_name": "rotate_z_deg",
+            "pos": [
+              -212,
+              180
+            ]
+          },
+          {
+            "id": "2db0d113-f5ec-5999-9f31-24c5ee230637",
+            "name": "translate_x",
+            "type": "FLOAT",
+            "linkIds": [
+              18
+            ],
+            "localized_name": "translate_x",
+            "pos": [
+              -212,
+              210
+            ]
+          },
+          {
+            "id": "0c11e1d3-2fc3-5ae9-9ae0-33c3387b62c0",
+            "name": "translate_y",
+            "type": "FLOAT",
+            "linkIds": [
+              20
+            ],
+            "localized_name": "translate_y",
+            "pos": [
+              -212,
+              240
+            ]
+          },
+          {
+            "id": "a093e931-0934-56e7-9a8d-8a5515d1bc3f",
+            "name": "translate_z",
+            "type": "FLOAT",
+            "linkIds": [
+              22
+            ],
+            "localized_name": "translate_z",
+            "pos": [
+              -212,
+              270
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "cfa79687-ef0c-540e-9cc2-659fce3b16f7",
+            "name": "points",
+            "type": "NPARRAY",
+            "linkIds": [
+              32
+            ],
+            "localized_name": "points",
+            "pos": [
+              2140,
+              60
+            ]
+          },
+          {
+            "id": "b51c296b-f674-586a-b853-96c3f1901af2",
+            "name": "matrix",
+            "type": "NPARRAY",
+            "linkIds": [
+              33
+            ],
+            "localized_name": "matrix",
+            "pos": [
+              2140,
+              90
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "id": 1,
+            "type": "ComfyMathExpression",
+            "pos": [
+              240,
+              40
+            ],
+            "size": [
+              260,
+              120
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 2
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  3
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a * 0.017453292519943295"
+            ],
+            "title": "x: degrees -> radians"
+          },
+          {
+            "id": 21,
+            "type": "PrimitiveFloat",
+            "pos": [
+              -60,
+              40
+            ],
+            "size": [
+              250,
+              108
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 1
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  2
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              0.0
+            ],
+            "title": "rotate x (degrees)"
+          },
+          {
+            "id": 4,
+            "type": "CV_Tuple",
+            "pos": [
+              540,
+              40
+            ],
+            "size": [
+              240,
+              190
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "a",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "a"
+                },
+                "link": 3
+              }
+            ],
+            "outputs": [
+              {
+                "name": "tuple",
+                "type": "CV_TUPLE",
+                "links": []
+              },
+              {
+                "name": "array",
+                "type": "NPARRAY",
+                "links": [
+                  4
+                ]
+              },
+              {
+                "name": "literal",
+                "type": "STRING",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_Tuple"
+            },
+            "widgets_values": [
+              3,
+              "float",
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "title": "rvec for x"
+          },
+          {
+            "id": 7,
+            "type": "cv2_Rodrigues",
+            "pos": [
+              820,
+              40
+            ],
+            "size": [
+              240,
+              110
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 4
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  16
+                ]
+              },
+              {
+                "name": "jacobian",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_Rodrigues"
+            },
+            "widgets_values": [],
+            "title": "Rx (3x3)"
+          },
+          {
+            "id": 2,
+            "type": "ComfyMathExpression",
+            "pos": [
+              240,
+              230
+            ],
+            "size": [
+              260,
+              120
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 6
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  7
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a * 0.017453292519943295"
+            ],
+            "title": "y: degrees -> radians"
+          },
+          {
+            "id": 22,
+            "type": "PrimitiveFloat",
+            "pos": [
+              -60,
+              230
+            ],
+            "size": [
+              250,
+              108
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 5
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  6
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              0.0
+            ],
+            "title": "rotate y (degrees)"
+          },
+          {
+            "id": 5,
+            "type": "CV_Tuple",
+            "pos": [
+              540,
+              230
+            ],
+            "size": [
+              240,
+              190
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "b",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "b"
+                },
+                "link": 7
+              }
+            ],
+            "outputs": [
+              {
+                "name": "tuple",
+                "type": "CV_TUPLE",
+                "links": []
+              },
+              {
+                "name": "array",
+                "type": "NPARRAY",
+                "links": [
+                  8
+                ]
+              },
+              {
+                "name": "literal",
+                "type": "STRING",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_Tuple"
+            },
+            "widgets_values": [
+              3,
+              "float",
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "title": "rvec for y"
+          },
+          {
+            "id": 8,
+            "type": "cv2_Rodrigues",
+            "pos": [
+              820,
+              230
+            ],
+            "size": [
+              240,
+              110
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 8
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  14
+                ]
+              },
+              {
+                "name": "jacobian",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_Rodrigues"
+            },
+            "widgets_values": [],
+            "title": "Ry (3x3)"
+          },
+          {
+            "id": 3,
+            "type": "ComfyMathExpression",
+            "pos": [
+              240,
+              420
+            ],
+            "size": [
+              260,
+              120
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 10
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  11
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a * 0.017453292519943295"
+            ],
+            "title": "z: degrees -> radians"
+          },
+          {
+            "id": 23,
+            "type": "PrimitiveFloat",
+            "pos": [
+              -60,
+              420
+            ],
+            "size": [
+              250,
+              108
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 9
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  10
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              0.0
+            ],
+            "title": "rotate z (degrees)"
+          },
+          {
+            "id": 6,
+            "type": "CV_Tuple",
+            "pos": [
+              540,
+              420
+            ],
+            "size": [
+              240,
+              190
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "c",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "c"
+                },
+                "link": 11
+              }
+            ],
+            "outputs": [
+              {
+                "name": "tuple",
+                "type": "CV_TUPLE",
+                "links": []
+              },
+              {
+                "name": "array",
+                "type": "NPARRAY",
+                "links": [
+                  12
+                ]
+              },
+              {
+                "name": "literal",
+                "type": "STRING",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_Tuple"
+            },
+            "widgets_values": [
+              3,
+              "float",
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "title": "rvec for z"
+          },
+          {
+            "id": 9,
+            "type": "cv2_Rodrigues",
+            "pos": [
+              820,
+              420
+            ],
+            "size": [
+              240,
+              110
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 12
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  13
+                ]
+              },
+              {
+                "name": "jacobian",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_Rodrigues"
+            },
+            "widgets_values": [],
+            "title": "Rz (3x3)"
+          },
+          {
+            "id": 10,
+            "type": "CV_MatMul",
+            "pos": [
+              1100,
+              40
+            ],
+            "size": [
+              240,
+              110
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "left",
+                "type": "NPARRAY",
+                "link": 13
+              },
+              {
+                "name": "right",
+                "type": "NPARRAY",
+                "link": 14
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  15
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_MatMul"
+            },
+            "widgets_values": [],
+            "title": "Rz . Ry"
+          },
+          {
+            "id": 11,
+            "type": "CV_MatMul",
+            "pos": [
+              1100,
+              190
+            ],
+            "size": [
+              240,
+              110
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "left",
+                "type": "NPARRAY",
+                "link": 15
+              },
+              {
+                "name": "right",
+                "type": "NPARRAY",
+                "link": 16
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  17
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_MatMul"
+            },
+            "widgets_values": [],
+            "title": "(Rz . Ry) . Rx"
+          },
+          {
+            "id": 12,
+            "type": "cv2_Rodrigues",
+            "pos": [
+              1100,
+              340
+            ],
+            "size": [
+              240,
+              110
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 17
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  24
+                ]
+              },
+              {
+                "name": "jacobian",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_Rodrigues"
+            },
+            "widgets_values": [],
+            "title": "the composed rotation as an rvec"
+          },
+          {
+            "id": 13,
+            "type": "CV_Tuple",
+            "pos": [
+              1100,
+              490
+            ],
+            "size": [
+              240,
+              190
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "a",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "a"
+                },
+                "link": 19
+              },
+              {
+                "name": "b",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "b"
+                },
+                "link": 21
+              },
+              {
+                "name": "c",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "c"
+                },
+                "link": 23
+              }
+            ],
+            "outputs": [
+              {
+                "name": "tuple",
+                "type": "CV_TUPLE",
+                "links": []
+              },
+              {
+                "name": "array",
+                "type": "NPARRAY",
+                "links": [
+                  25
+                ]
+              },
+              {
+                "name": "literal",
+                "type": "STRING",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_Tuple"
+            },
+            "widgets_values": [
+              3,
+              "float",
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "title": "tvec"
+          },
+          {
+            "id": 24,
+            "type": "PrimitiveFloat",
+            "pos": [
+              560,
+              620
+            ],
+            "size": [
+              250,
+              108
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 18
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  19
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              0.0
+            ],
+            "title": "translate x"
+          },
+          {
+            "id": 25,
+            "type": "PrimitiveFloat",
+            "pos": [
+              560,
+              760
+            ],
+            "size": [
+              250,
+              108
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 20
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  21
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              0.0
+            ],
+            "title": "translate y"
+          },
+          {
+            "id": 26,
+            "type": "PrimitiveFloat",
+            "pos": [
+              560,
+              900
+            ],
+            "size": [
+              250,
+              108
+            ],
+            "flags": {},
+            "order": 18,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 22
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  23
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              0.0
+            ],
+            "title": "translate z"
+          },
+          {
+            "id": 14,
+            "type": "CV_PoseToMatrix",
+            "pos": [
+              1400,
+              340
+            ],
+            "size": [
+              260,
+              160
+            ],
+            "flags": {},
+            "order": 19,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "rvec",
+                "type": "NPARRAY",
+                "link": 24
+              },
+              {
+                "name": "tvec",
+                "type": "NPARRAY",
+                "link": 25
+              }
+            ],
+            "outputs": [
+              {
+                "name": "matrix_3x4",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "name": "matrix_4x4",
+                "type": "NPARRAY",
+                "links": [
+                  31,
+                  33
+                ]
+              },
+              {
+                "name": "rotation",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_PoseToMatrix"
+            },
+            "widgets_values": [],
+            "title": "the 4x4 this subgraph built"
+          },
+          {
+            "id": 15,
+            "type": "cv2_addWeighted",
+            "pos": [
+              240,
+              620
+            ],
+            "size": [
+              280,
+              210
+            ],
+            "flags": {},
+            "order": 20,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 26
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 27
+              },
+              {
+                "name": "alpha",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": 29
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  30
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              1.0,
+              0.0,
+              0.0,
+              "same as input"
+            ],
+            "title": "scale the points"
+          },
+          {
+            "id": 20,
+            "type": "PrimitiveFloat",
+            "pos": [
+              -60,
+              620
+            ],
+            "size": [
+              250,
+              108
+            ],
+            "flags": {},
+            "order": 21,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 28
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  29
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              1.0
+            ],
+            "title": "uniform scale"
+          },
+          {
+            "id": 16,
+            "type": "CV_TransformPoints3D",
+            "pos": [
+              1700,
+              620
+            ],
+            "size": [
+              280,
+              160
+            ],
+            "flags": {},
+            "order": 22,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 30
+              },
+              {
+                "name": "matrix",
+                "type": "NPARRAY",
+                "link": 31
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  32
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_TransformPoints3D"
+            },
+            "widgets_values": [
+              "forward"
+            ],
+            "title": "rotate + translate"
+          }
+        ],
+        "links": [
+          {
+            "id": 1,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 21,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 2,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 3,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 4,
+            "origin_id": 4,
+            "origin_slot": 1,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 5,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 22,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 6,
+            "origin_id": 22,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 7,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 8,
+            "origin_id": 5,
+            "origin_slot": 1,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 9,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 23,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 10,
+            "origin_id": 23,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 11,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 12,
+            "origin_id": 6,
+            "origin_slot": 1,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 13,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 14,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 15,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 16,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 17,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 18,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 24,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 19,
+            "origin_id": 24,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 20,
+            "origin_id": -10,
+            "origin_slot": 6,
+            "target_id": 25,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 21,
+            "origin_id": 25,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 22,
+            "origin_id": -10,
+            "origin_slot": 7,
+            "target_id": 26,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 23,
+            "origin_id": 26,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 24,
+            "origin_id": 12,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 25,
+            "origin_id": 13,
+            "origin_slot": 1,
+            "target_id": 14,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 26,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 27,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 28,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 20,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 29,
+            "origin_id": 20,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 30,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 31,
+            "origin_id": 14,
+            "origin_slot": 1,
+            "target_id": 16,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 32,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 33,
+            "origin_id": 14,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          }
+        ]
+      }
+    ]
+  }
+}

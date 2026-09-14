@@ -1,0 +1,320 @@
+{
+  "id": "a193168c-2506-4b0b-858f-69fe635aff86",
+  "revision": 0,
+  "last_node_id": 10,
+  "last_link_id": 6,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        9.056628181494887,
+        197.61974062934576
+      ],
+      "size": [
+        369.984375,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "color_cast_posters.png",
+        "image"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 2,
+      "type": "CV_DetectColorChecker",
+      "pos": [
+        448.5631124478509,
+        307.1116716794408
+      ],
+      "size": [
+        289.046875,
+        106
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "color_patches",
+          "type": "NPARRAY",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Detect Color Checker]",
+      "properties": {
+        "Node name for S&R": "CV_DetectColorChecker"
+      },
+      "widgets_values": [
+        "MCC24 (Macbeth)"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_CreateCCMModel",
+      "pos": [
+        810.7111671679439,
+        305.9215419941137
+      ],
+      "size": [
+        396.15625,
+        350
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "color_patches",
+          "type": "NPARRAY",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "ccm_model",
+          "type": "CCM_MODEL",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "ccm_matrix",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "loss",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "[CV Create CCM Model]",
+      "properties": {
+        "Node name for S&R": "CV_CreateCCMModel"
+      },
+      "widgets_values": [
+        "CCM_LINEAR",
+        "COLOR_SPACE_SRGB",
+        "DISTANCE_CIE2000",
+        "LINEARIZATION_GAMMA",
+        2.2,
+        3,
+        "COLORCHECKER_MACBETH",
+        0,
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ApplyColorCorrection",
+      "pos": [
+        1293.0623201060764,
+        203.57038905598137
+      ],
+      "size": [
+        262.859375,
+        121.65625
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "name": "ccm_model",
+          "type": "CCM_MODEL",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "[CV Apply Color Correction]",
+      "properties": {
+        "Node name for S&R": "CV_ApplyColorCorrection"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "PreviewImage",
+      "pos": [
+        1627.837392063646,
+        201.19012968532712
+      ],
+      "size": [
+        300,
+        290
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: Apply Color Correction",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "Note",
+      "pos": [
+        -523.3348125869154,
+        203.5706484266356
+      ],
+      "size": [
+        519.984375,
+        187.5
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "color_cast_posters.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Art posters wall with synthetic ColorChecker + tungsten color cast\nCreator: generated (this repo) - composite of art_posters_wall.png + synthetic ColorChecker chart\nLicense: no third-party rights (synthetic composite)\nSource:  synthetic; posters from art_posters_wall.png, chart from synthetic_color_checker.png, scaled to 40% width and centered bottom\nSize:    1500x1050 (same as art_posters_wall.png)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 10,
+      "type": "MarkdownNote",
+      "pos": [
+        9.509525352708224,
+        588.2629356908491
+      ],
+      "size": [
+        368.9375,
+        102
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Color Checkers",
+      "properties": {},
+      "widgets_values": [
+        "Color Checkers are available at:\nhttps://github.com/MykhailoTrushch/opencv_extra/tree/d11f37b02d1358c2169b3c08d1c25a52e3f4c4bb/testdata/cv/mcc"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      1,
+      "CCM_MODEL"
+    ],
+    [
+      4,
+      4,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.3239506535992018,
+      "offset": [
+        1263.52122825061,
+        1089.7254433100456
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

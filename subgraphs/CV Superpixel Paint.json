@@ -1,0 +1,2109 @@
+{
+  "revision": 0,
+  "last_node_id": 216,
+  "last_link_id": 226,
+  "nodes": [
+    {
+      "id": 215,
+      "type": "f457136d-b07f-4842-be8f-123b6db565e7",
+      "pos": [
+        849.8977872669147,
+        3688.893304084883
+      ],
+      "size": [
+        314.359375,
+        440
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "region_size",
+          "name": "region_size",
+          "type": "INT",
+          "widget": {
+            "name": "region_size"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "presmooth",
+          "name": "presmooth",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "presmooth"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "posterize",
+          "name": "posterize",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "posterize"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "palette_size",
+          "name": "palette_size",
+          "type": "INT",
+          "widget": {
+            "name": "palette_size"
+          },
+          "link": null
+        },
+        {
+          "name": "algorithm",
+          "type": "COMBO",
+          "widget": {
+            "name": "algorithm"
+          },
+          "link": null
+        },
+        {
+          "name": "iterations",
+          "type": "INT",
+          "widget": {
+            "name": "iterations"
+          },
+          "link": null
+        },
+        {
+          "label": "outlines",
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": null
+        },
+        {
+          "label": "edge_strength",
+          "name": "alpha",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "alpha"
+          },
+          "link": null
+        },
+        {
+          "label": "line_width",
+          "name": "ksize_x",
+          "type": "INT",
+          "widget": {
+            "name": "ksize_x"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "localized_name": "labels",
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "palette",
+          "name": "palette",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "contours",
+          "name": "contours",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "count",
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "proxyWidgets": [
+          [
+            "211",
+            "region_size"
+          ],
+          [
+            "204",
+            "switch"
+          ],
+          [
+            "207",
+            "switch"
+          ],
+          [
+            "201",
+            "K"
+          ],
+          [
+            "211",
+            "algorithm"
+          ],
+          [
+            "211",
+            "iterations"
+          ],
+          [
+            "212",
+            "switch"
+          ],
+          [
+            "213",
+            "alpha"
+          ],
+          [
+            "214",
+            "ksize_x"
+          ]
+        ],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "title": "CV Superpixel Paint",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "f457136d-b07f-4842-be8f-123b6db565e7",
+        "version": 1,
+        "state": {
+          "lastGroupId": 3,
+          "lastNodeId": 272,
+          "lastLinkId": 240,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Superpixel Paint",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -241.75121465353607,
+            227.9174221836581,
+            129.216796875,
+            248.00000000000003
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            5777.524811806995,
+            229.31636617445346,
+            128,
+            148.00000000000003
+          ]
+        },
+        "inputs": [
+          {
+            "id": "69e02f4f-87a1-5bc6-aee3-6c7be8c29779",
+            "name": "image",
+            "type": "NPARRAY,IMAGE",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "image",
+            "pos": [
+              -136.53441777853607,
+              251.9174221836581
+            ]
+          },
+          {
+            "id": "6ef0df1a-1df8-5fe7-a49a-c63a766ab890",
+            "name": "region_size",
+            "type": "INT",
+            "linkIds": [
+              214
+            ],
+            "localized_name": "region_size",
+            "pos": [
+              -136.53441777853607,
+              271.9174221836581
+            ]
+          },
+          {
+            "id": "66819874-844d-5f1b-93fa-6c8feaded474",
+            "name": "presmooth",
+            "type": "BOOLEAN",
+            "linkIds": [
+              198
+            ],
+            "localized_name": "presmooth",
+            "pos": [
+              -136.53441777853607,
+              291.9174221836581
+            ]
+          },
+          {
+            "id": "669fb5ee-c515-50cb-a940-1ec7b81cbf15",
+            "name": "posterize",
+            "type": "BOOLEAN",
+            "linkIds": [
+              203
+            ],
+            "localized_name": "posterize",
+            "pos": [
+              -136.53441777853607,
+              311.9174221836581
+            ]
+          },
+          {
+            "id": "ae9cb2b5-541c-5bc5-be17-a68e94e0905f",
+            "name": "palette_size",
+            "type": "INT",
+            "linkIds": [
+              112
+            ],
+            "localized_name": "palette_size",
+            "pos": [
+              -136.53441777853607,
+              331.9174221836581
+            ]
+          },
+          {
+            "id": "1c4ca4b9-21ce-4db6-bac5-38baaf7e69f4",
+            "name": "algorithm",
+            "type": "COMBO",
+            "linkIds": [
+              216
+            ],
+            "pos": [
+              -136.53441777853607,
+              351.9174221836581
+            ]
+          },
+          {
+            "id": "20389ef5-54cc-4779-8290-d1c13998a175",
+            "name": "iterations",
+            "type": "INT",
+            "linkIds": [
+              217
+            ],
+            "pos": [
+              -136.53441777853607,
+              371.9174221836581
+            ]
+          },
+          {
+            "id": "7615184f-0fec-49c6-a846-1a27bf295b7b",
+            "name": "switch",
+            "type": "BOOLEAN",
+            "linkIds": [
+              222
+            ],
+            "label": "outlines",
+            "pos": [
+              -136.53441777853607,
+              391.9174221836581
+            ]
+          },
+          {
+            "id": "40c0f3b0-8c5b-48cd-abe7-f74706a4e4e1",
+            "name": "alpha",
+            "type": "FLOAT",
+            "linkIds": [
+              223
+            ],
+            "label": "edge_strength",
+            "pos": [
+              -136.53441777853607,
+              411.9174221836581
+            ]
+          },
+          {
+            "id": "6c8fe1a9-b5df-4d04-afb7-9fc0a0a9ab6a",
+            "name": "ksize_x",
+            "type": "INT",
+            "linkIds": [
+              224,
+              225
+            ],
+            "label": "line_width",
+            "pos": [
+              -136.53441777853607,
+              431.9174221836581
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "e1951dc5-8540-5f6a-8fca-7c5575aa8ee0",
+            "name": "image",
+            "type": "IMAGE",
+            "linkIds": [
+              135
+            ],
+            "localized_name": "image",
+            "pos": [
+              5801.524811806995,
+              253.31636617445346
+            ]
+          },
+          {
+            "id": "ccb8a0e9-335c-5a7f-b11c-196e8c9cb6c1",
+            "name": "labels",
+            "type": "NPARRAY",
+            "linkIds": [
+              136
+            ],
+            "localized_name": "labels",
+            "pos": [
+              5801.524811806995,
+              273.3163661744535
+            ]
+          },
+          {
+            "id": "b63df32c-4d9f-535c-8756-4fb6d98a0cdb",
+            "name": "palette",
+            "type": "NPARRAY",
+            "linkIds": [
+              205
+            ],
+            "localized_name": "palette",
+            "pos": [
+              5801.524811806995,
+              293.3163661744535
+            ]
+          },
+          {
+            "id": "12e7dd80-162d-5237-8d9f-6ade190fafe5",
+            "name": "contours",
+            "type": "NPARRAY",
+            "linkIds": [
+              138
+            ],
+            "localized_name": "contours",
+            "pos": [
+              5801.524811806995,
+              313.3163661744535
+            ]
+          },
+          {
+            "id": "6825443c-176b-548d-b561-1f17d31e95da",
+            "name": "count",
+            "type": "INT",
+            "linkIds": [
+              139
+            ],
+            "localized_name": "count",
+            "pos": [
+              5801.524811806995,
+              333.3163661744535
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 197,
+            "type": "cv2_edgePreservingFilter",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              310.3296875,
+              160
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE",
+                "link": 102
+              },
+              {
+                "localized_name": "flags",
+                "name": "flags",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "flags"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "sigma_s",
+                "name": "sigma_s",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "sigma_s"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "sigma_r",
+                "name": "sigma_r",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "sigma_r"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  196
+                ]
+              }
+            ],
+            "title": "Edge-preserving smooth (flatten texture)",
+            "properties": {
+              "Node name for S&R": "cv2_edgePreservingFilter"
+            },
+            "widgets_values": [
+              "RECURS_FILTER",
+              60,
+              0.4
+            ]
+          },
+          {
+            "id": 198,
+            "type": "cv2_dilate",
+            "pos": [
+              3676.4661369777073,
+              645.5700464072534
+            ],
+            "size": [
+              290,
+              312
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 124
+              },
+              {
+                "localized_name": "kernel",
+                "name": "kernel",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 125
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "iterations",
+                "name": "iterations",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "iterations"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderType",
+                "name": "borderType",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "borderType"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderValue",
+                "name": "borderValue",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "borderValue"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  126
+                ]
+              }
+            ],
+            "title": "Thicken the boundaries",
+            "properties": {
+              "Node name for S&R": "cv2_dilate"
+            },
+            "widgets_values": [
+              "(-1, -1)",
+              1,
+              "BORDER_DEFAULT",
+              "(0, 0, 0, 0)"
+            ]
+          },
+          {
+            "id": 199,
+            "type": "cv2_cvtColor",
+            "pos": [
+              4376.466136977696,
+              645.5700464072534
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 128
+              },
+              {
+                "localized_name": "code",
+                "name": "code",
+                "type": "COMBO",
+                "widget": {
+                  "name": "code"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "dstCn",
+                "name": "dstCn",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "dstCn"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "hint",
+                "name": "hint",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "hint"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  130
+                ]
+              }
+            ],
+            "title": "Lines -> 3 channels",
+            "properties": {
+              "Node name for S&R": "cv2_cvtColor"
+            },
+            "widgets_values": [
+              "COLOR_GRAY2BGR",
+              0,
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 200,
+            "type": "CV_AnyToCV",
+            "pos": [
+              -24.96169392735872,
+              81.7296911587986
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "input",
+                "name": "input",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  102,
+                  197
+                ]
+              }
+            ],
+            "title": "Input -> CV Array (BGR, frame 0)",
+            "properties": {
+              "Node name for S&R": "CV_AnyToCV"
+            }
+          },
+          {
+            "id": 201,
+            "type": "cv2_kmeans",
+            "pos": [
+              1822.709319436933,
+              445.57004640725324
+            ],
+            "size": [
+              392.015625,
+              312
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "data",
+                "name": "data",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 111
+              },
+              {
+                "localized_name": "bestLabels",
+                "name": "bestLabels",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": null
+              },
+              {
+                "localized_name": "K",
+                "name": "K",
+                "type": "INT",
+                "widget": {
+                  "name": "K"
+                },
+                "link": 112
+              },
+              {
+                "localized_name": "criteria_type",
+                "name": "criteria_type",
+                "type": "COMBO",
+                "widget": {
+                  "name": "criteria_type"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "criteria_max_count",
+                "name": "criteria_max_count",
+                "type": "INT",
+                "widget": {
+                  "name": "criteria_max_count"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "criteria_epsilon",
+                "name": "criteria_epsilon",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "criteria_epsilon"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "attempts",
+                "name": "attempts",
+                "type": "INT",
+                "widget": {
+                  "name": "attempts"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "flags",
+                "name": "flags",
+                "type": "COMBO",
+                "widget": {
+                  "name": "flags"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "retval",
+                "name": "retval",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "bestLabels",
+                "name": "bestLabels",
+                "type": "NPARRAY",
+                "links": [
+                  114
+                ]
+              },
+              {
+                "localized_name": "centers",
+                "name": "centers",
+                "type": "NPARRAY",
+                "links": [
+                  113
+                ]
+              }
+            ],
+            "title": "Cluster the region colours",
+            "properties": {
+              "Node name for S&R": "cv2_kmeans"
+            },
+            "widgets_values": [
+              12,
+              "max count or epsilon (whichever first)",
+              20,
+              0.5,
+              3,
+              "KMEANS_PP_CENTERS"
+            ]
+          },
+          {
+            "id": 202,
+            "type": "CV_TakeByIndex",
+            "pos": [
+              2288.5710990241305,
+              445.57004640725324
+            ],
+            "size": [
+              272.703125,
+              156
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "link": 113
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "NPARRAY",
+                "link": 114
+              },
+              {
+                "localized_name": "out_of_range",
+                "name": "out_of_range",
+                "type": "COMBO",
+                "widget": {
+                  "name": "out_of_range"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "fill_value",
+                "name": "fill_value",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "fill_value"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  115
+                ]
+              }
+            ],
+            "title": "Region -> cluster colour",
+            "properties": {
+              "Node name for S&R": "CV_TakeByIndex"
+            },
+            "widgets_values": [
+              "clamp",
+              0
+            ]
+          },
+          {
+            "id": 203,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              2636.8418187317843,
+              445.57004640725324
+            ],
+            "size": [
+              267.515625,
+              164
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 115
+              },
+              {
+                "localized_name": "rows",
+                "name": "rows",
+                "type": "INT",
+                "widget": {
+                  "name": "rows"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "cols",
+                "name": "cols",
+                "type": "INT",
+                "widget": {
+                  "name": "cols"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "channels"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  202
+                ]
+              }
+            ],
+            "title": "Back to one row per region",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              0,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 204,
+            "type": "ComfySwitchNode",
+            "pos": [
+              755.0401901355804,
+              25.321439723118257
+            ],
+            "size": [
+              270,
+              124
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "*",
+                "link": 197
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "*",
+                "link": 196
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 198
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "*",
+                "links": [
+                  199,
+                  200
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              true
+            ]
+          },
+          {
+            "id": 205,
+            "type": "CV_ReduceArrayByLabel",
+            "pos": [
+              1466.3556083552023,
+              -42.97135963674655
+            ],
+            "size": [
+              269.5,
+              212
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "link": 200
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "localized_name": "reduction",
+                "name": "reduction",
+                "type": "COMBO",
+                "widget": {
+                  "name": "reduction"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "num_labels",
+                "name": "num_labels",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "num_labels"
+                },
+                "link": 110
+              },
+              {
+                "localized_name": "empty_value",
+                "name": "empty_value",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "empty_value"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "links": [
+                  111,
+                  201
+                ]
+              },
+              {
+                "localized_name": "counts",
+                "name": "counts",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Mean colour per region",
+            "properties": {
+              "Node name for S&R": "CV_ReduceArrayByLabel"
+            },
+            "widgets_values": [
+              "mean",
+              0,
+              0
+            ]
+          },
+          {
+            "id": 206,
+            "type": "CV_TakeByIndex",
+            "pos": [
+              3348.9467807782075,
+              67.45417629558553
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "link": 204
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "NPARRAY",
+                "link": 120
+              },
+              {
+                "localized_name": "out_of_range",
+                "name": "out_of_range",
+                "type": "COMBO",
+                "widget": {
+                  "name": "out_of_range"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "fill_value",
+                "name": "fill_value",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "fill_value"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  121
+                ]
+              }
+            ],
+            "title": "Paint each region with its colour",
+            "properties": {
+              "Node name for S&R": "CV_TakeByIndex"
+            },
+            "widgets_values": [
+              "clamp",
+              0
+            ]
+          },
+          {
+            "id": 207,
+            "type": "ComfySwitchNode",
+            "pos": [
+              3035.889267053621,
+              -90.35935882990898
+            ],
+            "size": [
+              270,
+              124
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "*",
+                "link": 201
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "*",
+                "link": 202
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 203
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "*",
+                "links": [
+                  204,
+                  205
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ]
+          },
+          {
+            "id": 208,
+            "type": "CV_CastArray",
+            "pos": [
+              3703.0341705601168,
+              69.96949308445289
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 121
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  129,
+                  207
+                ]
+              }
+            ],
+            "title": "-> uint8",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "uint8"
+            ]
+          },
+          {
+            "id": 209,
+            "type": "cv2_subtract",
+            "pos": [
+              4722.322195446937,
+              385.48454278799807
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 129
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 130
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": null
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  206
+                ]
+              }
+            ],
+            "title": "Darken the region boundaries",
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ]
+          },
+          {
+            "id": 210,
+            "type": "CV_CVToImage",
+            "pos": [
+              5403.600235257094,
+              122.51960577005065
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 209
+              },
+              {
+                "localized_name": "channel_order",
+                "name": "channel_order",
+                "type": "COMBO",
+                "widget": {
+                  "name": "channel_order"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "IMAGE",
+                "links": [
+                  135
+                ]
+              },
+              {
+                "localized_name": "alpha",
+                "name": "alpha",
+                "type": "MASK",
+                "links": null
+              }
+            ],
+            "title": "CV Array -> Image",
+            "properties": {
+              "Node name for S&R": "CV_CVToImage"
+            },
+            "widgets_values": [
+              "BGR (OpenCV default)"
+            ]
+          },
+          {
+            "id": 211,
+            "type": "CV_Superpixels",
+            "pos": [
+              1113.4272074268465,
+              184.46777913221754
+            ],
+            "size": [
+              290,
+              282
+            ],
+            "flags": {
+              "collapsed": false
+            },
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 199
+              },
+              {
+                "localized_name": "algorithm",
+                "name": "algorithm",
+                "type": "COMBO",
+                "widget": {
+                  "name": "algorithm"
+                },
+                "link": 216
+              },
+              {
+                "localized_name": "region_size",
+                "name": "region_size",
+                "type": "INT",
+                "widget": {
+                  "name": "region_size"
+                },
+                "link": 214
+              },
+              {
+                "localized_name": "num_superpixels",
+                "name": "num_superpixels",
+                "type": "INT",
+                "widget": {
+                  "name": "num_superpixels"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "iterations",
+                "name": "iterations",
+                "type": "INT",
+                "widget": {
+                  "name": "iterations"
+                },
+                "link": 217
+              },
+              {
+                "localized_name": "compactness",
+                "name": "compactness",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "compactness"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "enforce_connectivity",
+                "name": "enforce_connectivity",
+                "shape": 7,
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "enforce_connectivity"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "NPARRAY",
+                "links": [
+                  109,
+                  120,
+                  136
+                ]
+              },
+              {
+                "localized_name": "contours",
+                "name": "contours",
+                "type": "NPARRAY",
+                "links": [
+                  124,
+                  138
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": [
+                  110,
+                  139
+                ]
+              }
+            ],
+            "title": "Superpixels (SLICO)",
+            "properties": {
+              "Node name for S&R": "CV_Superpixels"
+            },
+            "widgets_values": [
+              "SLIC",
+              50,
+              200,
+              10,
+              10,
+              true
+            ]
+          },
+          {
+            "id": 212,
+            "type": "ComfySwitchNode",
+            "pos": [
+              4087.145557067008,
+              72.48785356755167
+            ],
+            "size": [
+              225,
+              124
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "*",
+                "link": 207
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "*",
+                "link": 206
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 222
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "*",
+                "links": [
+                  209
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ]
+          },
+          {
+            "id": 213,
+            "type": "cv2_convertScaleAbs",
+            "pos": [
+              4027.4070399138845,
+              648.6155307190453
+            ],
+            "size": [
+              290,
+              164
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "showAdvanced": true,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 126
+              },
+              {
+                "localized_name": "alpha",
+                "name": "alpha",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": 223
+              },
+              {
+                "localized_name": "beta",
+                "name": "beta",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "beta"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  128
+                ]
+              }
+            ],
+            "title": "Line darkness (edge_strength)",
+            "properties": {
+              "Node name for S&R": "cv2_convertScaleAbs"
+            },
+            "widgets_values": [
+              0.1,
+              0
+            ]
+          },
+          {
+            "id": 214,
+            "type": "cv2_getStructuringElement",
+            "pos": [
+              3297.5806006335374,
+              776.9224167923733
+            ],
+            "size": [
+              290,
+              234
+            ],
+            "flags": {
+              "collapsed": false
+            },
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "shape",
+                "name": "shape",
+                "type": "COMBO",
+                "widget": {
+                  "name": "shape"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "ksize",
+                "name": "ksize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "ksize"
+                },
+                "link": 226
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  125
+                ]
+              }
+            ],
+            "title": "Line-width kernel",
+            "properties": {
+              "Node name for S&R": "cv2_getStructuringElement"
+            },
+            "widgets_values": [
+              "MORPH_ELLIPSE",
+              "(5, 5)",
+              "(-1, -1)"
+            ]
+          },
+          {
+            "id": 216,
+            "type": "CV_Tuple",
+            "pos": [
+              3057.5806006335374,
+              816.9224167923733
+            ],
+            "size": [
+              210,
+              130
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "title": "ksize (joined)",
+            "inputs": [
+              {
+                "localized_name": "a",
+                "name": "a",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "a"
+                },
+                "link": 224
+              },
+              {
+                "localized_name": "b",
+                "name": "b",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "b"
+                },
+                "link": 225
+              }
+            ],
+            "outputs": [
+              {
+                "name": "tuple",
+                "type": "CV_TUPLE",
+                "links": [
+                  226
+                ]
+              },
+              {
+                "name": "array",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "name": "literal",
+                "type": "STRING",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_Tuple"
+            },
+            "widgets_values": [
+              2,
+              "int",
+              5.0,
+              5.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 200,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE"
+          },
+          {
+            "id": 102,
+            "origin_id": 200,
+            "origin_slot": 0,
+            "target_id": 197,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": 211,
+            "origin_slot": 0,
+            "target_id": 205,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": 211,
+            "origin_slot": 2,
+            "target_id": 205,
+            "target_slot": 4,
+            "type": "INT"
+          },
+          {
+            "id": 111,
+            "origin_id": 205,
+            "origin_slot": 0,
+            "target_id": 201,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 201,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 113,
+            "origin_id": 201,
+            "origin_slot": 2,
+            "target_id": 202,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": 201,
+            "origin_slot": 1,
+            "target_id": 202,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": 202,
+            "origin_slot": 0,
+            "target_id": 203,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 211,
+            "origin_slot": 0,
+            "target_id": 206,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 206,
+            "origin_slot": 0,
+            "target_id": 208,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 124,
+            "origin_id": 211,
+            "origin_slot": 1,
+            "target_id": 198,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 125,
+            "origin_id": 214,
+            "origin_slot": 0,
+            "target_id": 198,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": 198,
+            "origin_slot": 0,
+            "target_id": 213,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": 213,
+            "origin_slot": 0,
+            "target_id": 199,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 129,
+            "origin_id": 208,
+            "origin_slot": 0,
+            "target_id": 209,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 130,
+            "origin_id": 199,
+            "origin_slot": 0,
+            "target_id": 209,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 135,
+            "origin_id": 210,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 136,
+            "origin_id": 211,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 138,
+            "origin_id": 211,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 139,
+            "origin_id": 211,
+            "origin_slot": 2,
+            "target_id": -20,
+            "target_slot": 4,
+            "type": "INT"
+          },
+          {
+            "id": 196,
+            "origin_id": 197,
+            "origin_slot": 0,
+            "target_id": 204,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 197,
+            "origin_id": 200,
+            "origin_slot": 0,
+            "target_id": 204,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 198,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 204,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 199,
+            "origin_id": 204,
+            "origin_slot": 0,
+            "target_id": 211,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 200,
+            "origin_id": 204,
+            "origin_slot": 0,
+            "target_id": 205,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 201,
+            "origin_id": 205,
+            "origin_slot": 0,
+            "target_id": 207,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 202,
+            "origin_id": 203,
+            "origin_slot": 0,
+            "target_id": 207,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 203,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 207,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 204,
+            "origin_id": 207,
+            "origin_slot": 0,
+            "target_id": 206,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 205,
+            "origin_id": 207,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 206,
+            "origin_id": 209,
+            "origin_slot": 0,
+            "target_id": 212,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 207,
+            "origin_id": 208,
+            "origin_slot": 0,
+            "target_id": 212,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 209,
+            "origin_id": 212,
+            "origin_slot": 0,
+            "target_id": 210,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 214,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 211,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 216,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 211,
+            "target_slot": 1,
+            "type": "COMBO"
+          },
+          {
+            "id": 217,
+            "origin_id": -10,
+            "origin_slot": 6,
+            "target_id": 211,
+            "target_slot": 4,
+            "type": "INT"
+          },
+          {
+            "id": 222,
+            "origin_id": -10,
+            "origin_slot": 7,
+            "target_id": 212,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 223,
+            "origin_id": -10,
+            "origin_slot": 8,
+            "target_id": 213,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 224,
+            "origin_id": -10,
+            "origin_slot": 9,
+            "target_id": 216,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 225,
+            "origin_id": -10,
+            "origin_slot": 9,
+            "target_id": 216,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 226,
+            "origin_id": 216,
+            "origin_slot": 0,
+            "target_id": 214,
+            "target_slot": 1,
+            "type": "CV_TUPLE"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "extra": {}
+}

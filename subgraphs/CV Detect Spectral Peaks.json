@@ -1,0 +1,1372 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "c9d0e1f2-a3b4-4567-2345-890123456789",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        340,
+        180
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "spectrum",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "sigmas",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "min_area",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "dc_radius",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "radius",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "notches",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Detect Spectral Peaks",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "c9d0e1f2-a3b4-4567-2345-890123456789",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 18,
+          "lastLinkId": 130,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Detect Spectral Peaks",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "7af31c95-b2a4-5dda-9400-24dc923b9de9",
+            "name": "spectrum",
+            "type": "NPARRAY",
+            "linkIds": [
+              101,
+              103,
+              109,
+              115
+            ],
+            "localized_name": "spectrum",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "dabba258-263b-5d49-9a2f-7fec2b7b1d6c",
+            "name": "sigmas",
+            "type": "FLOAT",
+            "linkIds": [
+              105
+            ],
+            "localized_name": "sigmas",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "077ede43-2f70-5e36-bdcc-b8000d3e1567",
+            "name": "min_area",
+            "type": "INT",
+            "linkIds": [
+              114
+            ],
+            "localized_name": "min_area",
+            "pos": [
+              140,
+              260
+            ]
+          },
+          {
+            "id": "d3f44eb0-0f46-5c6a-aba4-cf93c9e9893a",
+            "name": "dc_radius",
+            "type": "FLOAT",
+            "linkIds": [
+              121
+            ],
+            "localized_name": "dc_radius",
+            "pos": [
+              140,
+              280
+            ]
+          },
+          {
+            "id": "96f486b0-0eec-56b1-bfdc-b8fc029cc1e4",
+            "name": "radius",
+            "type": "FLOAT",
+            "linkIds": [
+              126
+            ],
+            "localized_name": "radius",
+            "pos": [
+              140,
+              300
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "d816ac02-46dd-5272-baf9-df61f31556e5",
+            "name": "notches",
+            "type": "NPARRAY",
+            "linkIds": [
+              129
+            ],
+            "localized_name": "notches",
+            "pos": [
+              2100,
+              220
+            ]
+          },
+          {
+            "id": "f837c222-288f-574d-aabd-8fb68cc2756a",
+            "name": "count",
+            "type": "INT",
+            "linkIds": [
+              130
+            ],
+            "localized_name": "count",
+            "pos": [
+              2100,
+              240
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_ArrayStat",
+            "pos": [
+              40,
+              40
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "name": "value",
+                "type": "NPARRAY",
+                "links": [
+                  102
+                ]
+              },
+              {
+                "name": "text",
+                "type": "STRING",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ArrayStat"
+            },
+            "widgets_values": [
+              "mean"
+            ],
+            "title": "Spectrum mean"
+          },
+          {
+            "id": 2,
+            "type": "CV_PickValue",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values",
+                "type": "NPARRAY",
+                "link": 102
+              },
+              {
+                "name": "key",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "links": [
+                  106
+                ]
+              },
+              {
+                "name": "index",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_PickValue"
+            },
+            "widgets_values": [
+              "largest first",
+              1
+            ],
+            "title": "mean as a number"
+          },
+          {
+            "id": 3,
+            "type": "CV_ArrayStat",
+            "pos": [
+              40,
+              240
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "name": "value",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              },
+              {
+                "name": "text",
+                "type": "STRING",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ArrayStat"
+            },
+            "widgets_values": [
+              "std (spread)"
+            ],
+            "title": "Spectrum std"
+          },
+          {
+            "id": 4,
+            "type": "CV_PickValue",
+            "pos": [
+              390,
+              240
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values",
+                "type": "NPARRAY",
+                "link": 104
+              },
+              {
+                "name": "key",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "links": [
+                  107
+                ]
+              },
+              {
+                "name": "index",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_PickValue"
+            },
+            "widgets_values": [
+              "largest first",
+              1
+            ],
+            "title": "std as a number"
+          },
+          {
+            "id": 5,
+            "type": "PrimitiveFloat",
+            "pos": [
+              390,
+              440
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 105
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  108
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              3.5
+            ],
+            "title": "sigmas above the mean"
+          },
+          {
+            "id": 6,
+            "type": "ComfyMathExpression",
+            "pos": [
+              740,
+              240
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 106
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 107
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  110
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a + b * c"
+            ],
+            "title": "threshold = mean + sigmas * std"
+          },
+          {
+            "id": 7,
+            "type": "cv2_threshold",
+            "pos": [
+              1090,
+              240
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "name": "thresh",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "thresh"
+                },
+                "link": 110
+              }
+            ],
+            "outputs": [
+              {
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0.0,
+              255.0,
+              "THRESH_BINARY"
+            ],
+            "title": "Keep the outliers"
+          },
+          {
+            "id": 8,
+            "type": "CV_CastArray",
+            "pos": [
+              1440,
+              240
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 111
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  112
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "uint8"
+            ],
+            "title": "To uint8"
+          },
+          {
+            "id": 9,
+            "type": "CV_CVToMask",
+            "pos": [
+              1790,
+              240
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 112
+              }
+            ],
+            "outputs": [
+              {
+                "name": "mask",
+                "type": "MASK",
+                "links": [
+                  113
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVToMask"
+            },
+            "widgets_values": [],
+            "title": "As a MASK"
+          },
+          {
+            "id": 10,
+            "type": "CV_RegionProperties",
+            "pos": [
+              2140,
+              240
+            ],
+            "size": [
+              290,
+              278
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "mask",
+                "type": "MASK",
+                "link": 113
+              },
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": null
+              },
+              {
+                "name": "min_area",
+                "type": "INT",
+                "widget": {
+                  "name": "min_area"
+                },
+                "link": 114
+              }
+            ],
+            "outputs": [
+              {
+                "name": "features",
+                "type": "NPARRAY",
+                "links": [
+                  118
+                ]
+              },
+              {
+                "name": "labels",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "name": "names",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_RegionProperties"
+            },
+            "widgets_values": [
+              "8",
+              "centroid (x, y)",
+              "raw (pixels)",
+              2,
+              "empty table (0 rows)"
+            ],
+            "title": "One centroid per spike"
+          },
+          {
+            "id": 11,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              1090,
+              640
+            ],
+            "size": [
+              290,
+              170
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 115
+              }
+            ],
+            "outputs": [
+              {
+                "name": "height",
+                "type": "INT",
+                "links": [
+                  117
+                ]
+              },
+              {
+                "name": "width",
+                "type": "INT",
+                "links": [
+                  116
+                ]
+              },
+              {
+                "name": "channels",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "name": "size",
+                "type": "CV_TUPLE",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            },
+            "widgets_values": [],
+            "title": "Shape"
+          },
+          {
+            "id": 12,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1440,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 116
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  119
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a // 2"
+            ],
+            "title": "centre x"
+          },
+          {
+            "id": 13,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1440,
+              840
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 117
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  120
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a // 2"
+            ],
+            "title": "centre y"
+          },
+          {
+            "id": 14,
+            "type": "CV_FilterPointsByDistance",
+            "pos": [
+              2490,
+              240
+            ],
+            "size": [
+              290,
+              252
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 118
+              },
+              {
+                "name": "origin_x",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_x"
+                },
+                "link": 119
+              },
+              {
+                "name": "origin_y",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_y"
+                },
+                "link": 120
+              },
+              {
+                "name": "min_dist",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "min_dist"
+                },
+                "link": 121
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  122
+                ]
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": [
+                  130
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_FilterPointsByDistance"
+            },
+            "widgets_values": [
+              0.0,
+              0.0,
+              0.0,
+              1000000.0
+            ],
+            "title": "Drop the DC blob"
+          },
+          {
+            "id": 15,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              2840,
+              240
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 122
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  123,
+                  127
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              0,
+              2,
+              0
+            ],
+            "title": "Nx1x2 -> Nx2 table"
+          },
+          {
+            "id": 16,
+            "type": "CV_SliceArray",
+            "pos": [
+              2840,
+              440
+            ],
+            "size": [
+              290,
+              212
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 123
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  124,
+                  125
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_SliceArray"
+            },
+            "widgets_values": [
+              1,
+              0,
+              1,
+              1,
+              true
+            ],
+            "title": "One column, N rows"
+          },
+          {
+            "id": 17,
+            "type": "cv2_addWeighted",
+            "pos": [
+              3190,
+              440
+            ],
+            "size": [
+              290,
+              230
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 124
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 125
+              },
+              {
+                "name": "gamma",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "gamma"
+                },
+                "link": 126
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  128
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              0.0,
+              0.0,
+              21,
+              "same as input"
+            ],
+            "title": "Fill it with `radius`"
+          },
+          {
+            "id": 18,
+            "type": "CV_ConcatArrays",
+            "pos": [
+              3540,
+              240
+            ],
+            "size": [
+              290,
+              174
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "array1",
+                "type": "NPARRAY",
+                "link": 127
+              },
+              {
+                "name": "array2",
+                "type": "NPARRAY",
+                "link": 128
+              },
+              {
+                "name": "array3",
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "name": "array4",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  129
+                ]
+              },
+              {
+                "name": "length",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ConcatArrays"
+            },
+            "widgets_values": [
+              1
+            ],
+            "title": "(x, y) + radius -> Nx3"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 106,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 107,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 108,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 109,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 111,
+            "origin_id": 7,
+            "origin_slot": 1,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "MASK"
+          },
+          {
+            "id": 114,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 10,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 115,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 11,
+            "origin_slot": 1,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 117,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 118,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": 12,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 120,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 121,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 14,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 122,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 123,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 124,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 125,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 17,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 127,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 129,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 130,
+            "origin_id": 14,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "INT"
+          }
+        ]
+      }
+    ]
+  }
+}

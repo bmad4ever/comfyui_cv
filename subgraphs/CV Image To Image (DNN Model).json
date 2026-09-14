@@ -1,0 +1,1133 @@
+{
+  "revision": 0,
+  "last_node_id": 120,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 62,
+      "type": "7e4ad2a2-bed0-4cb7-bae5-e88a7a9050fb",
+      "pos": [
+        965.9974932598639,
+        -1061.6725894392698
+      ],
+      "size": [
+        320,
+        228
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "COMBO",
+          "widget": {
+            "name": "model"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "scale",
+          "name": "scale",
+          "type": "FLOAT",
+          "widget": {
+            "name": "scale"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "postprocess",
+          "name": "postprocess",
+          "type": "COMBO",
+          "widget": {
+            "name": "postprocess"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "engine",
+          "name": "engine",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "engine"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "backend",
+          "name": "backend",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "backend"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "target",
+          "name": "target",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "target"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "array",
+          "name": "array",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {
+        "proxyWidgets": [
+          [
+            "53",
+            "model"
+          ],
+          [
+            "52",
+            "scale"
+          ],
+          [
+            "58",
+            "choice"
+          ],
+          [
+            "53",
+            "engine"
+          ],
+          [
+            "53",
+            "backend"
+          ],
+          [
+            "53",
+            "target"
+          ]
+        ],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "title": "CV Image To Image (DNN Model)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 120,
+      "type": "MarkdownNote",
+      "pos": [
+        1120,
+        40
+      ],
+      "size": [
+        540,
+        148
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "properties": {},
+      "widgets_values": [
+        "mosaic-9.onnx at\nhttps://huggingface.co/onnxmodelzoo/mosaic-9\n\nSwap in eudnie.onnx / candy-9.onnx / rain-princess-9.onnx / pointilism-9.onnx (same preprocessing) for the other styles.\n\nPut it in ComfyUI/models/onnx."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159",
+      "title": "Model: mosaic-9.onnx"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "7e4ad2a2-bed0-4cb7-bae5-e88a7a9050fb",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 72,
+          "lastLinkId": 132,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Image To Image (DNN Model)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            128,
+            188
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2964.7812166488825,
+            37.260114485301244,
+            128,
+            88
+          ]
+        },
+        "inputs": [
+          {
+            "id": "7efb4cf9-89c5-5909-b8c5-e2c41b5ebe96",
+            "name": "image",
+            "type": "IMAGE",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "image",
+            "pos": [
+              144,
+              224
+            ]
+          },
+          {
+            "id": "ad510c33-536d-5c8b-8020-0ac1bc378a6f",
+            "name": "model",
+            "type": "COMBO",
+            "linkIds": [
+              104
+            ],
+            "localized_name": "model",
+            "pos": [
+              144,
+              244
+            ]
+          },
+          {
+            "id": "d633986b-36f9-5d57-82b0-58176507ad8e",
+            "name": "scale",
+            "type": "FLOAT",
+            "linkIds": [
+              102
+            ],
+            "localized_name": "scale",
+            "pos": [
+              144,
+              264
+            ]
+          },
+          {
+            "id": "99ba2c01-728f-5894-b40a-c0638bada843",
+            "name": "postprocess",
+            "type": "COMBO",
+            "linkIds": [
+              112
+            ],
+            "localized_name": "postprocess",
+            "pos": [
+              144,
+              284
+            ]
+          },
+          {
+            "id": "c75d835d-b761-5428-92a0-c430dd95610c",
+            "name": "engine",
+            "type": "COMBO",
+            "linkIds": [
+              105
+            ],
+            "localized_name": "engine",
+            "pos": [
+              144,
+              304
+            ]
+          },
+          {
+            "id": "c91e406e-3b5a-5759-bc29-6b7d0d8cb170",
+            "name": "backend",
+            "type": "COMBO",
+            "linkIds": [
+              106
+            ],
+            "localized_name": "backend",
+            "pos": [
+              144,
+              324
+            ]
+          },
+          {
+            "id": "6415e0c6-1787-59ac-aad6-ebdfaa3a2823",
+            "name": "target",
+            "type": "COMBO",
+            "linkIds": [
+              107
+            ],
+            "localized_name": "target",
+            "pos": [
+              144,
+              344
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "44c9e5a6-d194-550e-8ca3-e659f4d99f8c",
+            "name": "image",
+            "type": "IMAGE",
+            "linkIds": [
+              118
+            ],
+            "localized_name": "image",
+            "pos": [
+              2988.7812166488825,
+              61.260114485301244
+            ]
+          },
+          {
+            "id": "e86da525-d85b-5b3e-8ac4-1c384eaeb225",
+            "name": "array",
+            "type": "NPARRAY",
+            "linkIds": [
+              119
+            ],
+            "localized_name": "array",
+            "pos": [
+              2988.7812166488825,
+              81.26011448530124
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 52,
+            "type": "CV_DnnBlobFromImage",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              312
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 101
+              },
+              {
+                "localized_name": "scale",
+                "name": "scale",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "scale"
+                },
+                "link": 102
+              },
+              {
+                "localized_name": "width",
+                "name": "width",
+                "type": "INT",
+                "widget": {
+                  "name": "width"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "height",
+                "name": "height",
+                "type": "INT",
+                "widget": {
+                  "name": "height"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "swap_rb",
+                "name": "swap_rb",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "swap_rb"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "mean_r",
+                "name": "mean_r",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "mean_r"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "mean_g",
+                "name": "mean_g",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "mean_g"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "mean_b",
+                "name": "mean_b",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "mean_b"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "crop",
+                "name": "crop",
+                "shape": 7,
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "crop"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "blob",
+                "name": "blob",
+                "type": "NPARRAY",
+                "links": [
+                  103
+                ]
+              }
+            ],
+            "title": "Blob: native size, RGB, scale = the input range knob",
+            "properties": {
+              "Node name for S&R": "CV_DnnBlobFromImage"
+            },
+            "widgets_values": [
+              1,
+              0,
+              0,
+              true,
+              0,
+              0,
+              0,
+              false
+            ]
+          },
+          {
+            "id": 53,
+            "type": "CV_DnnForward",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              300
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "blob",
+                "name": "blob",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "localized_name": "model",
+                "name": "model",
+                "type": "COMBO",
+                "widget": {
+                  "name": "model"
+                },
+                "link": 104
+              },
+              {
+                "localized_name": "output_layer",
+                "name": "output_layer",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "output_layer"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "backend",
+                "name": "backend",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "backend"
+                },
+                "link": 106
+              },
+              {
+                "localized_name": "target",
+                "name": "target",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "target"
+                },
+                "link": 107
+              },
+              {
+                "localized_name": "engine",
+                "name": "engine",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "engine"
+                },
+                "link": 105
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  108
+                ]
+              }
+            ],
+            "title": "Forward (loads the model, one pass)",
+            "properties": {
+              "Node name for S&R": "CV_DnnForward"
+            },
+            "widgets_values": [
+              "mosaic-9.onnx",
+              "",
+              "auto (default backend)",
+              "auto (default target)",
+              "auto (default engine)"
+            ],
+            "color": "#2a363b",
+            "bgcolor": "#3f5159"
+          },
+          {
+            "id": 54,
+            "type": "CV_DnnImagesFromBlob",
+            "pos": [
+              1090,
+              40
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "blob",
+                "name": "blob",
+                "type": "NPARRAY",
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "images",
+                "name": "images",
+                "type": "NPARRAY",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "title": "NCHW -> (N, H, W, C)",
+            "properties": {
+              "Node name for S&R": "CV_DnnImagesFromBlob"
+            }
+          },
+          {
+            "id": 55,
+            "type": "CV_IndexBatch",
+            "pos": [
+              1440,
+              40
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "INT",
+                "widget": {
+                  "name": "index"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "frame",
+                "name": "frame",
+                "type": "NPARRAY",
+                "links": [
+                  110,
+                  111
+                ]
+              }
+            ],
+            "title": "the single frame",
+            "properties": {
+              "Node name for S&R": "CV_IndexBatch"
+            },
+            "widgets_values": [
+              0
+            ]
+          },
+          {
+            "id": 58,
+            "type": "CustomCombo",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              234
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "choice",
+                "name": "choice",
+                "type": "COMBO",
+                "widget": {
+                  "name": "choice"
+                },
+                "link": 112
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "STRING",
+                "name": "STRING",
+                "type": "STRING",
+                "links": [
+                  113
+                ]
+              },
+              {
+                "localized_name": "INDEX",
+                "name": "INDEX",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "postprocess",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "CustomCombo"
+            },
+            "widgets_values": [
+              "clip to 0-255 (net emits 0-255, overshoots both ends)",
+              0,
+              "clip to 0-255 (net emits 0-255, overshoots both ends)",
+              "scale by 255 then clip (net emits 0-1; takes abs)",
+              ""
+            ]
+          },
+          {
+            "id": 59,
+            "type": "StringCompare",
+            "pos": [
+              1440,
+              440
+            ],
+            "size": [
+              290,
+              186
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "string_a",
+                "name": "string_a",
+                "type": "STRING",
+                "widget": {
+                  "name": "string_a"
+                },
+                "link": 113
+              },
+              {
+                "localized_name": "string_b",
+                "name": "string_b",
+                "type": "STRING",
+                "widget": {
+                  "name": "string_b"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "mode",
+                "name": "mode",
+                "type": "COMBO",
+                "widget": {
+                  "name": "mode"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "case_sensitive",
+                "name": "case_sensitive",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "case_sensitive"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "BOOLEAN",
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": [
+                  116
+                ]
+              }
+            ],
+            "title": "chose 'scale'?",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "StringCompare"
+            },
+            "widgets_values": [
+              "",
+              "scale",
+              "Starts With",
+              true
+            ]
+          },
+          {
+            "id": 56,
+            "type": "CV_CastArray",
+            "pos": [
+              1790,
+              40
+            ],
+            "size": [
+              338.95859375,
+              108
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 110
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  114
+                ]
+              }
+            ],
+            "title": "round, then clip to 0-255 (no rescale, no abs)",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "uint8"
+            ]
+          },
+          {
+            "id": 57,
+            "type": "cv2_convertScaleAbs",
+            "pos": [
+              1790,
+              240
+            ],
+            "size": [
+              305.5881116393389,
+              134
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 111
+              },
+              {
+                "localized_name": "alpha",
+                "name": "alpha",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "beta",
+                "name": "beta",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "beta"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  115
+                ]
+              }
+            ],
+            "title": "|x * 255|, then round + clip to 0-255",
+            "properties": {
+              "Node name for S&R": "cv2_convertScaleAbs"
+            },
+            "widgets_values": [
+              255,
+              0
+            ]
+          },
+          {
+            "id": 60,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2167.5290246425393,
+              40.96789909030922
+            ],
+            "size": [
+              321.94066998020435,
+              123.2247063678355
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "*",
+                "link": 114
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "*",
+                "link": 115
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 116
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "*",
+                "links": [
+                  117,
+                  119
+                ]
+              }
+            ],
+            "title": "postprocess: clip only, or x255 first",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ]
+          },
+          {
+            "id": 61,
+            "type": "CV_CVToImage",
+            "pos": [
+              2523.8764681608245,
+              40
+            ],
+            "size": [
+              374.9960382469134,
+              130
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 117
+              },
+              {
+                "localized_name": "channel_order",
+                "name": "channel_order",
+                "type": "COMBO",
+                "widget": {
+                  "name": "channel_order"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "IMAGE",
+                "links": [
+                  118
+                ]
+              },
+              {
+                "localized_name": "alpha",
+                "name": "alpha",
+                "type": "MASK",
+                "links": null
+              }
+            ],
+            "title": "-> IMAGE (the array is RGB: swap_rb was on)",
+            "properties": {
+              "Node name for S&R": "CV_CVToImage"
+            },
+            "widgets_values": [
+              "RGB"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 52,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 52,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 103,
+            "origin_id": 52,
+            "origin_slot": 0,
+            "target_id": 53,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 53,
+            "target_slot": 1,
+            "type": "COMBO"
+          },
+          {
+            "id": 105,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 53,
+            "target_slot": 2,
+            "type": "COMBO"
+          },
+          {
+            "id": 106,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 53,
+            "target_slot": 3,
+            "type": "COMBO"
+          },
+          {
+            "id": 107,
+            "origin_id": -10,
+            "origin_slot": 6,
+            "target_id": 53,
+            "target_slot": 4,
+            "type": "COMBO"
+          },
+          {
+            "id": 108,
+            "origin_id": 53,
+            "origin_slot": 0,
+            "target_id": 54,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": 54,
+            "origin_slot": 0,
+            "target_id": 55,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": 55,
+            "origin_slot": 0,
+            "target_id": 56,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 55,
+            "origin_slot": 0,
+            "target_id": 57,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 58,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 113,
+            "origin_id": 58,
+            "origin_slot": 0,
+            "target_id": 59,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 114,
+            "origin_id": 56,
+            "origin_slot": 0,
+            "target_id": 60,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": 57,
+            "origin_slot": 0,
+            "target_id": 60,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 59,
+            "origin_slot": 0,
+            "target_id": 60,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 117,
+            "origin_id": 60,
+            "origin_slot": 0,
+            "target_id": 61,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 118,
+            "origin_id": 61,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 119,
+            "origin_id": 60,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "*"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "extra": {}
+}

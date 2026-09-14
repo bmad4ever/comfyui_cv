@@ -1,0 +1,1586 @@
+{
+  "revision": 0,
+  "last_node_id": "58",
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 58,
+      "type": "02549b98-4ca5-4dfd-bc34-ea0bf7bbafef",
+      "pos": [
+        437.31088305006824,
+        257.2653139828463
+      ],
+      "size": [
+        320,
+        212
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE,MASK,NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "colors",
+          "name": "colors",
+          "type": "INT",
+          "widget": {
+            "name": "colors"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "attempts",
+          "name": "attempts",
+          "type": "INT",
+          "widget": {
+            "name": "attempts"
+          },
+          "link": null
+        },
+        {
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "quantized",
+          "name": "quantized",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "label": "palette_preview",
+          "localized_name": "palette",
+          "name": "palette",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "label": "pallete",
+          "name": "values",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "previewExposures": []
+      },
+      "widgets_values": [
+        5,
+        8,
+        0
+      ],
+      "title": "CV K-Means Colors",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "02549b98-4ca5-4dfd-bc34-ea0bf7bbafef",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 96,
+          "lastLinkId": 155,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV K-Means Colors",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -343.79298296950236,
+            733.6099610985905,
+            128,
+            128
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            4570.677407337634,
+            682.0452147750613,
+            137.390625,
+            108
+          ]
+        },
+        "inputs": [
+          {
+            "id": "e3ad8276-261a-5ead-bebb-ef4a26631834",
+            "name": "image",
+            "type": "IMAGE,MASK,NPARRAY",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "image",
+            "pos": [
+              -239.79298296950236,
+              757.6099610985905
+            ]
+          },
+          {
+            "id": "9f821ed5-90d7-55da-9dbb-ed4271c25a5e",
+            "name": "colors",
+            "type": "INT",
+            "linkIds": [
+              107,
+              135
+            ],
+            "localized_name": "colors",
+            "pos": [
+              -239.79298296950236,
+              777.6099610985905
+            ]
+          },
+          {
+            "id": "39398be1-801f-547b-a112-14823745ea6e",
+            "name": "attempts",
+            "type": "INT",
+            "linkIds": [
+              130
+            ],
+            "localized_name": "attempts",
+            "pos": [
+              -239.79298296950236,
+              797.6099610985905
+            ]
+          },
+          {
+            "id": "a087da02-1075-47d8-9850-27e7e55ad8aa",
+            "name": "seed",
+            "type": "INT",
+            "linkIds": [
+              155
+            ],
+            "pos": [
+              -239.79298296950236,
+              817.6099610985905
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "8ad3bd9e-3e40-5dc8-9029-64b8b116441b",
+            "name": "quantized",
+            "type": "IMAGE",
+            "linkIds": [
+              128
+            ],
+            "localized_name": "quantized",
+            "pos": [
+              4594.677407337634,
+              706.0452147750613
+            ]
+          },
+          {
+            "id": "77313a72-6516-5db8-85e3-3f4af2100db5",
+            "name": "palette",
+            "type": "IMAGE",
+            "linkIds": [
+              129
+            ],
+            "localized_name": "palette",
+            "label": "palette_preview",
+            "pos": [
+              4594.677407337634,
+              726.0452147750613
+            ]
+          },
+          {
+            "id": "9dba5566-edd0-4926-9276-5890cebefc8a",
+            "name": "values",
+            "type": "NPARRAY",
+            "linkIds": [
+              138
+            ],
+            "label": "pallete",
+            "pos": [
+              4594.677407337634,
+              746.0452147750613
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 42,
+            "type": "CV_AnyToCV",
+            "pos": [
+              40,
+              440
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "input",
+                "name": "input",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  102,
+                  103
+                ]
+              }
+            ],
+            "title": "-> CV array",
+            "properties": {
+              "Node name for S&R": "CV_AnyToCV"
+            }
+          },
+          {
+            "id": 44,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              390,
+              440
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "localized_name": "rows",
+                "name": "rows",
+                "type": "INT",
+                "widget": {
+                  "name": "rows"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "cols",
+                "name": "cols",
+                "type": "INT",
+                "widget": {
+                  "name": "cols"
+                },
+                "link": 104
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "channels"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  105
+                ]
+              }
+            ],
+            "title": "Flatten to (H*W, C)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "id": 45,
+            "type": "CV_CastArray",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 105
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  153
+                ]
+              }
+            ],
+            "title": "-> float32 (kmeans asserts CV_32F)",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ]
+          },
+          {
+            "id": 47,
+            "type": "CV_TakeByIndex",
+            "pos": [
+              1912.7920043888848,
+              437.28922091782283
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "NPARRAY",
+                "link": 110
+              },
+              {
+                "localized_name": "out_of_range",
+                "name": "out_of_range",
+                "type": "COMBO",
+                "widget": {
+                  "name": "out_of_range"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "fill_value",
+                "name": "fill_value",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "fill_value"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "title": "centers[bestLabels]",
+            "properties": {
+              "Node name for S&R": "CV_TakeByIndex"
+            },
+            "widgets_values": [
+              "clamp",
+              0
+            ]
+          },
+          {
+            "id": 48,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              2239.989327641408,
+              437.28922091782283
+            ],
+            "size": [
+              290,
+              226
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 111
+              },
+              {
+                "localized_name": "rows",
+                "name": "rows",
+                "type": "INT",
+                "widget": {
+                  "name": "rows"
+                },
+                "link": 112
+              },
+              {
+                "localized_name": "cols",
+                "name": "cols",
+                "type": "INT",
+                "widget": {
+                  "name": "cols"
+                },
+                "link": 113
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "channels"
+                },
+                "link": 114
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  115
+                ]
+              }
+            ],
+            "title": "Back to (H, W, C)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "id": 49,
+            "type": "CV_CastArray",
+            "pos": [
+              2589.989327641408,
+              437.28922091782283
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 115
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  116
+                ]
+              }
+            ],
+            "title": "-> uint8",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "uint8"
+            ]
+          },
+          {
+            "id": 50,
+            "type": "CV_CVToImage",
+            "pos": [
+              2939.989327641408,
+              437.28922091782283
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 116
+              },
+              {
+                "localized_name": "channel_order",
+                "name": "channel_order",
+                "type": "COMBO",
+                "widget": {
+                  "name": "channel_order"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "IMAGE",
+                "links": [
+                  128
+                ]
+              },
+              {
+                "localized_name": "alpha",
+                "name": "alpha",
+                "type": "MASK",
+                "links": null
+              }
+            ],
+            "title": "quantized -> IMAGE",
+            "properties": {
+              "Node name for S&R": "CV_CVToImage"
+            },
+            "widgets_values": [
+              "BGR (OpenCV default)"
+            ]
+          },
+          {
+            "id": 51,
+            "type": "CV_ReduceArrayByLabel",
+            "pos": [
+              1889.9893276414082,
+              837.2892209178228
+            ],
+            "size": [
+              290,
+              204
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "link": 117
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "NPARRAY",
+                "link": 118
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "localized_name": "reduction",
+                "name": "reduction",
+                "type": "COMBO",
+                "widget": {
+                  "name": "reduction"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "num_labels",
+                "name": "num_labels",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "num_labels"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "empty_value",
+                "name": "empty_value",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "empty_value"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "counts",
+                "name": "counts",
+                "type": "NPARRAY",
+                "links": [
+                  119
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Pixels per label (coverage)",
+            "properties": {
+              "Node name for S&R": "CV_ReduceArrayByLabel"
+            },
+            "widgets_values": [
+              "mean",
+              0,
+              0
+            ]
+          },
+          {
+            "id": 52,
+            "type": "cv2_sortIdx",
+            "pos": [
+              2239.989327641408,
+              837.2892209178228
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 119
+              },
+              {
+                "localized_name": "flags",
+                "name": "flags",
+                "type": "COMBO",
+                "widget": {
+                  "name": "flags"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  121
+                ]
+              }
+            ],
+            "title": "Sort colors by coverage",
+            "properties": {
+              "Node name for S&R": "cv2_sortIdx"
+            },
+            "widgets_values": [
+              "SORT_EVERY_ROW | SORT_DESCENDING"
+            ]
+          },
+          {
+            "id": 56,
+            "type": "CV_CastArray",
+            "pos": [
+              3639.989327641408,
+              837.2892209178228
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 126
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  127
+                ]
+              }
+            ],
+            "title": "-> uint8",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "uint8"
+            ]
+          },
+          {
+            "id": 46,
+            "type": "cv2_kmeans",
+            "pos": [
+              1426.2226076059108,
+              437.28922091782283
+            ],
+            "size": [
+              384.046875,
+              298.296875
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "data",
+                "name": "data",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 154
+              },
+              {
+                "localized_name": "bestLabels",
+                "name": "bestLabels",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": null
+              },
+              {
+                "localized_name": "K",
+                "name": "K",
+                "type": "INT",
+                "widget": {
+                  "name": "K"
+                },
+                "link": 107
+              },
+              {
+                "localized_name": "criteria_type",
+                "name": "criteria_type",
+                "type": "COMBO",
+                "widget": {
+                  "name": "criteria_type"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "criteria_max_count",
+                "name": "criteria_max_count",
+                "type": "INT",
+                "widget": {
+                  "name": "criteria_max_count"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "criteria_epsilon",
+                "name": "criteria_epsilon",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "criteria_epsilon"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "attempts",
+                "name": "attempts",
+                "type": "INT",
+                "widget": {
+                  "name": "attempts"
+                },
+                "link": 130
+              },
+              {
+                "localized_name": "flags",
+                "name": "flags",
+                "type": "COMBO",
+                "widget": {
+                  "name": "flags"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "retval",
+                "name": "retval",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "bestLabels",
+                "name": "bestLabels",
+                "type": "NPARRAY",
+                "links": [
+                  110,
+                  117,
+                  118
+                ]
+              },
+              {
+                "localized_name": "centers",
+                "name": "centers",
+                "type": "NPARRAY",
+                "links": [
+                  109,
+                  120
+                ]
+              }
+            ],
+            "title": "K-Means on pixels",
+            "properties": {
+              "Node name for S&R": "cv2_kmeans"
+            },
+            "widgets_values": [
+              7,
+              "max count or epsilon (whichever first)",
+              20,
+              1,
+              4,
+              "KMEANS_PP_CENTERS"
+            ]
+          },
+          {
+            "id": 55,
+            "type": "cv2_resize",
+            "pos": [
+              3289.989327641408,
+              837.2892209178228
+            ],
+            "size": [
+              290,
+              212
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 137
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "dsize"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "fx",
+                "name": "fx",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "fx"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "fy",
+                "name": "fy",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "fy"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "interpolation",
+                "name": "interpolation",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "interpolation"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  126
+                ]
+              }
+            ],
+            "title": "Tile to 64 x (64*K) swatches",
+            "properties": {
+              "Node name for S&R": "cv2_resize"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              64,
+              64,
+              "INTER_NEAREST"
+            ]
+          },
+          {
+            "id": 57,
+            "type": "CV_CVToImage",
+            "pos": [
+              3989.989327641408,
+              837.2892209178228
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 127
+              },
+              {
+                "localized_name": "channel_order",
+                "name": "channel_order",
+                "type": "COMBO",
+                "widget": {
+                  "name": "channel_order"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "IMAGE",
+                "links": [
+                  129
+                ]
+              },
+              {
+                "localized_name": "alpha",
+                "name": "alpha",
+                "type": "MASK",
+                "links": null
+              }
+            ],
+            "title": "palette -> IMAGE",
+            "properties": {
+              "Node name for S&R": "CV_CVToImage"
+            },
+            "widgets_values": [
+              "BGR (OpenCV default)"
+            ]
+          },
+          {
+            "id": 53,
+            "type": "CV_TakeByIndex",
+            "pos": [
+              2589.989327641408,
+              837.2892209178228
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "link": 120
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "NPARRAY",
+                "link": 121
+              },
+              {
+                "localized_name": "out_of_range",
+                "name": "out_of_range",
+                "type": "COMBO",
+                "widget": {
+                  "name": "out_of_range"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "fill_value",
+                "name": "fill_value",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "fill_value"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  136,
+                  138
+                ]
+              }
+            ],
+            "title": "centers, coverage order",
+            "properties": {
+              "Node name for S&R": "CV_TakeByIndex"
+            },
+            "widgets_values": [
+              "clamp",
+              0
+            ]
+          },
+          {
+            "id": 61,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              2953.394700135422,
+              890.8021590355173
+            ],
+            "size": [
+              270,
+              166
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 136
+              },
+              {
+                "localized_name": "rows",
+                "name": "rows",
+                "type": "INT",
+                "widget": {
+                  "name": "rows"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "cols",
+                "name": "cols",
+                "type": "INT",
+                "widget": {
+                  "name": "cols"
+                },
+                "link": 135
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "channels"
+                },
+                "link": 134
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  137
+                ]
+              }
+            ],
+            "title": "(1, K, C)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              1,
+              7,
+              0
+            ]
+          },
+          {
+            "id": 96,
+            "type": "CV_SetRNGSeed",
+            "pos": [
+              1080.470089131771,
+              438.8245488148421
+            ],
+            "size": [
+              311.2008358189348,
+              122.69074744413751
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "*",
+                "link": 153
+              },
+              {
+                "localized_name": "seed",
+                "name": "seed",
+                "type": "INT",
+                "widget": {
+                  "name": "seed"
+                },
+                "link": 155
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "*",
+                "links": [
+                  154
+                ]
+              }
+            ],
+            "title": "Seed cv2's RNG (repeatable clusters)",
+            "properties": {
+              "Node name for S&R": "CV_SetRNGSeed"
+            },
+            "widgets_values": [
+              0,
+              "fixed"
+            ]
+          },
+          {
+            "id": 43,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              87.29598195347256,
+              871.9943407332316
+            ],
+            "size": [
+              290,
+              148
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "height",
+                "name": "height",
+                "type": "INT",
+                "links": [
+                  112
+                ]
+              },
+              {
+                "localized_name": "width",
+                "name": "width",
+                "type": "INT",
+                "links": [
+                  113
+                ]
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "type": "INT",
+                "links": [
+                  104,
+                  114,
+                  134
+                ]
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              }
+            ],
+            "title": "H / W / C",
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            }
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 42,
+            "target_slot": 0,
+            "type": "IMAGE,MASK,NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": 42,
+            "origin_slot": 0,
+            "target_id": 43,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": 42,
+            "origin_slot": 0,
+            "target_id": 44,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 43,
+            "origin_slot": 2,
+            "target_id": 44,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 105,
+            "origin_id": 44,
+            "origin_slot": 0,
+            "target_id": 45,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 46,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 109,
+            "origin_id": 46,
+            "origin_slot": 2,
+            "target_id": 47,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": 46,
+            "origin_slot": 1,
+            "target_id": 47,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 47,
+            "origin_slot": 0,
+            "target_id": 48,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": 43,
+            "origin_slot": 0,
+            "target_id": 48,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 113,
+            "origin_id": 43,
+            "origin_slot": 1,
+            "target_id": 48,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 114,
+            "origin_id": 43,
+            "origin_slot": 2,
+            "target_id": 48,
+            "target_slot": 3,
+            "type": "INT"
+          },
+          {
+            "id": 115,
+            "origin_id": 48,
+            "origin_slot": 0,
+            "target_id": 49,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 49,
+            "origin_slot": 0,
+            "target_id": 50,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 117,
+            "origin_id": 46,
+            "origin_slot": 1,
+            "target_id": 51,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 118,
+            "origin_id": 46,
+            "origin_slot": 1,
+            "target_id": 51,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": 51,
+            "origin_slot": 1,
+            "target_id": 52,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 46,
+            "origin_slot": 2,
+            "target_id": 53,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 52,
+            "origin_slot": 0,
+            "target_id": 53,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": 55,
+            "origin_slot": 0,
+            "target_id": 56,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 127,
+            "origin_id": 56,
+            "origin_slot": 0,
+            "target_id": 57,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": 50,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 129,
+            "origin_id": 57,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "IMAGE"
+          },
+          {
+            "id": 130,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 46,
+            "target_slot": 6,
+            "type": "INT"
+          },
+          {
+            "id": 134,
+            "origin_id": 43,
+            "origin_slot": 2,
+            "target_id": 61,
+            "target_slot": 3,
+            "type": "INT"
+          },
+          {
+            "id": 135,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 61,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 136,
+            "origin_id": 53,
+            "origin_slot": 0,
+            "target_id": 61,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 137,
+            "origin_id": 61,
+            "origin_slot": 0,
+            "target_id": 55,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 138,
+            "origin_id": 53,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 153,
+            "origin_id": 45,
+            "origin_slot": 0,
+            "target_id": 96,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 154,
+            "origin_id": 96,
+            "origin_slot": 0,
+            "target_id": 46,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 155,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 96,
+            "target_slot": 1,
+            "type": "INT"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "extra": {}
+}

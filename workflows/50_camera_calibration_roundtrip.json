@@ -1,0 +1,938 @@
+{
+  "id": "6b6e6484-e53d-40f6-9a80-0ad79000ff72",
+  "revision": 0,
+  "last_node_id": 27,
+  "last_link_id": 36,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        747.162678709675,
+        154.4520770517421
+      ],
+      "size": [
+        737.921875,
+        220.140625
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "Camera calibration round-trip: calibrate -> save -> load -> undistort\n\nLEFT branch: six synthetic chessboard photos (different angles, with lens distortion baked in) are batched and fed to 'Calibrate Camera (Chessboard)', which recovers the camera matrix + distortion coefficients. 'CV Save Camera Params (JSON)' writes them to output/demo_camera_params.json.\n\nRIGHT branch: 'CV Load Camera Params (JSON)' reads that file back and cv2.undistort straightens a distorted board with it.\n\nFIRST RUN reads the seeded demo_camera_params.json (Save hasn't overwritten it yet, and Load's dropdown is built when the page loads). RELOAD the page and run again to undistort with the params THIS graph just calibrated - the true round-trip.\n\n"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        294.8567741935436,
+        405.4977931810776
+      ],
+      "size": [
+        265.40625,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            24
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 0",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_00.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        563.4061706093166,
+        405.5419295595248
+      ],
+      "size": [
+        265.40625,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            25
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 1",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_01.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        836.8254050179213,
+        409.70941082378056
+      ],
+      "size": [
+        265.40625,
+        346
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            26
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 2",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_02.png",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "LoadImage",
+      "pos": [
+        290.1327827956917,
+        759.5335997330614
+      ],
+      "size": [
+        265.40625,
+        346
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            27
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 3",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_03.png",
+        "image"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "LoadImage",
+      "pos": [
+        563.5520172042964,
+        763.8941853032635
+      ],
+      "size": [
+        265.40625,
+        346
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            28
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 4",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_04.png",
+        "image"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "LoadImage",
+      "pos": [
+        836.9712516129009,
+        765.9829555093845
+      ],
+      "size": [
+        265.40625,
+        346
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            29
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Board view 5",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_05.png",
+        "image"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_CalibrateCamera",
+      "pos": [
+        1501,
+        442.7488965905388
+      ],
+      "size": [
+        471.078125,
+        218
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "rms_error",
+          "type": "FLOAT",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "views_used",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": []
+        }
+      ],
+      "title": "[CV Calibrate Camera (Chessboard)] Calibrate from 6 views",
+      "properties": {
+        "Node name for S&R": "CV_CalibrateCamera"
+      },
+      "widgets_values": [
+        9,
+        6,
+        1
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_SaveCameraParams",
+      "pos": [
+        1981,
+        442.7488965905388
+      ],
+      "size": [
+        430,
+        166
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "link": 13
+        },
+        {
+          "name": "rms_error",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "rms_error"
+          },
+          "link": 14
+        }
+      ],
+      "outputs": [],
+      "title": "[CV Save Camera Params (JSON)] Save params -> output/",
+      "properties": {
+        "Node name for S&R": "CV_SaveCameraParams"
+      },
+      "widgets_values": [
+        "demo_camera_params",
+        800,
+        600,
+        0
+      ]
+    },
+    {
+      "id": 16,
+      "type": "LoadImage",
+      "pos": [
+        1501,
+        702.7488965905388
+      ],
+      "size": [
+        265.40625,
+        346
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            17,
+            32
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Distorted board",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_00.png",
+        "image"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_LoadCameraParams",
+      "pos": [
+        1781,
+        882.7488965905388
+      ],
+      "size": [
+        400,
+        170
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            18,
+            22
+          ]
+        },
+        {
+          "name": "dist_coeffs",
+          "type": "NPARRAY",
+          "links": [
+            19
+          ]
+        },
+        {
+          "name": "image_width",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "image_height",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "rms_error",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "[CV Load Camera Params (JSON)] Load params <- file",
+      "properties": {
+        "Node name for S&R": "CV_LoadCameraParams"
+      },
+      "widgets_values": [
+        "demo_camera_params.json"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "cv2_undistort",
+      "pos": [
+        2242,
+        742.7488965905388
+      ],
+      "size": [
+        280,
+        130
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 17
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 18
+        },
+        {
+          "name": "distCoeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            36
+          ]
+        }
+      ],
+      "title": "Undistort the board",
+      "properties": {
+        "Node name for S&R": "cv2_undistort"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 20,
+      "type": "CV_CVPreview",
+      "pos": [
+        2562,
+        702.7488965905388
+      ],
+      "size": [
+        280,
+        346
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "title": "Undistorted (lines straightened)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CV_CVInspect",
+      "pos": [
+        2242,
+        922.7488965905388
+      ],
+      "size": [
+        280,
+        90
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "Loaded camera matrix",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "PreviewAny",
+      "pos": [
+        2245,
+        1059.6530037999348
+      ],
+      "size": [
+        280,
+        162
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "Params as text",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 24,
+      "type": "BatchImagesNode",
+      "pos": [
+        1222,
+        446.66955461508223
+      ],
+      "size": [
+        225,
+        178
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image0",
+          "name": "images.image0",
+          "type": "IMAGE",
+          "link": 24
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 25
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 26
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 27
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 28
+        },
+        {
+          "label": "image5",
+          "name": "images.image5",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 29
+        },
+        {
+          "label": "image6",
+          "name": "images.image6",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "BatchImagesNode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 25,
+      "type": "Note",
+      "pos": [
+        304.3244584372712,
+        202.56736582008477
+      ],
+      "size": [
+        424.34375,
+        167.59375
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "calib_board_00.png .. calib_board_06.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Synthetic chessboard views with baked-in lens distortion\nCreator: generated (this repo)\nLicense: no third-party rights (synthetic renders)\nSource:  synthetic\nSize:    800x600 each\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 26,
+      "type": "ImageCompare",
+      "pos": [
+        2871,
+        616.0498895824494
+      ],
+      "size": [
+        400,
+        350
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 32
+        },
+        {
+          "name": "image_b",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 35
+        }
+      ],
+      "outputs": [],
+      "title": "Original vs Undistorted",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "ImageCompare"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      12,
+      13,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      13,
+      1,
+      14,
+      1,
+      "NPARRAY"
+    ],
+    [
+      14,
+      13,
+      2,
+      14,
+      2,
+      "FLOAT"
+    ],
+    [
+      17,
+      16,
+      0,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      18,
+      0,
+      19,
+      1,
+      "NPARRAY"
+    ],
+    [
+      19,
+      18,
+      1,
+      19,
+      2,
+      "NPARRAY"
+    ],
+    [
+      22,
+      18,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      22,
+      0,
+      23,
+      0,
+      "STRING"
+    ],
+    [
+      24,
+      2,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      25,
+      3,
+      0,
+      24,
+      1,
+      "IMAGE"
+    ],
+    [
+      26,
+      4,
+      0,
+      24,
+      2,
+      "IMAGE"
+    ],
+    [
+      27,
+      5,
+      0,
+      24,
+      3,
+      "IMAGE"
+    ],
+    [
+      28,
+      6,
+      0,
+      24,
+      4,
+      "IMAGE"
+    ],
+    [
+      29,
+      7,
+      0,
+      24,
+      5,
+      "IMAGE"
+    ],
+    [
+      30,
+      24,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      32,
+      16,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ],
+    [
+      35,
+      20,
+      0,
+      26,
+      1,
+      "IMAGE"
+    ],
+    [
+      36,
+      19,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.2107495645588566,
+      "offset": [
+        771.1413699325445,
+        1860.2561461755818
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

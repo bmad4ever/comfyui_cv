@@ -1,0 +1,1588 @@
+{
+  "id": "24dbbed0-2625-4a82-994d-0d3adf729d47",
+  "revision": 0,
+  "last_node_id": 141,
+  "last_link_id": 143,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        -198.31191188780008
+      ],
+      "size": [
+        762.84375,
+        380.0625
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "YOLO instance segmentation, rebuilt from GENERIC cv2.dnn nodes\n\nMirrors the YOLO26-seg reference pipeline (huggingface.co/opencv/opencv_contribution) with NO model-specific monolith (contrast the all-in-one 'CV YOLOv4 Detect' node). The 'YOLO-Seg Inference' subgraph decomposes the pipeline:\n\n  DNN Letterbox        (aspect-preserving resize + 114 pad to 640)\n  DNN Blob From Image  (scale 1/255, BGR->RGB)\n  DNN Forward All      (loads yolo26n-seg.onnx, returns BOTH outputs)\n  DNN Pick Output x2   (the (1,300,38) detection head + the (1,32,160,160) mask prototypes, picked by shape; 'by name' also available so output ORDER does not matter)\n  YOLO Detect Decode   (unwraps boxes/scores/class ids; the layout dropdown also covers yolov5/v8 class-score heads and yolov4 separate boxes+confs)\n  YOLO Seg Masks       (OPTIONAL second stage: one binary MASK per detection from the kept rows' mask coefficients @ proto, crop, upsample, un-letterbox)\n\nClass names are NOT baked in: 'CV Load Labels' reads example_inputs/coco-labels-2014_2017.txt (line N = class id N) and feeds the decoder. To adapt to another model: swap the model combo + layout dropdown inside the subgraph (detection-only models just delete/bypass the 'YOLO Seg Masks' node). Put yolo26n-seg.onnx in the models/onnx folder (.tflite models are listed too, but OpenCV's TFLite importer rejects this particular one - use the ONNX export instead). Boxes go to the core 'Draw BBoxes' node, masks to 'Overlay Masks'. Zero detections is a valid result (found=false, empty outputs)."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            4,
+            7
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "walking_the_dog.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "c4d2e6f8-1a3b-4c5d-8e9f-0a1b2c3d4e51",
+      "pos": [
+        394.326298083195,
+        316.4312661364446
+      ],
+      "size": [
+        388.15625,
+        294
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "masks",
+          "type": "MASK",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "scores",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "det_count",
+          "type": "INT",
+          "links": [
+            10
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "previewExposures": []
+      },
+      "widgets_values": [
+        "yolo26n-seg.onnx",
+        "coco-labels-2014_2017.txt",
+        "rows: xyxy + conf + class id (NMS-free)",
+        0.25
+      ],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 5,
+      "type": "DrawBBoxes",
+      "pos": [
+        846.7153527188098,
+        195.74673099501936
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "link": 3
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out_image",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "title": "Draw object boxes + labels",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "DrawBBoxes"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "pos": [
+        1196.7153527188088,
+        195.74673099501936
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Detections (boxes + labels)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "CV_OverlayMasks",
+      "pos": [
+        846.7153527188098,
+        595.7467309950188
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "link": 6
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "Overlay instance masks",
+      "properties": {
+        "Node name for S&R": "CV_OverlayMasks"
+      },
+      "widgets_values": [
+        0.6
+      ]
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "pos": [
+        1196.7153527188088,
+        595.7467309950188
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Instance masks",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "PreviewAny",
+      "pos": [
+        846.7153527188098,
+        795.7467309950175
+      ],
+      "size": [
+        290,
+        162
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Detected classes",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "PreviewAny",
+      "pos": [
+        1190.4473410160222,
+        925.5841162670267
+      ],
+      "size": [
+        290,
+        162
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Detection count",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "Note",
+      "pos": [
+        -94.98619999999983,
+        636.0451
+      ],
+      "size": [
+        462.03125,
+        206.140625
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "walking_the_dog.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Walking the dog\nCreator: Helgi Halldorsson from Reykjavik, Iceland\nLicense: CC BY-SA 2.0 (attribution + share-alike)\n         https://creativecommons.org/licenses/by-sa/2.0/\nSource:  https://commons.wikimedia.org/wiki/File:Walking_the_dog_(1945527533).jpg\nSize:    960x1440 (960px thumbnail render, downscaled from original 2592x3888)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 141,
+      "type": "MarkdownNote",
+      "pos": [
+        408.9761515701604,
+        645.5122910486191
+      ],
+      "size": [
+        366.234375,
+        180
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Model: yolo26n-seg.onnx",
+      "properties": {},
+      "widgets_values": [
+        "yolo26n-seg.onnx at\nhttps://huggingface.co/opencv/opencv_contribution\n\nLICENSE: AGPL-3.0 (Ultralytics weights + exporter), not the repo's Apache-2.0. Downloading and running it yourself is fine; redistributing the file, or serving its output over a network, pulls the AGPL obligations in. https://github.com/ultralytics/ultralytics/blob/main/LICENSE\n\nLabels: example_inputs/coco-labels-2014_2017.txt (80 COCO classes, 2014/2017 naming: motorcycle/airplane/couch/tv style)."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "BOUNDING_BOX"
+    ],
+    [
+      4,
+      2,
+      0,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      4,
+      1,
+      7,
+      0,
+      "MASK"
+    ],
+    [
+      7,
+      2,
+      0,
+      7,
+      1,
+      "IMAGE"
+    ],
+    [
+      8,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      4,
+      3,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      4,
+      4,
+      10,
+      0,
+      "INT"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "c4d2e6f8-1a3b-4c5d-8e9f-0a1b2c3d4e51",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 141,
+          "lastLinkId": 143,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV YOLO-Seg Inference",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            128,
+            68
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2526.48807534374,
+            34.63404616898794,
+            128,
+            168
+          ]
+        },
+        "inputs": [
+          {
+            "id": "2ebb01d8-21d5-531c-9cac-3597a7eae512",
+            "name": "image",
+            "type": "IMAGE",
+            "linkIds": [
+              101,
+              107,
+              114
+            ],
+            "localized_name": "image",
+            "pos": [
+              144,
+              224
+            ]
+          },
+          {
+            "id": "9f0812c1-cd40-40c0-bd16-346cda2e9d26",
+            "name": "model",
+            "type": "COMBO",
+            "linkIds": [
+              140
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "78c01018-701c-46de-9b19-f4ccb3882f5d",
+            "name": "file",
+            "type": "COMBO",
+            "linkIds": [
+              141
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "b79d65d2-6267-4c93-8129-30e8003e9a99",
+            "name": "layout",
+            "type": "COMBO",
+            "linkIds": [
+              142
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "d126ed4d-cb6b-4cfc-a267-7aa230ea305f",
+            "name": "conf_threshold",
+            "type": "FLOAT",
+            "linkIds": [
+              143
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "aa9b32e0-67ed-50ff-9913-3bf263ec80bf",
+            "name": "bboxes",
+            "type": "BOUNDING_BOX",
+            "linkIds": [
+              118
+            ],
+            "localized_name": "bboxes",
+            "pos": [
+              2550.48807534374,
+              58.63404616898794
+            ]
+          },
+          {
+            "id": "6240ffed-ff78-5f7c-b785-711cfd976f38",
+            "name": "masks",
+            "type": "MASK",
+            "linkIds": [
+              119
+            ],
+            "localized_name": "masks",
+            "pos": [
+              2550.48807534374,
+              78.63404616898794
+            ]
+          },
+          {
+            "id": "03ac1942-d9a6-5c3a-bc1b-7c5b97210c7d",
+            "name": "scores",
+            "type": "NPARRAY",
+            "linkIds": [
+              120
+            ],
+            "localized_name": "scores",
+            "pos": [
+              2550.48807534374,
+              98.63404616898794
+            ]
+          },
+          {
+            "id": "9f951175-2cba-5124-9789-661239cfe787",
+            "name": "labels",
+            "type": "NPARRAY",
+            "linkIds": [
+              121
+            ],
+            "localized_name": "labels",
+            "pos": [
+              2550.48807534374,
+              118.63404616898794
+            ]
+          },
+          {
+            "id": "cc920722-5c8c-50bd-99c0-c82a82f8135a",
+            "name": "det_count",
+            "type": "INT",
+            "linkIds": [
+              122
+            ],
+            "localized_name": "det_count",
+            "pos": [
+              2550.48807534374,
+              138.63404616898794
+            ]
+          },
+          {
+            "id": "af8b3386-d3ce-5536-b988-4eee87d2ae04",
+            "name": "found",
+            "type": "BOOLEAN",
+            "linkIds": [
+              123
+            ],
+            "localized_name": "found",
+            "pos": [
+              2550.48807534374,
+              158.63404616898794
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 140,
+            "type": "CV_DnnLetterbox",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              204
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "IMAGE",
+                "links": [
+                  102
+                ]
+              },
+              {
+                "localized_name": "ratio",
+                "name": "ratio",
+                "type": "FLOAT",
+                "links": [
+                  108,
+                  115
+                ]
+              },
+              {
+                "localized_name": "pad_left",
+                "name": "pad_left",
+                "type": "INT",
+                "links": [
+                  109,
+                  116
+                ]
+              },
+              {
+                "localized_name": "pad_top",
+                "name": "pad_top",
+                "type": "INT",
+                "links": [
+                  110,
+                  117
+                ]
+              }
+            ],
+            "title": "Letterbox to 640 (keep aspect)",
+            "properties": {
+              "Node name for S&R": "CV_DnnLetterbox"
+            },
+            "widgets_values": [
+              640,
+              114
+            ]
+          },
+          {
+            "id": 13,
+            "type": "CV_DnnBlobFromImage",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              290
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "blob",
+                "name": "blob",
+                "type": "NPARRAY",
+                "links": [
+                  103
+                ]
+              }
+            ],
+            "title": "Blob (1/255, BGR->RGB)",
+            "properties": {
+              "Node name for S&R": "CV_DnnBlobFromImage"
+            },
+            "widgets_values": [
+              0.00392156862745098,
+              0,
+              0,
+              true,
+              0,
+              0,
+              0,
+              false
+            ]
+          },
+          {
+            "id": 18,
+            "type": "CV_YoloSegMasks",
+            "pos": [
+              2140,
+              240
+            ],
+            "size": [
+              290,
+              296
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "det_rows",
+                "name": "det_rows",
+                "type": "NPARRAY",
+                "link": 112
+              },
+              {
+                "localized_name": "proto",
+                "name": "proto",
+                "type": "NPARRAY",
+                "link": 113
+              },
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 114
+              },
+              {
+                "localized_name": "ratio",
+                "name": "ratio",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "ratio"
+                },
+                "link": 115
+              },
+              {
+                "localized_name": "pad_left",
+                "name": "pad_left",
+                "type": "INT",
+                "widget": {
+                  "name": "pad_left"
+                },
+                "link": 116
+              },
+              {
+                "localized_name": "pad_top",
+                "name": "pad_top",
+                "type": "INT",
+                "widget": {
+                  "name": "pad_top"
+                },
+                "link": 117
+              },
+              {
+                "localized_name": "net_size",
+                "name": "net_size",
+                "type": "INT",
+                "widget": {
+                  "name": "net_size"
+                },
+                "link": 128
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "masks",
+                "name": "masks",
+                "type": "MASK",
+                "links": [
+                  119
+                ]
+              },
+              {
+                "localized_name": "mask_count",
+                "name": "mask_count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Instance masks (coeffs @ proto)",
+            "properties": {
+              "Node name for S&R": "CV_YoloSegMasks"
+            },
+            "widgets_values": [
+              1,
+              0,
+              0,
+              640
+            ]
+          },
+          {
+            "id": 17,
+            "type": "CV_YoloDetectDecode",
+            "pos": [
+              1790,
+              40
+            ],
+            "size": [
+              290,
+              536
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "showAdvanced": true,
+            "inputs": [
+              {
+                "localized_name": "det",
+                "name": "det",
+                "type": "NPARRAY",
+                "link": 106
+              },
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 107
+              },
+              {
+                "localized_name": "confs",
+                "name": "confs",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "localized_name": "ratio",
+                "name": "ratio",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "ratio"
+                },
+                "link": 108
+              },
+              {
+                "localized_name": "pad_left",
+                "name": "pad_left",
+                "type": "INT",
+                "widget": {
+                  "name": "pad_left"
+                },
+                "link": 109
+              },
+              {
+                "localized_name": "pad_top",
+                "name": "pad_top",
+                "type": "INT",
+                "widget": {
+                  "name": "pad_top"
+                },
+                "link": 110
+              },
+              {
+                "localized_name": "net_size",
+                "name": "net_size",
+                "type": "INT",
+                "widget": {
+                  "name": "net_size"
+                },
+                "link": 127
+              },
+              {
+                "localized_name": "conf_threshold",
+                "name": "conf_threshold",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "conf_threshold"
+                },
+                "link": 143
+              },
+              {
+                "localized_name": "layout",
+                "name": "layout",
+                "type": "COMBO",
+                "widget": {
+                  "name": "layout"
+                },
+                "link": 142
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "labels"
+                },
+                "link": 124
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "bboxes",
+                "name": "bboxes",
+                "type": "BOUNDING_BOX",
+                "links": [
+                  118
+                ]
+              },
+              {
+                "localized_name": "scores",
+                "name": "scores",
+                "type": "NPARRAY",
+                "links": [
+                  120
+                ]
+              },
+              {
+                "localized_name": "class_ids",
+                "name": "class_ids",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "labels_out",
+                "name": "labels_out",
+                "type": "NPARRAY",
+                "links": [
+                  121
+                ]
+              },
+              {
+                "localized_name": "det_rows",
+                "name": "det_rows",
+                "type": "NPARRAY",
+                "links": [
+                  112
+                ]
+              },
+              {
+                "localized_name": "det_count",
+                "name": "det_count",
+                "type": "INT",
+                "links": [
+                  122
+                ]
+              },
+              {
+                "localized_name": "found",
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": [
+                  123
+                ]
+              }
+            ],
+            "title": "Decode detection head -> boxes",
+            "properties": {
+              "Node name for S&R": "CV_YoloDetectDecode"
+            },
+            "widgets_values": [
+              1,
+              0,
+              0,
+              640,
+              0.25,
+              "rows: xyxy + conf + class id (NMS-free)",
+              0.45,
+              ""
+            ]
+          },
+          {
+            "id": 21,
+            "type": "PrimitiveInt",
+            "pos": [
+              1458.6744853956045,
+              541.2724354685545
+            ],
+            "size": [
+              270,
+              82
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  127,
+                  128
+                ]
+              }
+            ],
+            "title": "Net Size (int)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "PrimitiveInt"
+            },
+            "widgets_values": [
+              640,
+              "fixed"
+            ]
+          },
+          {
+            "id": 19,
+            "type": "CV_LoadLabels",
+            "pos": [
+              1411.5987765155785,
+              662.2903485821948
+            ],
+            "size": [
+              318.234375,
+              152
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "file",
+                "name": "file",
+                "type": "COMBO",
+                "widget": {
+                  "name": "file"
+                },
+                "link": 141
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "STRING",
+                "links": [
+                  124
+                ]
+              },
+              {
+                "localized_name": "labels_array",
+                "name": "labels_array",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Load COCO class names",
+            "properties": {
+              "Node name for S&R": "CV_LoadLabels"
+            },
+            "widgets_values": [
+              "coco-labels-2014_2017.txt"
+            ]
+          },
+          {
+            "id": 16,
+            "type": "CV_DnnPickOutput",
+            "pos": [
+              1438.545476204027,
+              303.5459526926474
+            ],
+            "size": [
+              290,
+              196
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "outputs",
+                "name": "outputs",
+                "type": "NPARRAY",
+                "link": 138
+              },
+              {
+                "localized_name": "output_names",
+                "name": "output_names",
+                "shape": 7,
+                "type": "STRING",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  113
+                ]
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Pick mask prototypes (1,C,h,w)",
+            "properties": {
+              "Node name for S&R": "CV_DnnPickOutput"
+            },
+            "widgets_values": [
+              "4-D prototype map",
+              0,
+              ""
+            ]
+          },
+          {
+            "id": 14,
+            "type": "CV_DnnForwardAll",
+            "pos": [
+              1090,
+              40
+            ],
+            "size": [
+              290,
+              256
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "showAdvanced": false,
+            "inputs": [
+              {
+                "localized_name": "blob",
+                "name": "blob",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "localized_name": "model",
+                "name": "model",
+                "type": "COMBO",
+                "widget": {
+                  "name": "model"
+                },
+                "link": 140
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "outputs",
+                "name": "outputs",
+                "type": "NPARRAY",
+                "links": [
+                  137,
+                  138
+                ]
+              },
+              {
+                "localized_name": "output_names",
+                "name": "output_names",
+                "type": "STRING",
+                "links": []
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": []
+              }
+            ],
+            "title": "Forward All",
+            "properties": {
+              "Node name for S&R": "CV_DnnForwardAll"
+            },
+            "widgets_values": [
+              "yolo26n-seg.onnx",
+              "",
+              "auto (default backend)",
+              "auto (default target)",
+              "auto (default engine)",
+              ""
+            ],
+            "color": "#2a363b",
+            "bgcolor": "#3f5159"
+          },
+          {
+            "id": 15,
+            "type": "CV_DnnPickOutput",
+            "pos": [
+              1441.545476204028,
+              38.45452379597183
+            ],
+            "size": [
+              289,
+              224
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "outputs",
+                "name": "outputs",
+                "type": "NPARRAY",
+                "link": 137
+              },
+              {
+                "localized_name": "output_names",
+                "name": "output_names",
+                "shape": 7,
+                "type": "STRING",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  106
+                ]
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Pick detection head (1,N,6+C)",
+            "properties": {
+              "Node name for S&R": "CV_DnnPickOutput"
+            },
+            "widgets_values": [
+              "3-D detection head",
+              0,
+              ""
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 140,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 102,
+            "origin_id": 140,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 103,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 1,
+            "type": "IMAGE"
+          },
+          {
+            "id": 108,
+            "origin_id": 140,
+            "origin_slot": 1,
+            "target_id": 17,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 109,
+            "origin_id": 140,
+            "origin_slot": 2,
+            "target_id": 17,
+            "target_slot": 4,
+            "type": "INT"
+          },
+          {
+            "id": 110,
+            "origin_id": 140,
+            "origin_slot": 3,
+            "target_id": 17,
+            "target_slot": 5,
+            "type": "INT"
+          },
+          {
+            "id": 112,
+            "origin_id": 17,
+            "origin_slot": 4,
+            "target_id": 18,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 2,
+            "type": "IMAGE"
+          },
+          {
+            "id": 115,
+            "origin_id": 140,
+            "origin_slot": 1,
+            "target_id": 18,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 116,
+            "origin_id": 140,
+            "origin_slot": 2,
+            "target_id": 18,
+            "target_slot": 4,
+            "type": "INT"
+          },
+          {
+            "id": 117,
+            "origin_id": 140,
+            "origin_slot": 3,
+            "target_id": 18,
+            "target_slot": 5,
+            "type": "INT"
+          },
+          {
+            "id": 118,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "BOUNDING_BOX"
+          },
+          {
+            "id": 119,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "MASK"
+          },
+          {
+            "id": 120,
+            "origin_id": 17,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 17,
+            "origin_slot": 3,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 122,
+            "origin_id": 17,
+            "origin_slot": 5,
+            "target_id": -20,
+            "target_slot": 4,
+            "type": "INT"
+          },
+          {
+            "id": 123,
+            "origin_id": 17,
+            "origin_slot": 6,
+            "target_id": -20,
+            "target_slot": 5,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 124,
+            "origin_id": 19,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 9,
+            "type": "STRING"
+          },
+          {
+            "id": 127,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 6,
+            "type": "INT"
+          },
+          {
+            "id": 128,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 6,
+            "type": "INT"
+          },
+          {
+            "id": 137,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 138,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 140,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 14,
+            "target_slot": 1,
+            "type": "COMBO"
+          },
+          {
+            "id": 141,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 19,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 142,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 17,
+            "target_slot": 8,
+            "type": "COMBO"
+          },
+          {
+            "id": 143,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 17,
+            "target_slot": 7,
+            "type": "FLOAT"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.35049389948139237,
+      "offset": [
+        636.9572596065568,
+        836.9186766708042
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

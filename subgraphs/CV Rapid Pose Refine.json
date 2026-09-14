@@ -1,0 +1,1461 @@
+{
+  "revision": 0,
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "e7a41c93-5b2d-4f68-8c14-9d30af62b7e5",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        360,
+        460
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "img",
+          "name": "img",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "pts3d",
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "tris",
+          "name": "tris",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "K",
+          "name": "K",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "rvec",
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "tvec",
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "num",
+          "name": "num",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "localized_name": "len",
+          "name": "len",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "use_ransac",
+          "type": "BOOLEAN",
+          "link": null
+        },
+        {
+          "name": "reprojection_error",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "found",
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "localized_name": "rvec",
+          "name": "rvec",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "tvec",
+          "name": "tvec",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "correspondences",
+          "name": "correspondences",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "search_lines",
+          "name": "search_lines",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "bundle",
+          "name": "bundle",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "cols",
+          "name": "cols",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "scores",
+          "name": "scores",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "inliers",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {
+        "proxyWidgets": [],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "title": "CV Rapid Pose Refine",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "e7a41c93-5b2d-4f68-8c14-9d30af62b7e5",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 11,
+          "lastLinkId": 145,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Rapid Pose Refine",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -380,
+            220,
+            128,
+            380
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            1880,
+            220,
+            128,
+            420
+          ]
+        },
+        "inputs": [
+          {
+            "id": "e7a41c93-a000-4000-8000-000000000000",
+            "name": "img",
+            "type": "NPARRAY",
+            "linkIds": [
+              110
+            ],
+            "localized_name": "img",
+            "pos": [
+              -420,
+              240
+            ]
+          },
+          {
+            "id": "e7a41c93-a000-4000-8000-000000000001",
+            "name": "pts3d",
+            "type": "NPARRAY",
+            "linkIds": [
+              103
+            ],
+            "localized_name": "pts3d",
+            "pos": [
+              -420,
+              270
+            ]
+          },
+          {
+            "id": "e7a41c93-a000-4000-8000-000000000002",
+            "name": "tris",
+            "type": "NPARRAY",
+            "linkIds": [
+              107
+            ],
+            "localized_name": "tris",
+            "pos": [
+              -420,
+              300
+            ]
+          },
+          {
+            "id": "e7a41c93-a000-4000-8000-000000000003",
+            "name": "K",
+            "type": "NPARRAY",
+            "linkIds": [
+              106,
+              117,
+              128
+            ],
+            "localized_name": "K",
+            "pos": [
+              -420,
+              330
+            ]
+          },
+          {
+            "id": "e7a41c93-a000-4000-8000-000000000004",
+            "name": "rvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              104
+            ],
+            "localized_name": "rvec",
+            "pos": [
+              -420,
+              360
+            ]
+          },
+          {
+            "id": "e7a41c93-a000-4000-8000-000000000005",
+            "name": "tvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              105
+            ],
+            "localized_name": "tvec",
+            "pos": [
+              -420,
+              390
+            ]
+          },
+          {
+            "id": "e7a41c93-a000-4000-8000-000000000006",
+            "name": "num",
+            "type": "INT",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "num",
+            "pos": [
+              -420,
+              420
+            ]
+          },
+          {
+            "id": "e7a41c93-a000-4000-8000-000000000007",
+            "name": "len",
+            "type": "INT",
+            "linkIds": [
+              102,
+              108
+            ],
+            "localized_name": "len",
+            "pos": [
+              -420,
+              450
+            ]
+          },
+          {
+            "id": "e7a41c93-5b2d-4f68-8c14-9d30af62b7e5-i8",
+            "name": "use_ransac",
+            "type": "BOOLEAN",
+            "linkIds": [
+              132
+            ],
+            "localized_name": "use_ransac",
+            "pos": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "e7a41c93-5b2d-4f68-8c14-9d30af62b7e5-i9",
+            "name": "reprojection_error",
+            "type": "FLOAT",
+            "linkIds": [
+              129
+            ],
+            "localized_name": "reprojection_error",
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "e7a41c93-b000-4000-8000-000000000000",
+            "name": "found",
+            "type": "BOOLEAN",
+            "linkIds": [
+              139
+            ],
+            "localized_name": "found",
+            "pos": [
+              1920,
+              240
+            ]
+          },
+          {
+            "id": "e7a41c93-b000-4000-8000-000000000001",
+            "name": "rvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              140
+            ],
+            "localized_name": "rvec",
+            "pos": [
+              1920,
+              270
+            ]
+          },
+          {
+            "id": "e7a41c93-b000-4000-8000-000000000002",
+            "name": "tvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              141
+            ],
+            "localized_name": "tvec",
+            "pos": [
+              1920,
+              300
+            ]
+          },
+          {
+            "id": "e7a41c93-b000-4000-8000-000000000003",
+            "name": "correspondences",
+            "type": "NPARRAY",
+            "linkIds": [
+              121
+            ],
+            "localized_name": "correspondences",
+            "pos": [
+              1920,
+              330
+            ]
+          },
+          {
+            "id": "e7a41c93-b000-4000-8000-000000000004",
+            "name": "search_lines",
+            "type": "NPARRAY",
+            "linkIds": [
+              122
+            ],
+            "localized_name": "search_lines",
+            "pos": [
+              1920,
+              360
+            ]
+          },
+          {
+            "id": "e7a41c93-b000-4000-8000-000000000005",
+            "name": "bundle",
+            "type": "NPARRAY",
+            "linkIds": [
+              123
+            ],
+            "localized_name": "bundle",
+            "pos": [
+              1920,
+              390
+            ]
+          },
+          {
+            "id": "e7a41c93-b000-4000-8000-000000000006",
+            "name": "cols",
+            "type": "NPARRAY",
+            "linkIds": [
+              124
+            ],
+            "localized_name": "cols",
+            "pos": [
+              1920,
+              420
+            ]
+          },
+          {
+            "id": "e7a41c93-b000-4000-8000-000000000007",
+            "name": "scores",
+            "type": "NPARRAY",
+            "linkIds": [
+              125
+            ],
+            "localized_name": "scores",
+            "pos": [
+              1920,
+              450
+            ]
+          },
+          {
+            "id": "e7a41c93-5b2d-4f68-8c14-9d30af62b7e5-o8",
+            "name": "inliers",
+            "type": "NPARRAY",
+            "linkIds": [
+              142
+            ],
+            "localized_name": "inliers",
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 1,
+            "type": "cv2_rapid_extractControlPoints",
+            "pos": [
+              240,
+              300
+            ],
+            "size": [
+              340,
+              150
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "num",
+                "name": "num",
+                "type": "INT",
+                "link": 101,
+                "widget": {
+                  "name": "num"
+                }
+              },
+              {
+                "localized_name": "len",
+                "name": "len",
+                "type": "INT",
+                "link": 102,
+                "widget": {
+                  "name": "len"
+                }
+              },
+              {
+                "localized_name": "pts3d",
+                "name": "pts3d",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "localized_name": "rvec",
+                "name": "rvec",
+                "type": "NPARRAY",
+                "link": 104
+              },
+              {
+                "localized_name": "tvec",
+                "name": "tvec",
+                "type": "NPARRAY",
+                "link": 105
+              },
+              {
+                "localized_name": "K",
+                "name": "K",
+                "type": "NPARRAY",
+                "link": 106
+              },
+              {
+                "localized_name": "imsize",
+                "name": "imsize",
+                "type": "CV_TUPLE",
+                "link": null,
+                "widget": {
+                  "name": "imsize"
+                }
+              },
+              {
+                "localized_name": "tris",
+                "name": "tris",
+                "type": "NPARRAY",
+                "link": 107
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "ctl2d",
+                "name": "ctl2d",
+                "type": "NPARRAY",
+                "links": [
+                  109
+                ]
+              },
+              {
+                "localized_name": "ctl3d",
+                "name": "ctl3d",
+                "type": "NPARRAY",
+                "links": [
+                  115,
+                  126
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_rapid_extractControlPoints"
+            },
+            "widgets_values": [
+              150,
+              30,
+              "(640, 480)"
+            ],
+            "title": "Control points on the silhouette"
+          },
+          {
+            "id": 2,
+            "type": "cv2_rapid_extractLineBundle",
+            "pos": [
+              680,
+              300
+            ],
+            "size": [
+              340,
+              150
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "len",
+                "name": "len",
+                "type": "INT",
+                "link": 108,
+                "widget": {
+                  "name": "len"
+                }
+              },
+              {
+                "localized_name": "ctl2d",
+                "name": "ctl2d",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "localized_name": "img",
+                "name": "img",
+                "type": "NPARRAY",
+                "link": 110
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "bundle",
+                "name": "bundle",
+                "type": "NPARRAY",
+                "links": [
+                  111,
+                  123
+                ]
+              },
+              {
+                "localized_name": "locations",
+                "name": "locations",
+                "type": "NPARRAY",
+                "links": [
+                  113,
+                  122
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_rapid_extractLineBundle"
+            },
+            "widgets_values": [
+              30
+            ],
+            "title": "Search lines along silhouette normals"
+          },
+          {
+            "id": 3,
+            "type": "cv2_rapid_findCorrespondencies",
+            "pos": [
+              1120,
+              300
+            ],
+            "size": [
+              340,
+              150
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "bundle",
+                "name": "bundle",
+                "type": "NPARRAY",
+                "link": 111
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "cols",
+                "name": "cols",
+                "type": "NPARRAY",
+                "links": [
+                  112,
+                  124
+                ]
+              },
+              {
+                "localized_name": "scores",
+                "name": "scores",
+                "type": "NPARRAY",
+                "links": [
+                  125
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_rapid_findCorrespondencies"
+            },
+            "widgets_values": [],
+            "title": "Strongest gradient per line"
+          },
+          {
+            "id": 4,
+            "type": "cv2_rapid_convertCorrespondencies",
+            "pos": [
+              1120,
+              560
+            ],
+            "size": [
+              340,
+              150
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "cols",
+                "name": "cols",
+                "type": "NPARRAY",
+                "link": 112
+              },
+              {
+                "localized_name": "srcLocations",
+                "name": "srcLocations",
+                "type": "NPARRAY",
+                "link": 113
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null,
+                "shape": 7
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "pts2d",
+                "name": "pts2d",
+                "type": "NPARRAY",
+                "links": [
+                  114
+                ]
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_rapid_convertCorrespondencies"
+            },
+            "widgets_values": [],
+            "title": "Line offsets -> image points"
+          },
+          {
+            "id": 5,
+            "type": "CV_CastArray",
+            "pos": [
+              1520,
+              560
+            ],
+            "size": [
+              340,
+              110
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 114
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "type": "COMBO",
+                "link": null,
+                "widget": {
+                  "name": "dtype"
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  116,
+                  121,
+                  127
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ],
+            "title": "Correspondences -> float32"
+          },
+          {
+            "id": 6,
+            "type": "cv2_solvePnP",
+            "pos": [
+              1520,
+              260
+            ],
+            "size": [
+              340,
+              190
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "objectPoints",
+                "name": "objectPoints",
+                "type": "NPARRAY",
+                "link": 115
+              },
+              {
+                "localized_name": "imagePoints",
+                "name": "imagePoints",
+                "type": "NPARRAY",
+                "link": 116
+              },
+              {
+                "localized_name": "cameraMatrix",
+                "name": "cameraMatrix",
+                "type": "NPARRAY",
+                "link": 117
+              },
+              {
+                "localized_name": "distCoeffs",
+                "name": "distCoeffs",
+                "type": "NPARRAY",
+                "link": null,
+                "shape": 7
+              },
+              {
+                "localized_name": "useExtrinsicGuess",
+                "name": "useExtrinsicGuess",
+                "type": "BOOLEAN",
+                "link": null,
+                "widget": {
+                  "name": "useExtrinsicGuess"
+                },
+                "shape": 7
+              },
+              {
+                "localized_name": "flags",
+                "name": "flags",
+                "type": "COMBO",
+                "link": null,
+                "widget": {
+                  "name": "flags"
+                },
+                "shape": 7
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "retval",
+                "name": "retval",
+                "type": "BOOLEAN",
+                "links": [
+                  130
+                ]
+              },
+              {
+                "localized_name": "rvec",
+                "name": "rvec",
+                "type": "NPARRAY",
+                "links": [
+                  133
+                ]
+              },
+              {
+                "localized_name": "tvec",
+                "name": "tvec",
+                "type": "NPARRAY",
+                "links": [
+                  136
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_solvePnP"
+            },
+            "widgets_values": [
+              false,
+              "SOLVEPNP_ITERATIVE"
+            ],
+            "title": "Pose from correspondences"
+          },
+          {
+            "id": 7,
+            "type": "cv2_solvePnPRansac",
+            "pos": [
+              2020,
+              700
+            ],
+            "size": [
+              300,
+              300
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "objectPoints",
+                "type": "NPARRAY",
+                "link": 126
+              },
+              {
+                "name": "imagePoints",
+                "type": "NPARRAY",
+                "link": 127
+              },
+              {
+                "name": "cameraMatrix",
+                "type": "NPARRAY",
+                "link": 128
+              },
+              {
+                "name": "distCoeffs",
+                "type": "NPARRAY",
+                "link": null,
+                "shape": 7
+              },
+              {
+                "name": "reprojectionError",
+                "type": "FLOAT",
+                "link": 129,
+                "widget": {
+                  "name": "reprojectionError"
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "name": "retval",
+                "type": "BOOLEAN",
+                "links": [
+                  131
+                ]
+              },
+              {
+                "name": "rvec",
+                "type": "NPARRAY",
+                "links": [
+                  134
+                ]
+              },
+              {
+                "name": "tvec",
+                "type": "NPARRAY",
+                "links": [
+                  137
+                ]
+              },
+              {
+                "name": "inliers",
+                "type": "NPARRAY",
+                "links": [
+                  142
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_solvePnPRansac"
+            },
+            "widgets_values": [
+              false,
+              100,
+              3.0,
+              0.99,
+              "SOLVEPNP_ITERATIVE"
+            ],
+            "title": "Pose from correspondences (RANSAC)"
+          },
+          {
+            "id": 8,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2380,
+              1040
+            ],
+            "size": [
+              280,
+              120
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "on_false",
+                "type": "BOOLEAN",
+                "link": 130
+              },
+              {
+                "name": "on_true",
+                "type": "BOOLEAN",
+                "link": 131
+              },
+              {
+                "name": "switch",
+                "type": "BOOLEAN",
+                "link": 143,
+                "shape": 7
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "BOOLEAN",
+                "links": [
+                  139
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ],
+            "title": "found: RANSAC or plain PnP"
+          },
+          {
+            "id": 9,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2380,
+              1200
+            ],
+            "size": [
+              280,
+              120
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 133
+              },
+              {
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 134
+              },
+              {
+                "name": "switch",
+                "type": "BOOLEAN",
+                "link": 144,
+                "shape": 7
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  140
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ],
+            "title": "rvec: RANSAC or plain PnP"
+          },
+          {
+            "id": 10,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2380,
+              1360
+            ],
+            "size": [
+              280,
+              120
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 136
+              },
+              {
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 137
+              },
+              {
+                "name": "switch",
+                "type": "BOOLEAN",
+                "link": 145,
+                "shape": 7
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  141
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ],
+            "title": "tvec: RANSAC or plain PnP"
+          },
+          {
+            "id": 11,
+            "type": "PrimitiveBoolean",
+            "pos": [
+              2020,
+              1040
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 132
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "BOOLEAN",
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": [
+                  143,
+                  144,
+                  145
+                ]
+              }
+            ],
+            "title": "use RANSAC (off = plain PnP)",
+            "properties": {
+              "Node name for S&R": "PrimitiveBoolean"
+            },
+            "widgets_values": [
+              false
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 6,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 7,
+            "target_id": 1,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 1,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 1,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 1,
+            "target_slot": 4,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 1,
+            "target_slot": 5,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 1,
+            "target_slot": 7,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": -10,
+            "origin_slot": 7,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 109,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 2,
+            "origin_slot": 1,
+            "target_id": 4,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 117,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 6,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 122,
+            "origin_id": 2,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 4,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 123,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 5,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 124,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 6,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 125,
+            "origin_id": 3,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 7,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 127,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 7,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 129,
+            "origin_id": -10,
+            "origin_slot": 9,
+            "target_id": 7,
+            "target_slot": 4,
+            "type": "FLOAT"
+          },
+          {
+            "id": 130,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 131,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 1,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 132,
+            "origin_id": -10,
+            "origin_slot": 8,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 133,
+            "origin_id": 6,
+            "origin_slot": 1,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 134,
+            "origin_id": 7,
+            "origin_slot": 1,
+            "target_id": 9,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 136,
+            "origin_id": 6,
+            "origin_slot": 2,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 137,
+            "origin_id": 7,
+            "origin_slot": 2,
+            "target_id": 10,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 139,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 140,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 141,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 142,
+            "origin_id": 7,
+            "origin_slot": 3,
+            "target_id": -20,
+            "target_slot": 8,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 143,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 144,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 145,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  }
+}

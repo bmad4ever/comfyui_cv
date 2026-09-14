@@ -1,0 +1,1664 @@
+{
+  "id": "31226405-448e-4543-9f8f-6faf1502c4c7",
+  "revision": 0,
+  "last_node_id": 27,
+  "last_link_id": 45,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        43,
+        -105.15617314001807
+      ],
+      "size": [
+        1310.546875,
+        298.765625
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Exercise: uncalibrated stereo rectification + disparity\n\nTwo views of the SAME static scene from horizontally-offset camera positions (the scene must have DEPTH - a single plane is degenerate for the fundamental matrix).\n1. ORB features are detected in both views and matched (brute force + Lowe ratio test).\n2. 'Find Fundamental Matrix' estimates F with RANSAC (failure-tolerant: too few matches / degenerate -> found=false).\n3. 'Filter Points By Mask' keeps the RANSAC inliers of each view (same mask, applied in lockstep, so the pairs stay aligned).\n4. 'Stereo Rectify (Uncalibrated)' turns F + the inliers into the two rectifying homographies H1/H2 - no camera intrinsics needed.\n5. Each view is warped by its homography ('CV Array Size' supplies the output size; borderMode=BORDER_CONSTANT so empty areas stay black, not mirrored). After rectification a scene point lands on the SAME row in both views.\n6. 'Stereo Disparity (SGBM)' matches along horizontal scanlines; the heatmap shows disparity (brighter = larger shift = closer). IMPORTANT: uncalibrated rectification fixes H1/H2 only up to an affine ambiguity and least-squares-CENTERS the disparity around zero, so 'min_disparity' must be NEGATIVE (here -48 with num_disparities=96: the search window straddles 0). With min_disparity=0 half the scene falls outside the window and the map degenerates; an over-wide window invites wrong matches on repetitive texture.\n7. The two if/else nodes gate the warps on 'found': an unrectifiable pair passes through unchanged.\n\nDebug: the inlier matches side by side, and H1 ('Inspect CV Data'). Check the rectified previews - corresponding features should sit on the same horizontal line. Tip: switch the detectors to SIFT for wide baselines; widen the (min_disparity, num_disparities) window for nearer objects."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load left view",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "stereo_gallery_L.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        640
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load right view",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "stereo_gallery_R.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ImageToCV",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        290,
+        173.3125
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            18,
+            19,
+            20,
+            28,
+            37
+          ]
+        }
+      ],
+      "title": "Left -> BGR array",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_ImageToCV",
+      "pos": [
+        390,
+        640
+      ],
+      "size": [
+        290,
+        173.3125
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            4,
+            23,
+            31,
+            39
+          ]
+        }
+      ],
+      "title": "Right -> BGR array",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_DetectFeatures",
+      "pos": [
+        730,
+        410.02150587128494
+      ],
+      "size": [
+        290,
+        182
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 3
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "keypoints",
+          "type": "CV_KEYPOINTS",
+          "links": [
+            5,
+            38
+          ]
+        },
+        {
+          "name": "descriptors",
+          "type": "NPARRAY",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Detect Features (left)",
+      "properties": {
+        "Node name for S&R": "CV_DetectFeatures"
+      },
+      "widgets_values": [
+        "ORB",
+        2000,
+        false
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_DetectFeatures",
+      "pos": [
+        729,
+        736.3952943409972
+      ],
+      "size": [
+        289.984375,
+        182
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 4
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "keypoints",
+          "type": "CV_KEYPOINTS",
+          "links": [
+            7,
+            40
+          ]
+        },
+        {
+          "name": "descriptors",
+          "type": "NPARRAY",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Detect Features (right)",
+      "properties": {
+        "Node name for S&R": "CV_DetectFeatures"
+      },
+      "widgets_values": [
+        "ORB",
+        2000,
+        false
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_MatchFeatures",
+      "pos": [
+        1216.7809972422613,
+        240
+      ],
+      "size": [
+        289.984375,
+        282
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "keypoints_a",
+          "type": "CV_KEYPOINTS",
+          "link": 5
+        },
+        {
+          "name": "descriptors_a",
+          "type": "NPARRAY",
+          "link": 6
+        },
+        {
+          "name": "keypoints_b",
+          "type": "CV_KEYPOINTS",
+          "link": 7
+        },
+        {
+          "name": "descriptors_b",
+          "type": "NPARRAY",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "matches",
+          "type": "CV_MATCHES",
+          "links": [
+            41
+          ]
+        },
+        {
+          "name": "points_a",
+          "type": "NPARRAY",
+          "links": [
+            9,
+            11
+          ]
+        },
+        {
+          "name": "points_b",
+          "type": "NPARRAY",
+          "links": [
+            10,
+            13
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Match Features",
+      "properties": {
+        "Node name for S&R": "CV_MatchFeatures"
+      },
+      "widgets_values": [
+        "BFMatcher",
+        "auto",
+        "ratio test (Lowe)",
+        0.75,
+        2,
+        0,
+        "auto",
+        5,
+        50,
+        6,
+        12,
+        1
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CV_FindFundamentalMat",
+      "pos": [
+        1566.7809972422613,
+        309.44971202271984
+      ],
+      "size": [
+        511.875,
+        230
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points_a",
+          "type": "NPARRAY",
+          "link": 9
+        },
+        {
+          "name": "points_b",
+          "type": "NPARRAY",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "fundamental",
+          "type": "NPARRAY",
+          "links": [
+            17
+          ]
+        },
+        {
+          "name": "inlier_mask",
+          "type": "NPARRAY",
+          "links": [
+            12,
+            14,
+            42
+          ]
+        },
+        {
+          "name": "inlier_count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Find Fundamental Matrix] Find Fundamental Matrix (RANSAC)",
+      "properties": {
+        "Node name for S&R": "CV_FindFundamentalMat"
+      },
+      "widgets_values": [
+        "FM_RANSAC",
+        2,
+        0.99,
+        15
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_FilterPointsByMask",
+      "pos": [
+        2176.5842036221966,
+        181.13973733649505
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 11
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Keep left inliers",
+      "properties": {
+        "Node name for S&R": "CV_FilterPointsByMask"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "CV_FilterPointsByMask",
+      "pos": [
+        2176.5842036221966,
+        368.3099746862247
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 13
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Keep right inliers",
+      "properties": {
+        "Node name for S&R": "CV_FilterPointsByMask"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "CV_StereoRectifyUncalibrated",
+      "pos": [
+        2563.549372924612,
+        240
+      ],
+      "size": [
+        301.25,
+        176
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points_a",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "points_b",
+          "type": "NPARRAY",
+          "link": 16
+        },
+        {
+          "name": "fundamental",
+          "type": "NPARRAY",
+          "link": 17
+        },
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "H1",
+          "type": "NPARRAY",
+          "links": [
+            21,
+            44
+          ]
+        },
+        {
+          "name": "H2",
+          "type": "NPARRAY",
+          "links": [
+            24
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": [
+            26,
+            29
+          ]
+        }
+      ],
+      "title": "[CV Stereo Rectify (Uncalibrated)]",
+      "properties": {
+        "Node name for S&R": "CV_StereoRectifyUncalibrated"
+      },
+      "widgets_values": [
+        3
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_CVSize",
+      "pos": [
+        2526.5842036221966,
+        640
+      ],
+      "size": [
+        290,
+        126
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "dsize",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "size",
+          "type": "CV_TUPLE",
+          "links": [
+            22,
+            25
+          ]
+        }
+      ],
+      "title": "Rectified size (= left)",
+      "properties": {
+        "Node name for S&R": "CV_CVSize"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "cv2_warpPerspective",
+      "pos": [
+        3035.3382697908182,
+        40
+      ],
+      "size": [
+        290,
+        294
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 20
+        },
+        {
+          "name": "M",
+          "type": "NPARRAY",
+          "link": 21
+        },
+        {
+          "name": "dsize",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "dsize"
+          },
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "title": "Rectify left (H1)",
+      "properties": {
+        "Node name for S&R": "cv2_warpPerspective"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "cv2_warpPerspective",
+      "pos": [
+        3035.3382697908182,
+        440
+      ],
+      "size": [
+        290,
+        294
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 23
+        },
+        {
+          "name": "M",
+          "type": "NPARRAY",
+          "link": 24
+        },
+        {
+          "name": "dsize",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "dsize"
+          },
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "title": "Rectify right (H2)",
+      "properties": {
+        "Node name for S&R": "cv2_warpPerspective"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "ComfySwitchNode",
+      "pos": [
+        3417.311338717178,
+        40
+      ],
+      "size": [
+        290,
+        152
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "on_false",
+          "type": "NPARRAY",
+          "link": 28
+        },
+        {
+          "name": "on_true",
+          "type": "NPARRAY",
+          "link": 27
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "NPARRAY",
+          "links": [
+            32,
+            35
+          ]
+        }
+      ],
+      "title": "Rectified left if found, else raw",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
+      "id": 17,
+      "type": "ComfySwitchNode",
+      "pos": [
+        3425.0267863329736,
+        440
+      ],
+      "size": [
+        290,
+        152
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "on_false",
+          "type": "NPARRAY",
+          "link": 31
+        },
+        {
+          "name": "on_true",
+          "type": "NPARRAY",
+          "link": 30
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "NPARRAY",
+          "links": [
+            33,
+            36
+          ]
+        }
+      ],
+      "title": "Rectified right if found, else raw",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_StereoDisparity",
+      "pos": [
+        3906.141476170753,
+        240
+      ],
+      "size": [
+        290,
+        286
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY,IMAGE",
+          "link": 32
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY,IMAGE",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "disparity",
+          "type": "NPARRAY",
+          "links": [
+            34
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Stereo Disparity (SGBM)]",
+      "properties": {
+        "Node name for S&R": "CV_StereoDisparity"
+      },
+      "widgets_values": [
+        96,
+        7,
+        -48,
+        "SGBM (balanced)",
+        10,
+        100,
+        2,
+        -1
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_CVPreview",
+      "pos": [
+        4256.141476170753,
+        240
+      ],
+      "size": [
+        290,
+        366.65625
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Disparity (heatmap, closer=brighter)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_CVPreview",
+      "pos": [
+        3906.141476170753,
+        666.4764298033829
+      ],
+      "size": [
+        290,
+        366.65625
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 35
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Rectified left",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 21,
+      "type": "CV_CVPreview",
+      "pos": [
+        4256.141476170753,
+        666.4764298033829
+      ],
+      "size": [
+        290,
+        366.65625
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Rectified right",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CV_DrawMatches",
+      "pos": [
+        2179.6270297541328,
+        841.8514985876491
+      ],
+      "size": [
+        290,
+        224
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "type": "NPARRAY",
+          "link": 37
+        },
+        {
+          "name": "keypoints_a",
+          "type": "CV_KEYPOINTS",
+          "link": 38
+        },
+        {
+          "name": "image_b",
+          "type": "NPARRAY",
+          "link": 39
+        },
+        {
+          "name": "keypoints_b",
+          "type": "CV_KEYPOINTS",
+          "link": 40
+        },
+        {
+          "name": "matches",
+          "type": "CV_MATCHES",
+          "link": 41
+        },
+        {
+          "name": "inlier_mask",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "title": "Inlier matches (debug)",
+      "properties": {
+        "Node name for S&R": "CV_DrawMatches"
+      },
+      "widgets_values": [
+        60,
+        "(0, 255, 0)"
+      ]
+    },
+    {
+      "id": 23,
+      "type": "CV_CVPreview",
+      "pos": [
+        2526.5842036221966,
+        840
+      ],
+      "size": [
+        290,
+        366.65625
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 43
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview inlier matches",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 24,
+      "type": "CV_CVInspect",
+      "pos": [
+        3044.2138300896486,
+        840
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            45
+          ]
+        }
+      ],
+      "title": "Inspect H1 (left homography)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 25,
+      "type": "PreviewAny",
+      "pos": [
+        3049.612976300962,
+        971.4563997230912
+      ],
+      "size": [
+        350,
+        162
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 45
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect H1 (left homography)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 26,
+      "type": "Note",
+      "pos": [
+        -353,
+        510.54840606813036
+      ],
+      "size": [
+        368.171875,
+        224.71875
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "stereo_gallery_L.png / stereo_gallery_R.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Synthetic 'gallery' stereo pair (this repo)\nCreator: generated (this repo)\nLicense: source paintings public domain (the art_ref_* set); everything else synthetic - no third-party rights\nSource:  synthetic; textured planes at 4-12 m, 0.35 m horizontal baseline\nSize:    960x540 each\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      5,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      6,
+      0,
+      8,
+      0,
+      "CV_KEYPOINTS"
+    ],
+    [
+      6,
+      6,
+      1,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      7,
+      7,
+      0,
+      8,
+      2,
+      "CV_KEYPOINTS"
+    ],
+    [
+      8,
+      7,
+      1,
+      8,
+      3,
+      "NPARRAY"
+    ],
+    [
+      9,
+      8,
+      1,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      8,
+      2,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      11,
+      8,
+      1,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      9,
+      1,
+      10,
+      1,
+      "NPARRAY"
+    ],
+    [
+      13,
+      8,
+      2,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      9,
+      1,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      15,
+      10,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      11,
+      0,
+      12,
+      1,
+      "NPARRAY"
+    ],
+    [
+      17,
+      9,
+      0,
+      12,
+      2,
+      "NPARRAY"
+    ],
+    [
+      18,
+      4,
+      0,
+      12,
+      3,
+      "NPARRAY"
+    ],
+    [
+      19,
+      4,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      20,
+      4,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      12,
+      0,
+      14,
+      1,
+      "NPARRAY"
+    ],
+    [
+      22,
+      13,
+      3,
+      14,
+      2,
+      "CV_TUPLE"
+    ],
+    [
+      23,
+      5,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      24,
+      12,
+      1,
+      15,
+      1,
+      "NPARRAY"
+    ],
+    [
+      25,
+      13,
+      3,
+      15,
+      2,
+      "CV_TUPLE"
+    ],
+    [
+      26,
+      12,
+      2,
+      16,
+      2,
+      "BOOLEAN"
+    ],
+    [
+      27,
+      14,
+      0,
+      16,
+      1,
+      "NPARRAY"
+    ],
+    [
+      28,
+      4,
+      0,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      29,
+      12,
+      2,
+      17,
+      2,
+      "BOOLEAN"
+    ],
+    [
+      30,
+      15,
+      0,
+      17,
+      1,
+      "NPARRAY"
+    ],
+    [
+      31,
+      5,
+      0,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      32,
+      16,
+      0,
+      18,
+      0,
+      "*"
+    ],
+    [
+      33,
+      17,
+      0,
+      18,
+      1,
+      "*"
+    ],
+    [
+      34,
+      18,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      35,
+      16,
+      0,
+      20,
+      0,
+      "*"
+    ],
+    [
+      36,
+      17,
+      0,
+      21,
+      0,
+      "*"
+    ],
+    [
+      37,
+      4,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      38,
+      6,
+      0,
+      22,
+      1,
+      "CV_KEYPOINTS"
+    ],
+    [
+      39,
+      5,
+      0,
+      22,
+      2,
+      "NPARRAY"
+    ],
+    [
+      40,
+      7,
+      0,
+      22,
+      3,
+      "CV_KEYPOINTS"
+    ],
+    [
+      41,
+      8,
+      0,
+      22,
+      4,
+      "CV_MATCHES"
+    ],
+    [
+      42,
+      9,
+      1,
+      22,
+      5,
+      "NPARRAY"
+    ],
+    [
+      43,
+      22,
+      0,
+      23,
+      0,
+      "NPARRAY"
+    ],
+    [
+      44,
+      12,
+      0,
+      24,
+      0,
+      "NPARRAY"
+    ],
+    [
+      45,
+      24,
+      0,
+      25,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.14222600873837635,
+      "offset": [
+        2869.87513311157,
+        2974.1197113383078
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

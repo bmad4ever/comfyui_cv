@@ -1,0 +1,470 @@
+{
+  "id": "b4f82a1e-7c93-4d5a-9e26-1f8b3c7d5a92",
+  "revision": 0,
+  "last_node_id": 13,
+  "last_link_id": 8,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        -51.999999999999886
+      ],
+      "size": [
+        979.984375,
+        380
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Neural style transfer with the GENERIC cv2.dnn nodes (mosaic-9.onnx)\n\nAfter the pyimagesearch neural-style-transfer tutorial, but built entirely from the reusable cv2.dnn primitives - no model-specific node. Same three generic nodes as workflow 40, just a different model and a different clip step:\n\n  Load Image\n   -> DNN Blob From Image   (cv2.dnn.blobFromImage: scale 1.0, swap R/B, native size, NO mean)\n   -> DNN Forward           (loads mosaic-9.onnx, runs one forward pass)\n   -> DNN Images From Blob  (cv2.dnn.imagesFromBlob: undoes the CHW->HWC transpose)\n   -> CV Cast Array (uint8)  (the CLIP: saturating round to 0-255, like numpy.clip)\n   -> CV Array -> Image     (RGB: back to a ComfyUI IMAGE)\n\nPreprocessing differs from the NAFNet deblur of workflow 40: this ONNX fast-neural-style model wants a RAW [0-255] RGB blob (scale 1.0, no mean subtraction) - NOT the ImageNet mean subtraction the tutorial uses for its Torch .t7 models, and NOT the 1/255 scale NAFNet needs.\n\nThe postprocess CLIP is 'CV Cast Array' to uint8, NOT cv2.convertScaleAbs. The style output runs well outside [0,255] on BOTH sides (roughly -260..380), and convertScaleAbs takes the ABSOLUTE value - it would reflect the negative (dark) pixels back to bright and corrupt them. 'CV Cast Array' rounds and clamps to 0-255 with no abs (a true numpy.clip), which is exactly the tutorial's postprocess.\n\nNote: the network rounds each output side up to a multiple of 4, so the styled image can be a pixel or two larger than the input (before/after are previewed separately rather than slider-compared for that reason). Inference is heavy (seconds for a ~1 MP image on CPU)."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        380
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "dog_leaping.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_DnnBlobFromImage",
+      "pos": [
+        400,
+        380
+      ],
+      "size": [
+        550,
+        226
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "blob",
+          "type": "NPARRAY",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "[CV DNN Blob From Image] DNN Blob From Image (raw RGB, scale 1.0)",
+      "properties": {
+        "Node name for S&R": "CV_DnnBlobFromImage"
+      },
+      "widgets_values": [
+        1,
+        0,
+        0,
+        true,
+        0,
+        0,
+        0,
+        false
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_DnnForward",
+      "pos": [
+        960,
+        380
+      ],
+      "size": [
+        450,
+        154
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "blob",
+          "type": "NPARRAY",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "title": "[CV DNN Forward] DNN Forward (load + infer mosaic-9)",
+      "properties": {
+        "Node name for S&R": "CV_DnnForward"
+      },
+      "widgets_values": [
+        "mosaic-9.onnx",
+        "",
+        "auto (default backend)",
+        "auto (default target)",
+        "auto (default engine)"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 5,
+      "type": "CV_DnnImagesFromBlob",
+      "pos": [
+        1420,
+        380
+      ],
+      "size": [
+        501.515625,
+        104
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "blob",
+          "type": "NPARRAY",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "NPARRAY",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "[CV DNN Images From Blob] DNN Images From Blob (transpose)",
+      "properties": {
+        "Node name for S&R": "CV_DnnImagesFromBlob"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "CV_CastArray",
+      "pos": [
+        1759,
+        631.9617712503361
+      ],
+      "size": [
+        329.140625,
+        86
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "title": "CV Cast Array (uint8: clip to 0-255, no abs)",
+      "properties": {
+        "Node name for S&R": "CV_CastArray"
+      },
+      "widgets_values": [
+        "uint8"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_CVToImage",
+      "pos": [
+        2098,
+        737.1857665437934
+      ],
+      "size": [
+        323.203125,
+        106
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "CV Array -> Image (RGB)",
+      "properties": {
+        "Node name for S&R": "CV_CVToImage"
+      },
+      "widgets_values": [
+        "RGB"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "PreviewImage",
+      "pos": [
+        2469,
+        380
+      ],
+      "size": [
+        320,
+        320
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Stylized (mosaic)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "CV_IndexBatch",
+      "pos": [
+        1423,
+        526.7855618939592
+      ],
+      "size": [
+        325.75,
+        86
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "Index Batch (pick frame 0)",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 12,
+      "type": "Note",
+      "pos": [
+        42,
+        769.9385908811491
+      ],
+      "size": [
+        557.25,
+        170.90625
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "dog_leaping.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Dog Leaping\nCreator: Harry Walker (photographer, 1894-1971), 1920s\nLicense: Public domain (not copyrighted)\nSource:  https://commons.wikimedia.org/wiki/File:Dog_Leaping.jpg\nSize:    960x1645 (960px thumbnail render, downscaled from original 3168x5430)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 13,
+      "type": "MarkdownNote",
+      "pos": [
+        965.84641759443,
+        580.5263613577176
+      ],
+      "size": [
+        442.703125,
+        102
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Model: mosaic-9.onnx",
+      "properties": {},
+      "widgets_values": [
+        "mosaic-9.onnx at\nhttps://huggingface.co/onnxmodelzoo/mosaic-9\n\nSwap in eudnie.onnx / candy-9.onnx / rain-princess-9.onnx / pointilism-9.onnx (same preprocessing) for the other styles."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      8,
+      5,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      11,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      6,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.3415067276825359,
+      "offset": [
+        398.4028848111749,
+        1195.4197366024
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

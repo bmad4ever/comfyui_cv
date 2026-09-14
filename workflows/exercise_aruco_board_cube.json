@@ -1,0 +1,773 @@
+{
+  "id": "94161db3-b323-4672-906c-ea486040f727",
+  "revision": 0,
+  "last_node_id": 18,
+  "last_link_id": 36,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        48,
+        -151.34899999999956
+      ],
+      "size": [
+        704,
+        316
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Augmented reality: a virtual cube on an ArUco marker board\n\n1. 'CV ArUco Detect Markers' finds every marker of the chosen dictionary (here DICT_6X6_250) and returns their image corners + ids. It is failure-tolerant: no markers -> count 0, empty arrays.\n2. 'CV ArUco Draw Markers' overlays the detected outlines and ids (visualization only).\n3. 'CV ArUco Board Pose (Average)' solves each marker's pose (IPPE_SQUARE) and AVERAGES them - rotation matrices meaned + re-orthonormalized (SVD), translations meaned to the board centroid. The planar pose flip is resolved per marker (normal facing the camera) so a stray marker cannot skew the mean. 'CV Camera Matrix' supplies approximate intrinsics (fx=fy=image width, principal point = image center). marker_length sets the world unit.\n4. A virtual cube ('CV Points', 3D, +z = up out of the board, centered on the centroid) is projected with cv2.projectPoints and drawn as a single polyline through its 12 edges ('Draw Polygon', open).\n5. Basic data handling 'if/else' gates the cube on 'found': without markers the marker overlay passes through unchanged.\n\nInspect the recovered board pose (rvec/tvec) as text."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Board photo",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "aruco_board_5x7_DICT_6X6_250.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_ImageToCV",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            2,
+            3
+          ]
+        }
+      ],
+      "title": "Photo -> BGR array",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ArucoDetectMarkers",
+      "pos": [
+        763,
+        323.583470594339
+      ],
+      "size": [
+        260,
+        126
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "links": [
+            4,
+            6
+          ]
+        },
+        {
+          "name": "ids",
+          "type": "NPARRAY",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV ArUco Detect Markers]",
+      "properties": {
+        "Node name for S&R": "CV_ArucoDetectMarkers"
+      },
+      "widgets_values": [
+        "DICT_6X6_250"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_ArucoDrawMarkers",
+      "pos": [
+        1150.2072133930644,
+        260.18939105490983
+      ],
+      "size": [
+        381,
+        126
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 3
+        },
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "link": 4
+        },
+        {
+          "name": "ids",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            12,
+            32
+          ]
+        }
+      ],
+      "title": "[CV ArUco Draw Markers] Draw markers + ids",
+      "properties": {
+        "Node name for S&R": "CV_ArucoDrawMarkers"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "CV_CameraMatrix",
+      "pos": [
+        767,
+        542.1116059433876
+      ],
+      "size": [
+        252.078125,
+        170
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            7,
+            35
+          ]
+        }
+      ],
+      "title": "Approx camera matrix",
+      "properties": {
+        "Node name for S&R": "CV_CameraMatrix"
+      },
+      "widgets_values": [
+        2666.7,
+        2250,
+        960,
+        540
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_ArucoBoardPose",
+      "pos": [
+        1093,
+        621.7051331620052
+      ],
+      "size": [
+        504.3125,
+        126
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "link": 6
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "links": [
+            9,
+            36
+          ]
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "links": [
+            10
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": [
+            33
+          ]
+        }
+      ],
+      "title": "[CV ArUco Board Pose (Average)] Board pose (average markers)",
+      "properties": {
+        "Node name for S&R": "CV_ArucoBoardPose"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_PointsLiteral",
+      "pos": [
+        1236.6173737790934,
+        70.57409719847621
+      ],
+      "size": [
+        291.09375,
+        142
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Virtual cube (3D points)",
+      "properties": {
+        "Node name for S&R": "CV_PointsLiteral"
+      },
+      "widgets_values": [
+        "[[-1, -1, 0], [1, -1, 0], [1, 1, 0], [-1, 1, 0], [-1, -1, 0], [-1, -1, 2], [1, -1, 2], [1, 1, 2], [-1, 1, 2], [-1, -1, 2], [1, -1, 2], [1, -1, 0], [1, 1, 0], [1, 1, 2], [-1, 1, 2], [-1, 1, 0]]",
+        "float32"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "cv2_projectPoints",
+      "pos": [
+        1669.3796251139834,
+        378.0063167072418
+      ],
+      "size": [
+        259.65625,
+        166
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "objectPoints",
+          "type": "NPARRAY",
+          "link": 8
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 9
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 10
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 35
+        },
+        {
+          "name": "distCoeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "imagePoints",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "jacobian",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "Project cube to image",
+      "properties": {
+        "Node name for S&R": "cv2_projectPoints"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_DrawPolygon",
+      "pos": [
+        1967.6173737790934,
+        240
+      ],
+      "size": [
+        244.53125,
+        198
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Draw cube wireframe",
+      "properties": {
+        "Node name for S&R": "CV_DrawPolygon"
+      },
+      "widgets_values": [
+        "(0, 255, 0)",
+        2,
+        false,
+        "solid"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_CVPreview",
+      "pos": [
+        2602.6173737790937,
+        243.15421941939255
+      ],
+      "size": [
+        290,
+        342
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "AR result (cube on board)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 14,
+      "type": "PreviewAny",
+      "pos": [
+        1291.388642823185,
+        796.815538264765
+      ],
+      "size": [
+        302.8125,
+        162
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect board pose (rvec)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 15,
+      "type": "ComfySwitchNode",
+      "pos": [
+        2278.6173737790937,
+        241.43033607298634
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "on_false",
+          "type": "NPARRAY",
+          "link": 32
+        },
+        {
+          "name": "on_true",
+          "type": "NPARRAY",
+          "link": 31
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "NPARRAY",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        false
+      ]
+    },
+    {
+      "id": 18,
+      "type": "Note",
+      "pos": [
+        44,
+        622.4790960467211
+      ],
+      "size": [
+        480.796875,
+        149.609375
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "aruco_board_5x7_DICT_6X6_250.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   aruco_board_5x7_DICT_6x6_250.jpg (rendered in Blender)\nCreator: bmad4ever\nLicense: CC0 - https://creativecommons.org/publicdomain/zero/1.0/\nSource:  synthetic (Blender render)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      3,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      4,
+      0,
+      5,
+      1,
+      "NPARRAY"
+    ],
+    [
+      5,
+      4,
+      1,
+      5,
+      2,
+      "NPARRAY"
+    ],
+    [
+      6,
+      4,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      7,
+      6,
+      0,
+      7,
+      1,
+      "NPARRAY"
+    ],
+    [
+      8,
+      8,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      9,
+      7,
+      0,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      10,
+      7,
+      1,
+      9,
+      2,
+      "NPARRAY"
+    ],
+    [
+      12,
+      5,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      9,
+      0,
+      10,
+      1,
+      "NPARRAY"
+    ],
+    [
+      31,
+      10,
+      0,
+      15,
+      1,
+      "NPARRAY"
+    ],
+    [
+      32,
+      5,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      33,
+      7,
+      2,
+      15,
+      2,
+      "BOOLEAN"
+    ],
+    [
+      34,
+      15,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      35,
+      6,
+      0,
+      9,
+      3,
+      "NPARRAY"
+    ],
+    [
+      36,
+      7,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.3558410273836756,
+      "offset": [
+        477.93526165119795,
+        779.9086282128079
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

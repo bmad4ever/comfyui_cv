@@ -1,0 +1,1364 @@
+{
+  "revision": 0,
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "9c1e5f38-4b07-4a62-8d5e-71f3c206a94b",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        343.2258064516129,
+        154.70967741935488
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "plate",
+          "name": "plate",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "shot",
+          "name": "shot",
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "aligned",
+          "name": "aligned",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "background_mask",
+          "name": "background_mask",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "coverage",
+          "name": "coverage",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "found",
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "CV Plate Align (Geometric + Photometric)",
+      "properties": {
+        "proxyWidgets": [],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "9c1e5f38-4b07-4a62-8d5e-71f3c206a94b",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 11,
+          "lastLinkId": 127,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Plate Align (Geometric + Photometric)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -471.51903237282096,
+            200,
+            128,
+            88
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2165.0088936321586,
+            242.5044468160797,
+            151.828125,
+            128.00000000000003
+          ]
+        },
+        "inputs": [
+          {
+            "id": "d702c959-e067-56ca-8f36-00c08ba8ec87",
+            "name": "plate",
+            "type": "NPARRAY",
+            "linkIds": [
+              102,
+              110,
+              115,
+              117
+            ],
+            "localized_name": "plate",
+            "pos": [
+              -367.51903237282096,
+              224
+            ]
+          },
+          {
+            "id": "025e09a5-4b65-5355-a442-a862906f4f0b",
+            "name": "shot",
+            "type": "NPARRAY",
+            "linkIds": [
+              101,
+              103,
+              123
+            ],
+            "localized_name": "shot",
+            "pos": [
+              -367.51903237282096,
+              244
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "3c14b307-a0e5-5eec-9fe6-6b5356a374f6",
+            "name": "aligned",
+            "type": "NPARRAY",
+            "linkIds": [
+              124
+            ],
+            "localized_name": "aligned",
+            "pos": [
+              2189.0088936321586,
+              266.50444681607974
+            ]
+          },
+          {
+            "id": "15510053-6c55-5a46-a126-c78bb53c4e9f",
+            "name": "background_mask",
+            "type": "NPARRAY",
+            "linkIds": [
+              125
+            ],
+            "localized_name": "background_mask",
+            "pos": [
+              2189.0088936321586,
+              286.50444681607974
+            ]
+          },
+          {
+            "id": "58ce0a8f-c4c0-5237-9c3e-196018d8c4b7",
+            "name": "coverage",
+            "type": "NPARRAY",
+            "linkIds": [
+              126
+            ],
+            "localized_name": "coverage",
+            "pos": [
+              2189.0088936321586,
+              306.50444681607974
+            ]
+          },
+          {
+            "id": "5617526e-ef55-5ec8-a2c9-e1d4a4365f19",
+            "name": "found",
+            "type": "BOOLEAN",
+            "linkIds": [
+              127
+            ],
+            "localized_name": "found",
+            "pos": [
+              2189.0088936321586,
+              326.50444681607974
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 2,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              40,
+              40
+            ],
+            "size": [
+              290,
+              148
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "height",
+                "name": "height",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "localized_name": "width",
+                "name": "width",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "name": "size",
+                "type": "CV_TUPLE",
+                "links": [
+                  112,
+                  120
+                ]
+              }
+            ],
+            "title": "Take's size",
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            }
+          },
+          {
+            "id": 5,
+            "type": "CV_MatchFeatures",
+            "pos": [
+              390,
+              240
+            ],
+            "size": [
+              303.5142578125,
+              460
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "keypoints_a",
+                "name": "keypoints_a",
+                "type": "CV_KEYPOINTS",
+                "link": 104
+              },
+              {
+                "localized_name": "descriptors_a",
+                "name": "descriptors_a",
+                "type": "NPARRAY",
+                "link": 105
+              },
+              {
+                "localized_name": "keypoints_b",
+                "name": "keypoints_b",
+                "type": "CV_KEYPOINTS",
+                "link": 106
+              },
+              {
+                "localized_name": "descriptors_b",
+                "name": "descriptors_b",
+                "type": "NPARRAY",
+                "link": 107
+              },
+              {
+                "localized_name": "matcher",
+                "name": "matcher",
+                "type": "COMBO",
+                "widget": {
+                  "name": "matcher"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "norm_type",
+                "name": "norm_type",
+                "type": "COMBO",
+                "widget": {
+                  "name": "norm_type"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "match_mode",
+                "name": "match_mode",
+                "type": "COMBO",
+                "widget": {
+                  "name": "match_mode"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "ratio",
+                "name": "ratio",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "ratio"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "k",
+                "name": "k",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "k"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "radius",
+                "name": "radius",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "radius"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "flann_algorithm",
+                "name": "flann_algorithm",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "flann_algorithm"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "flann_trees",
+                "name": "flann_trees",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "flann_trees"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "flann_checks",
+                "name": "flann_checks",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "flann_checks"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "flann_table_number",
+                "name": "flann_table_number",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "flann_table_number"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "flann_key_size",
+                "name": "flann_key_size",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "flann_key_size"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "flann_multi_probe_level",
+                "name": "flann_multi_probe_level",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "flann_multi_probe_level"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "matches",
+                "name": "matches",
+                "type": "CV_MATCHES",
+                "links": null
+              },
+              {
+                "localized_name": "points_a",
+                "name": "points_a",
+                "type": "NPARRAY",
+                "links": [
+                  108
+                ]
+              },
+              {
+                "localized_name": "points_b",
+                "name": "points_b",
+                "type": "NPARRAY",
+                "links": [
+                  109
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Match (subject keypoints will not agree)",
+            "properties": {
+              "Node name for S&R": "CV_MatchFeatures"
+            },
+            "widgets_values": [
+              "BFMatcher",
+              "auto",
+              "ratio test (Lowe)",
+              0.75,
+              2,
+              0,
+              "auto",
+              5,
+              50,
+              6,
+              12,
+              1
+            ]
+          },
+          {
+            "id": 6,
+            "type": "CV_FindHomography",
+            "pos": [
+              740,
+              240
+            ],
+            "size": [
+              290,
+              226
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points_a",
+                "name": "points_a",
+                "type": "NPARRAY",
+                "link": 108
+              },
+              {
+                "localized_name": "points_b",
+                "name": "points_b",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "localized_name": "method",
+                "name": "method",
+                "type": "COMBO",
+                "widget": {
+                  "name": "method"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "reproj_threshold",
+                "name": "reproj_threshold",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "reproj_threshold"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "min_inliers",
+                "name": "min_inliers",
+                "type": "INT",
+                "widget": {
+                  "name": "min_inliers"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "homography",
+                "name": "homography",
+                "type": "NPARRAY",
+                "links": [
+                  111,
+                  119
+                ]
+              },
+              {
+                "localized_name": "inlier_mask",
+                "name": "inlier_mask",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "inlier_count",
+                "name": "inlier_count",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "found",
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": [
+                  116,
+                  127
+                ]
+              }
+            ],
+            "title": "RANSAC homography plate -> take",
+            "properties": {
+              "Node name for S&R": "CV_FindHomography"
+            },
+            "widgets_values": [
+              "RANSAC",
+              2,
+              15
+            ]
+          },
+          {
+            "id": 7,
+            "type": "cv2_warpPerspective",
+            "pos": [
+              1090,
+              240
+            ],
+            "size": [
+              290,
+              356
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 110
+              },
+              {
+                "localized_name": "M",
+                "name": "M",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 111
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "dsize"
+                },
+                "link": 112
+              },
+              {
+                "localized_name": "flags",
+                "name": "flags",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "flags"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderMode",
+                "name": "borderMode",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "borderMode"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderValue",
+                "name": "borderValue",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "borderValue"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  114
+                ]
+              }
+            ],
+            "title": "Warp the plate into the take's frame",
+            "properties": {
+              "Node name for S&R": "cv2_warpPerspective"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              "INTER_LANCZOS4",
+              "BORDER_REPLICATE",
+              "(0, 0, 0, 0)",
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 8,
+            "type": "ComfySwitchNode",
+            "pos": [
+              1440,
+              240
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "*",
+                "link": 115
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "*",
+                "link": 114
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 116
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "*",
+                "links": [
+                  122
+                ]
+              }
+            ],
+            "title": "Warped, or the raw plate",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              true
+            ]
+          },
+          {
+            "id": 9,
+            "type": "CV_ConstantLike",
+            "pos": [
+              740,
+              640
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 117
+              },
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "INT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "type": "COMBO",
+                "widget": {
+                  "name": "channels"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  118
+                ]
+              }
+            ],
+            "title": "All-white, plate-sized",
+            "properties": {
+              "Node name for S&R": "CV_ConstantLike"
+            },
+            "widgets_values": [
+              255,
+              "grayscale (single channel)"
+            ]
+          },
+          {
+            "id": 10,
+            "type": "cv2_warpPerspective",
+            "pos": [
+              1090,
+              640
+            ],
+            "size": [
+              290,
+              356
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 118
+              },
+              {
+                "localized_name": "M",
+                "name": "M",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 119
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "dsize"
+                },
+                "link": 120
+              },
+              {
+                "localized_name": "flags",
+                "name": "flags",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "flags"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderMode",
+                "name": "borderMode",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "borderMode"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderValue",
+                "name": "borderValue",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "borderValue"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  126
+                ]
+              }
+            ],
+            "title": "Where the plate really has data",
+            "properties": {
+              "Node name for S&R": "cv2_warpPerspective"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              "INTER_NEAREST",
+              "BORDER_CONSTANT",
+              "(0, 0, 0, 0)",
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 11,
+            "type": "CV_PhotometricAlign",
+            "pos": [
+              1790,
+              240
+            ],
+            "size": [
+              290,
+              296
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 122
+              },
+              {
+                "localized_name": "reference",
+                "name": "reference",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 123
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": null
+              },
+              {
+                "localized_name": "model",
+                "name": "model",
+                "type": "COMBO",
+                "widget": {
+                  "name": "model"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "scope",
+                "name": "scope",
+                "type": "COMBO",
+                "widget": {
+                  "name": "scope"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "inlier_fraction",
+                "name": "inlier_fraction",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "inlier_fraction"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "iterations",
+                "name": "iterations",
+                "type": "INT",
+                "widget": {
+                  "name": "iterations"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "aligned",
+                "name": "aligned",
+                "type": "*",
+                "links": [
+                  124
+                ]
+              },
+              {
+                "localized_name": "gain",
+                "name": "gain",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "bias",
+                "name": "bias",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "inlier_mask",
+                "name": "inlier_mask",
+                "type": "NPARRAY",
+                "links": [
+                  125
+                ]
+              },
+              {
+                "localized_name": "residual",
+                "name": "residual",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "found",
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "Fit the plate's exposure to the take",
+            "properties": {
+              "Node name for S&R": "CV_PhotometricAlign"
+            },
+            "widgets_values": [
+              "gain + bias",
+              "per channel (also fixes white balance)",
+              0.5,
+              3
+            ]
+          },
+          {
+            "id": 3,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              39.85343294201111,
+              231.20597652081108
+            ],
+            "size": [
+              290,
+              204
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 102
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": null
+              },
+              {
+                "localized_name": "detector",
+                "name": "detector",
+                "type": "COMBO",
+                "widget": {
+                  "name": "detector"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "max_features",
+                "name": "max_features",
+                "type": "INT",
+                "widget": {
+                  "name": "max_features"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "clahe",
+                "name": "clahe",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "clahe"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  104
+                ]
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  105
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "SIFT on the plate",
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "SIFT",
+              2000,
+              false
+            ]
+          },
+          {
+            "id": 4,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              41.46567057986483,
+              481.03877623621497
+            ],
+            "size": [
+              290,
+              204
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 103
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": null
+              },
+              {
+                "localized_name": "detector",
+                "name": "detector",
+                "type": "COMBO",
+                "widget": {
+                  "name": "detector"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "max_features",
+                "name": "max_features",
+                "type": "INT",
+                "widget": {
+                  "name": "max_features"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "clahe",
+                "name": "clahe",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "clahe"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  106
+                ]
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  107
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "SIFT on the take",
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "SIFT",
+              2000,
+              false
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 105,
+            "origin_id": 3,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 2,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 107,
+            "origin_id": 4,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": 5,
+            "origin_slot": 1,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": 5,
+            "origin_slot": 2,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": 2,
+            "origin_slot": 4,
+            "target_id": 7,
+            "target_slot": 2,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 114,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 6,
+            "origin_slot": 3,
+            "target_id": 8,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 117,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 118,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 2,
+            "origin_slot": 4,
+            "target_id": 10,
+            "target_slot": 2,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 122,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 123,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 124,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 125,
+            "origin_id": 11,
+            "origin_slot": 3,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 127,
+            "origin_id": 6,
+            "origin_slot": 3,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "BOOLEAN"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "extra": {}
+}

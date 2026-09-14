@@ -1,0 +1,1953 @@
+{
+  "revision": 0,
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "c04f7a63-1b8d-4e59-9a27-5f30b8e6d142",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        359.3934209462366,
+        153.48552632258065
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "guide",
+          "name": "guide",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "coverage",
+          "name": "coverage",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "noise_floor",
+          "name": "noise_floor",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "gate",
+          "name": "gate",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "CV Matte Cleanup (Noise Floor + Speckle)",
+      "properties": {
+        "proxyWidgets": [],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "c04f7a63-1b8d-4e59-9a27-5f30b8e6d142",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 21,
+          "lastLinkId": 131,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Matte Cleanup (Noise Floor + Speckle)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            128,
+            128
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            5353.809487542262,
+            253.0979653661953,
+            128,
+            88
+          ]
+        },
+        "inputs": [
+          {
+            "id": "87bbcf02-06e4-53ef-957d-045ad2059cdc",
+            "name": "alpha",
+            "type": "NPARRAY",
+            "linkIds": [
+              106
+            ],
+            "localized_name": "alpha",
+            "pos": [
+              144,
+              224
+            ]
+          },
+          {
+            "id": "1de33245-59c1-568d-9db4-530e139b9d13",
+            "name": "guide",
+            "type": "NPARRAY",
+            "linkIds": [
+              124
+            ],
+            "localized_name": "guide",
+            "pos": [
+              144,
+              244
+            ]
+          },
+          {
+            "id": "2c6cc579-863b-5bca-9dc2-57366ded4d88",
+            "name": "coverage",
+            "type": "NPARRAY",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "coverage",
+            "pos": [
+              144,
+              264
+            ]
+          },
+          {
+            "id": "fb645b76-a6e2-5b2e-b909-e4a0ea5b5f90",
+            "name": "noise_floor",
+            "type": "FLOAT",
+            "linkIds": [
+              108,
+              109,
+              115
+            ],
+            "localized_name": "noise_floor",
+            "pos": [
+              144,
+              284
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "07f93c5b-c1d0-5fdf-ae5c-4afd12ee63cb",
+            "name": "alpha",
+            "type": "NPARRAY",
+            "linkIds": [
+              130
+            ],
+            "localized_name": "alpha",
+            "pos": [
+              5377.809487542262,
+              277.0979653661953
+            ]
+          },
+          {
+            "id": "f530de82-b2c9-5e4b-b0d5-453dbf3a5857",
+            "name": "gate",
+            "type": "NPARRAY",
+            "linkIds": [
+              131
+            ],
+            "localized_name": "gate",
+            "pos": [
+              5377.809487542262,
+              297.0979653661953
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 2,
+            "type": "cv2_getStructuringElement",
+            "pos": [
+              40,
+              440
+            ],
+            "size": [
+              290,
+              212
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "shape",
+                "name": "shape",
+                "type": "COMBO",
+                "widget": {
+                  "name": "shape"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "ksize",
+                "name": "ksize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "ksize"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  102
+                ]
+              }
+            ],
+            "title": "Coverage margin",
+            "properties": {
+              "Node name for S&R": "cv2_getStructuringElement"
+            },
+            "widgets_values": [
+              "MORPH_ELLIPSE",
+              "(5, 5)",
+              "(-1, -1)"
+            ]
+          },
+          {
+            "id": 3,
+            "type": "cv2_erode",
+            "pos": [
+              390,
+              440
+            ],
+            "size": [
+              290,
+              312
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 101
+              },
+              {
+                "localized_name": "kernel",
+                "name": "kernel",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 102
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "iterations",
+                "name": "iterations",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "iterations"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderType",
+                "name": "borderType",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "borderType"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderValue",
+                "name": "borderValue",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "borderValue"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  103
+                ]
+              }
+            ],
+            "title": "Trim the coverage edge",
+            "properties": {
+              "Node name for S&R": "cv2_erode"
+            },
+            "widgets_values": [
+              "(-1, -1)",
+              1,
+              "BORDER_DEFAULT",
+              "(0, 0, 0, 0)"
+            ]
+          },
+          {
+            "id": 4,
+            "type": "CV_CastArray",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  104,
+                  105
+                ]
+              }
+            ],
+            "title": "Coverage as float32",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ]
+          },
+          {
+            "id": 5,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 104
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 105
+              },
+              {
+                "localized_name": "alpha",
+                "name": "alpha",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "beta",
+                "name": "beta",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "beta"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "gamma",
+                "name": "gamma",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "gamma"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "title": "Coverage in 0..1",
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              0.00392156862745098,
+              0,
+              0,
+              "same as input"
+            ]
+          },
+          {
+            "id": 6,
+            "type": "cv2_multiply",
+            "pos": [
+              1440,
+              240
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 106
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 107
+              },
+              {
+                "localized_name": "scale",
+                "name": "scale",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "scale"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  110,
+                  111
+                ]
+              }
+            ],
+            "title": "Alpha only where the plate has data",
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          },
+          {
+            "id": 7,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1440,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 108
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "localized_name": "expression",
+                "name": "expression",
+                "type": "STRING",
+                "widget": {
+                  "name": "expression"
+                },
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  112
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "Dead-zone gain",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "1 / (1 - a)"
+            ]
+          },
+          {
+            "id": 8,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1440,
+              840
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 109
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "localized_name": "expression",
+                "name": "expression",
+                "type": "STRING",
+                "widget": {
+                  "name": "expression"
+                },
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  113
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "Dead-zone offset",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "-a / (1 - a)"
+            ]
+          },
+          {
+            "id": 9,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1790,
+              240
+            ],
+            "size": [
+              290,
+              252
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 110
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 111
+              },
+              {
+                "localized_name": "alpha",
+                "name": "alpha",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": 112
+              },
+              {
+                "localized_name": "beta",
+                "name": "beta",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "beta"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "gamma",
+                "name": "gamma",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "gamma"
+                },
+                "link": 113
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  114
+                ]
+              }
+            ],
+            "title": "(alpha - floor) / (1 - floor)",
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              "same as input"
+            ]
+          },
+          {
+            "id": 10,
+            "type": "cv2_threshold",
+            "pos": [
+              2140,
+              240
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 114
+              },
+              {
+                "localized_name": "thresh",
+                "name": "thresh",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "thresh"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "maxval",
+                "name": "maxval",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "maxval"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "type",
+                "name": "type",
+                "type": "STRING",
+                "widget": {
+                  "name": "type"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  116,
+                  122
+                ]
+              }
+            ],
+            "title": "... clipped at 0",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0,
+              1,
+              "THRESH_TOZERO"
+            ]
+          },
+          {
+            "id": 11,
+            "type": "ComfyMathExpression",
+            "pos": [
+              2140,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 115
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "localized_name": "expression",
+                "name": "expression",
+                "type": "STRING",
+                "widget": {
+                  "name": "expression"
+                },
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  117
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "Core threshold",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "2 * a"
+            ]
+          },
+          {
+            "id": 12,
+            "type": "cv2_threshold",
+            "pos": [
+              2490,
+              240
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 116
+              },
+              {
+                "localized_name": "thresh",
+                "name": "thresh",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "thresh"
+                },
+                "link": 117
+              },
+              {
+                "localized_name": "maxval",
+                "name": "maxval",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "maxval"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "type",
+                "name": "type",
+                "type": "STRING",
+                "widget": {
+                  "name": "type"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  118
+                ]
+              }
+            ],
+            "title": "Confident core",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0,
+              1,
+              "THRESH_BINARY"
+            ]
+          },
+          {
+            "id": 13,
+            "type": "cv2_getStructuringElement",
+            "pos": [
+              2490,
+              640
+            ],
+            "size": [
+              290,
+              212
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "shape",
+                "name": "shape",
+                "type": "COMBO",
+                "widget": {
+                  "name": "shape"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "ksize",
+                "name": "ksize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "ksize"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  119
+                ]
+              }
+            ],
+            "title": "Speckle size",
+            "properties": {
+              "Node name for S&R": "cv2_getStructuringElement"
+            },
+            "widgets_values": [
+              "MORPH_ELLIPSE",
+              "(5, 5)",
+              "(-1, -1)"
+            ]
+          },
+          {
+            "id": 14,
+            "type": "cv2_morphologyEx",
+            "pos": [
+              2840,
+              240
+            ],
+            "size": [
+              290,
+              338
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 118
+              },
+              {
+                "localized_name": "kernel",
+                "name": "kernel",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 119
+              },
+              {
+                "localized_name": "op",
+                "name": "op",
+                "type": "COMBO",
+                "widget": {
+                  "name": "op"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "iterations",
+                "name": "iterations",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "iterations"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderType",
+                "name": "borderType",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "borderType"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderValue",
+                "name": "borderValue",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "borderValue"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  120
+                ]
+              }
+            ],
+            "title": "Drop isolated pixels",
+            "properties": {
+              "Node name for S&R": "cv2_morphologyEx"
+            },
+            "widgets_values": [
+              "MORPH_OPEN",
+              "(-1, -1)",
+              1,
+              "BORDER_DEFAULT",
+              "(0, 0, 0, 0)"
+            ]
+          },
+          {
+            "id": 15,
+            "type": "cv2_getStructuringElement",
+            "pos": [
+              2840,
+              640
+            ],
+            "size": [
+              290,
+              212
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "shape",
+                "name": "shape",
+                "type": "COMBO",
+                "widget": {
+                  "name": "shape"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "ksize",
+                "name": "ksize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "ksize"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  121
+                ]
+              }
+            ],
+            "title": "Soft-band margin",
+            "properties": {
+              "Node name for S&R": "cv2_getStructuringElement"
+            },
+            "widgets_values": [
+              "MORPH_ELLIPSE",
+              "(7, 7)",
+              "(-1, -1)"
+            ]
+          },
+          {
+            "id": 16,
+            "type": "cv2_dilate",
+            "pos": [
+              3190,
+              240
+            ],
+            "size": [
+              290,
+              312
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 120
+              },
+              {
+                "localized_name": "kernel",
+                "name": "kernel",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 121
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "iterations",
+                "name": "iterations",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "iterations"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderType",
+                "name": "borderType",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "borderType"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderValue",
+                "name": "borderValue",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "borderValue"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  123,
+                  127,
+                  131
+                ]
+              }
+            ],
+            "title": "Gate: the subject plus its soft band",
+            "properties": {
+              "Node name for S&R": "cv2_dilate"
+            },
+            "widgets_values": [
+              "(-1, -1)",
+              1,
+              "BORDER_DEFAULT",
+              "(0, 0, 0, 0)"
+            ]
+          },
+          {
+            "id": 17,
+            "type": "cv2_multiply",
+            "pos": [
+              3540,
+              240
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 122
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 123
+              },
+              {
+                "localized_name": "scale",
+                "name": "scale",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "scale"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  125
+                ]
+              }
+            ],
+            "title": "Alpha inside the gate",
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          },
+          {
+            "id": 18,
+            "type": "cv2_ximgproc_guidedFilter",
+            "pos": [
+              3890,
+              240
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "guide",
+                "name": "guide",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 124
+              },
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 125
+              },
+              {
+                "localized_name": "radius",
+                "name": "radius",
+                "type": "INT",
+                "widget": {
+                  "name": "radius"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "eps",
+                "name": "eps",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "eps"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "dDepth",
+                "name": "dDepth",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "dDepth"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "scale",
+                "name": "scale",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "scale"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  126
+                ]
+              }
+            ],
+            "title": "Snap alpha to the take's edges",
+            "properties": {
+              "Node name for S&R": "cv2_ximgproc_guidedFilter"
+            },
+            "widgets_values": [
+              4,
+              0.0001,
+              "same as input",
+              1
+            ]
+          },
+          {
+            "id": 19,
+            "type": "cv2_multiply",
+            "pos": [
+              4240,
+              240
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 126
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 127
+              },
+              {
+                "localized_name": "scale",
+                "name": "scale",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "scale"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  128
+                ]
+              }
+            ],
+            "title": "... still inside the gate",
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          },
+          {
+            "id": 20,
+            "type": "cv2_threshold",
+            "pos": [
+              4590,
+              240
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 18,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 128
+              },
+              {
+                "localized_name": "thresh",
+                "name": "thresh",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "thresh"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "maxval",
+                "name": "maxval",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "maxval"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "type",
+                "name": "type",
+                "type": "STRING",
+                "widget": {
+                  "name": "type"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  129
+                ]
+              }
+            ],
+            "title": "alpha < 0 -> 0",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0,
+              1,
+              "THRESH_TOZERO"
+            ]
+          },
+          {
+            "id": 21,
+            "type": "cv2_threshold",
+            "pos": [
+              4940,
+              240
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 19,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 129
+              },
+              {
+                "localized_name": "thresh",
+                "name": "thresh",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "thresh"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "maxval",
+                "name": "maxval",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "maxval"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "type",
+                "name": "type",
+                "type": "STRING",
+                "widget": {
+                  "name": "type"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  130
+                ]
+              }
+            ],
+            "title": "alpha > 1 -> 1",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              1,
+              1,
+              "THRESH_TRUNC"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 109,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 110,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 113,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 4,
+            "type": "FLOAT"
+          },
+          {
+            "id": 114,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 116,
+            "origin_id": 10,
+            "origin_slot": 1,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 117,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 118,
+            "origin_id": 12,
+            "origin_slot": 1,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 122,
+            "origin_id": 10,
+            "origin_slot": 1,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 123,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 124,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 18,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 125,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": 19,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 127,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 19,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": 19,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 129,
+            "origin_id": 20,
+            "origin_slot": 1,
+            "target_id": 21,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 130,
+            "origin_id": 21,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 131,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "extra": {}
+}

@@ -1,0 +1,1380 @@
+{
+  "id": "9d4e1f72-3a86-4b05-bc92-617f08d3a4e1",
+  "revision": 0,
+  "last_node_id": 21,
+  "last_link_id": 24,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        41.47656714871745,
+        -27.54532524019386
+      ],
+      "size": [
+        992.25,
+        219.59375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Exercise: homography estimation with RANSAC and local features\n\nTwo photos of the same planar object (here a boxed product seen among clutter vs. a clean frontal shot). The 'Feature Match + RANSAC Homography' subgraph detects ORB features in both images, matches them with a brute-force matcher + Lowe ratio test, and estimates the homography with 'CV Find Homography (RANSAC)' (reprojection threshold 3 px). The estimation is failure-tolerant: with too few matches it outputs found=false and an identity homography instead of stopping the workflow. Image A is then warped onto image B's frame (cv2.warpPerspective, output size taken from image B via 'CV Array Size') and blended 50/50 with cv2.addWeighted - if the homography is right, the two images line up in the overlay.\n\nDebug outputs: the side-by-side inlier match drawing, the 3x3 homography matrix ('Inspect CV Data') and the RANSAC inlier count. Everything between the loaders and the previews stays in raw ndarray form - no tensor round trips."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load Image A (will be warped)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "box_in_scene.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        37.94361540320193,
+        861.7900193567472
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load Image B (target frame)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "box.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ImageToCV",
+      "pos": [
+        420,
+        300
+      ],
+      "size": [
+        310,
+        173.3125
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_ImageToCV",
+      "pos": [
+        417.575576344086,
+        750.005980645161
+      ],
+      "size": [
+        310,
+        173.3125
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            4,
+            9,
+            12
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "7f3d9a2c-5b1e-4c8a-9f60-3e2a8d4b7c15",
+      "pos": [
+        805.4281505376343,
+        305.3908817204307
+      ],
+      "size": [
+        320,
+        172
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "type": "NPARRAY",
+          "link": 3
+        },
+        {
+          "name": "image_b",
+          "type": "NPARRAY",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "homography",
+          "type": "NPARRAY",
+          "links": [
+            5,
+            23
+          ]
+        },
+        {
+          "name": "inlier_mask",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "matches_vis",
+          "type": "NPARRAY",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "inlier_count",
+          "type": "INT",
+          "links": [
+            24
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 7,
+      "type": "CV_CVSize",
+      "pos": [
+        882.1692677967962,
+        751.2165962899883
+      ],
+      "size": [
+        240,
+        120
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "dsize",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "size",
+          "type": "CV_TUPLE",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "CV Array Size (B frame size)",
+      "properties": {
+        "Node name for S&R": "CV_CVSize"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "cv2_warpPerspective",
+      "pos": [
+        1188.8160860215053,
+        677.870516129031
+      ],
+      "size": [
+        320,
+        294
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 8
+        },
+        {
+          "name": "M",
+          "type": "NPARRAY",
+          "link": 5
+        },
+        {
+          "name": "dsize",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "dsize"
+          },
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "title": "Warp A into B's frame",
+      "properties": {
+        "Node name for S&R": "cv2_warpPerspective"
+      },
+      "widgets_values": [
+        "(512, 512)",
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "cv2_addWeighted",
+      "pos": [
+        1186.3916623655914,
+        1017.8764967741919
+      ],
+      "size": [
+        320,
+        220
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 11
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "Blend warped A over B (50/50)",
+      "properties": {
+        "Node name for S&R": "cv2_addWeighted"
+      },
+      "widgets_values": [
+        0.5,
+        0.5,
+        0,
+        "same as input"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_CVPreview",
+      "pos": [
+        1566.3916623655914,
+        1019.0916989247295
+      ],
+      "size": [
+        320,
+        366.65625
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (registered overlay)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_CVPreview",
+      "pos": [
+        1555.5919569892476,
+        347.8332473118273
+      ],
+      "size": [
+        320,
+        366.65625
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (RANSAC inlier matches)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 14,
+      "type": "PreviewAny",
+      "pos": [
+        1175.1445841395475,
+        101.63695876434741
+      ],
+      "size": [
+        366.59375,
+        225.734375
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (3x3 homography matrix)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 15,
+      "type": "PreviewAny",
+      "pos": [
+        1169.6532962232304,
+        460.6059694303776
+      ],
+      "size": [
+        349.53125,
+        162
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (RANSAC inlier count)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "Note",
+      "pos": [
+        -134.53783375820268,
+        624.0762399073378
+      ],
+      "size": [
+        491.625,
+        195.046875
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "box.png / box_in_scene.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   box.png / box_in_scene.png\nCreator: OpenCV project (sample data)\nLicense: Apache-2.0 (OpenCV) - sample data redistributed with the library\n         https://www.apache.org/licenses/LICENSE-2.0\nSource:  https://github.com/opencv/opencv (samples/data/)\nSize:    box.png 324x223, box_in_scene.png 512x384 (the canonical OpenCV feature-matching / homography pair)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      5,
+      0,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      5,
+      6,
+      0,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      7,
+      6,
+      2,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      8,
+      4,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      9,
+      5,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      7,
+      3,
+      8,
+      2,
+      "CV_TUPLE"
+    ],
+    [
+      11,
+      8,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      5,
+      0,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      13,
+      9,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      6,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      24,
+      6,
+      3,
+      15,
+      0,
+      "INT"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "7f3d9a2c-5b1e-4c8a-9f60-3e2a8d4b7c15",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 21,
+          "lastLinkId": 24,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Feature Match + RANSAC Homography",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -620,
+            320,
+            128,
+            88
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            1367.2156145166227,
+            320,
+            128,
+            148
+          ]
+        },
+        "inputs": [
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d901",
+            "name": "image_a",
+            "type": "NPARRAY",
+            "linkIds": [
+              1,
+              2
+            ],
+            "localized_name": "image_a",
+            "pos": [
+              -516,
+              344
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d902",
+            "name": "image_b",
+            "type": "NPARRAY",
+            "linkIds": [
+              3,
+              4
+            ],
+            "localized_name": "image_b",
+            "pos": [
+              -516,
+              364
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d903",
+            "name": "homography",
+            "type": "NPARRAY",
+            "linkIds": [
+              20
+            ],
+            "localized_name": "homography",
+            "pos": [
+              1391.2156145166227,
+              344
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d904",
+            "name": "inlier_mask",
+            "type": "NPARRAY",
+            "linkIds": [
+              21
+            ],
+            "localized_name": "inlier_mask",
+            "pos": [
+              1391.2156145166227,
+              364
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d905",
+            "name": "matches_vis",
+            "type": "NPARRAY",
+            "linkIds": [
+              17
+            ],
+            "localized_name": "matches_vis",
+            "pos": [
+              1391.2156145166227,
+              384
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d906",
+            "name": "inlier_count",
+            "type": "INT",
+            "linkIds": [
+              18
+            ],
+            "localized_name": "inlier_count",
+            "pos": [
+              1391.2156145166227,
+              404
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d907",
+            "name": "found",
+            "type": "BOOLEAN",
+            "linkIds": [
+              22
+            ],
+            "localized_name": "found",
+            "pos": [
+              1391.2156145166227,
+              424
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 16,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              -380,
+              200
+            ],
+            "size": [
+              300,
+              182
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 1
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  5,
+                  10
+                ]
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  6
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Detect Features A",
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "ORB",
+              2000,
+              false
+            ]
+          },
+          {
+            "id": 17,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              -380,
+              460
+            ],
+            "size": [
+              300,
+              182
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 3
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  7,
+                  11
+                ]
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  8
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Detect Features B",
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "ORB",
+              2000,
+              false
+            ]
+          },
+          {
+            "id": 18,
+            "type": "CV_MatchFeatures",
+            "pos": [
+              40,
+              320
+            ],
+            "size": [
+              320,
+              382
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "keypoints_a",
+                "name": "keypoints_a",
+                "type": "CV_KEYPOINTS",
+                "link": 5
+              },
+              {
+                "localized_name": "descriptors_a",
+                "name": "descriptors_a",
+                "type": "NPARRAY",
+                "link": 6
+              },
+              {
+                "localized_name": "keypoints_b",
+                "name": "keypoints_b",
+                "type": "CV_KEYPOINTS",
+                "link": 7
+              },
+              {
+                "localized_name": "descriptors_b",
+                "name": "descriptors_b",
+                "type": "NPARRAY",
+                "link": 8
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "matches",
+                "name": "matches",
+                "type": "CV_MATCHES",
+                "links": [
+                  12
+                ]
+              },
+              {
+                "localized_name": "points_a",
+                "name": "points_a",
+                "type": "NPARRAY",
+                "links": [
+                  13
+                ]
+              },
+              {
+                "localized_name": "points_b",
+                "name": "points_b",
+                "type": "NPARRAY",
+                "links": [
+                  14
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_MatchFeatures"
+            },
+            "widgets_values": [
+              "BFMatcher",
+              "auto",
+              "ratio test (Lowe)",
+              0.75,
+              2,
+              0,
+              "auto",
+              5,
+              50,
+              6,
+              12,
+              1
+            ]
+          },
+          {
+            "id": 19,
+            "type": "CV_FindHomography",
+            "pos": [
+              460,
+              320
+            ],
+            "size": [
+              320,
+              202
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points_a",
+                "name": "points_a",
+                "type": "NPARRAY",
+                "link": 13
+              },
+              {
+                "localized_name": "points_b",
+                "name": "points_b",
+                "type": "NPARRAY",
+                "link": 14
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "homography",
+                "name": "homography",
+                "type": "NPARRAY",
+                "links": [
+                  20
+                ]
+              },
+              {
+                "localized_name": "inlier_mask",
+                "name": "inlier_mask",
+                "type": "NPARRAY",
+                "links": [
+                  15,
+                  21
+                ]
+              },
+              {
+                "localized_name": "inlier_count",
+                "name": "inlier_count",
+                "type": "INT",
+                "links": [
+                  18
+                ]
+              },
+              {
+                "localized_name": "found",
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": [
+                  22
+                ]
+              }
+            ],
+            "title": "Find Homography (RANSAC, robust)",
+            "properties": {
+              "Node name for S&R": "CV_FindHomography"
+            },
+            "widgets_values": [
+              "RANSAC",
+              3,
+              10
+            ]
+          },
+          {
+            "id": 20,
+            "type": "CV_DrawMatches",
+            "pos": [
+              880,
+              460
+            ],
+            "size": [
+              320,
+              222
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image_a",
+                "name": "image_a",
+                "type": "NPARRAY",
+                "link": 2
+              },
+              {
+                "localized_name": "keypoints_a",
+                "name": "keypoints_a",
+                "type": "CV_KEYPOINTS",
+                "link": 10
+              },
+              {
+                "localized_name": "image_b",
+                "name": "image_b",
+                "type": "NPARRAY",
+                "link": 4
+              },
+              {
+                "localized_name": "keypoints_b",
+                "name": "keypoints_b",
+                "type": "CV_KEYPOINTS",
+                "link": 11
+              },
+              {
+                "localized_name": "matches",
+                "name": "matches",
+                "type": "CV_MATCHES",
+                "link": 12
+              },
+              {
+                "localized_name": "inlier_mask",
+                "name": "inlier_mask",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 15
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  17
+                ]
+              }
+            ],
+            "title": "Draw Matches (inliers only)",
+            "properties": {
+              "Node name for S&R": "CV_DrawMatches"
+            },
+            "widgets_values": [
+              0,
+              "(0, 255, 0)"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 1,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 2,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 4,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 5,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 0,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 6,
+            "origin_id": 16,
+            "origin_slot": 1,
+            "target_id": 18,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 7,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 2,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 8,
+            "origin_id": 17,
+            "origin_slot": 1,
+            "target_id": 18,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 10,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 1,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 11,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 3,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 12,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 4,
+            "type": "CV_MATCHES"
+          },
+          {
+            "id": 13,
+            "origin_id": 18,
+            "origin_slot": 1,
+            "target_id": 19,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 14,
+            "origin_id": 18,
+            "origin_slot": 2,
+            "target_id": 19,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 15,
+            "origin_id": 19,
+            "origin_slot": 1,
+            "target_id": 20,
+            "target_slot": 5,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 17,
+            "origin_id": 20,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 18,
+            "origin_id": 19,
+            "origin_slot": 2,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "INT"
+          },
+          {
+            "id": 20,
+            "origin_id": 19,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 21,
+            "origin_id": 19,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 22,
+            "origin_id": 19,
+            "origin_slot": 3,
+            "target_id": -20,
+            "target_slot": 4,
+            "type": "BOOLEAN"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.37497196782144043,
+      "offset": [
+        613.7099680397497,
+        906.7555626398085
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

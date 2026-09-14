@@ -1,0 +1,695 @@
+{
+  "id": "b7e1f2a4-3c6d-4e9b-8a71-2d5c9f0e4a68",
+  "revision": 0,
+  "last_node_id": 12,
+  "last_link_id": 15,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        47,
+        -7.379679144384955
+      ],
+      "size": [
+        1100,
+        200.578125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "MediaPipe hand-pose estimation (cv2.dnn), two stages.\n\nStage 1 'CV MediaPipe Palm Detect' runs the palm SSD (palm_detection_mediapipe_2023feb.onnx) and outputs one box + 7 palm landmarks per hand, packed as the (N, 19) 'palms' array. Stage 2 'CV MediaPipe Hand Pose' takes that 'palms' array plus the SAME image and regresses the 21 hand keypoints per hand (handpose_estimation_mediapipe_2023feb_int8bq.onnx). Put both .onnx files in ComfyUI/models/onnx and pick them in the model combos.\n\nEverything downstream is visualization, kept in separate nodes: the hand box goes to core 'Draw BBoxes'; then 'CV Draw Connections' draws the skeleton from the 'landmarks' + 'connections' (the MediaPipe HAND_CONNECTIONS edges); 'CV Draw Points' marks the 21 keypoints; 'CV Draw Labels' names them from 'keypoint_names'. Zero palms / zero hands is a valid result (empty outputs). Gesture naming is NOT baked in: build it as a subgraph over the landmarks."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "OK_Sign.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_MPPalmDetect",
+      "pos": [
+        400,
+        240
+      ],
+      "size": [
+        330,
+        296
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "palms",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "palm_points",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "scores",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "palm_count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV MediaPipe Palm Detect]",
+      "properties": {
+        "Node name for S&R": "CV_MPPalmDetect"
+      },
+      "widgets_values": [
+        "palm_detection_mediapipe_2023feb_int8bq.onnx",
+        0.6,
+        0.3,
+        5000
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 4,
+      "type": "CV_MPHandPose",
+      "pos": [
+        770,
+        240
+      ],
+      "size": [
+        490,
+        304
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 2
+        },
+        {
+          "name": "palms",
+          "type": "NPARRAY",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "landmarks",
+          "type": "NPARRAY",
+          "links": [
+            7,
+            10,
+            12
+          ]
+        },
+        {
+          "name": "world_landmarks",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "handedness",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "scores",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "hand_count",
+          "type": "INT",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "connections",
+          "type": "NPARRAY",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "keypoint_names",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "[CV MediaPipe Hand Pose] Estimate hand pose (21 keypoints)",
+      "properties": {
+        "Node name for S&R": "CV_MPHandPose"
+      },
+      "widgets_values": [
+        "handpose_estimation_mediapipe_2023feb_int8bq.onnx",
+        0.9
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 5,
+      "type": "DrawBBoxes",
+      "pos": [
+        1270,
+        240
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "link": 5
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out_image",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "title": "Draw hand box",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "DrawBBoxes"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "CV_DrawPoints",
+      "pos": [
+        1799,
+        240
+      ],
+      "size": [
+        300,
+        190
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 10
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "title": "Draw 21 keypoints",
+      "properties": {
+        "Node name for S&R": "CV_DrawPoints"
+      },
+      "widgets_values": [
+        4,
+        "(0, 0, 255)",
+        "filled circle"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "PreviewImage",
+      "pos": [
+        2447,
+        240
+      ],
+      "size": [
+        360,
+        380
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: Name each keypoint",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "PreviewAny",
+      "pos": [
+        1474,
+        649.3047058823529
+      ],
+      "size": [
+        300,
+        162
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Hand count",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "Note",
+      "pos": [
+        40,
+        626.6199999999999
+      ],
+      "size": [
+        588.8125,
+        175.65625
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "OK_Sign.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   OK Sign\nCreator: Steven H. Keys (User:Steevven1)\nLicense: CC BY 2.5 (attribution)\n         https://creativecommons.org/licenses/by/2.5/\nSource:  https://commons.wikimedia.org/wiki/File:OK_Sign.jpg\nSize:    416x411 (a single upright hand making the OK gesture)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 10,
+      "type": "CV_DrawConnections",
+      "pos": [
+        1463,
+        391.6879307869959
+      ],
+      "size": [
+        300,
+        212
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 6
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "name": "edges",
+          "type": "NPARRAY",
+          "link": 8
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Draw hand skeleton",
+      "properties": {
+        "Node name for S&R": "CV_DrawConnections"
+      },
+      "widgets_values": [
+        2,
+        "(255, 255, 255)"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_DrawLabels",
+      "pos": [
+        2109,
+        442.6453658998044
+      ],
+      "size": [
+        300,
+        248
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 11
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Name each keypoint",
+      "properties": {
+        "Node name for S&R": "CV_DrawLabels"
+      },
+      "widgets_values": [
+        0.4,
+        "(0, 255, 255)",
+        1,
+        4,
+        -4,
+        true
+      ]
+    },
+    {
+      "id": 12,
+      "type": "MarkdownNote",
+      "pos": [
+        653,
+        601.866827154893
+      ],
+      "size": [
+        801.84375,
+        132.578125
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Models: palm_detection_mediapipe_2023feb_int8bq.onnx + handpose_estimation_mediapipe_2023feb_int8bq.onnx",
+      "properties": {},
+      "widgets_values": [
+        "palm_detection_mediapipe_2023feb_int8bq.onnx at\nhttps://huggingface.co/opencv/palm_detection_mediapipe\n\nhandpose_estimation_mediapipe_2023feb_int8bq.onnx at\nhttps://huggingface.co/opencv/handpose_estimation_mediapipe"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      1,
+      4,
+      1,
+      "NPARRAY"
+    ],
+    [
+      4,
+      2,
+      0,
+      5,
+      1,
+      "IMAGE"
+    ],
+    [
+      5,
+      4,
+      0,
+      5,
+      0,
+      "BOUNDING_BOX"
+    ],
+    [
+      6,
+      5,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      4,
+      1,
+      10,
+      1,
+      "NPARRAY"
+    ],
+    [
+      8,
+      4,
+      6,
+      10,
+      2,
+      "NPARRAY"
+    ],
+    [
+      9,
+      10,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      4,
+      1,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      11,
+      6,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      4,
+      1,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      13,
+      4,
+      7,
+      11,
+      2,
+      "NPARRAY"
+    ],
+    [
+      14,
+      11,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      4,
+      5,
+      8,
+      0,
+      "INT"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.29791981455918426,
+      "offset": [
+        487.9236750704387,
+        1329.9284923816508
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

@@ -1,0 +1,632 @@
+{
+  "revision": 0,
+  "last_node_id": 3,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 3,
+      "type": "b7e3a1d4-5c8f-4a92-9f16-2d8e7c0b5a34",
+      "pos": [
+        440.4562496199425,
+        240
+      ],
+      "size": [
+        251.03774969088613,
+        82
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "amount",
+          "name": "amount",
+          "type": "FLOAT",
+          "widget": {
+            "name": "amount"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "radius",
+          "name": "radius",
+          "type": "FLOAT",
+          "widget": {
+            "name": "radius"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "proxyWidgets": [
+          [
+            "9",
+            "value"
+          ],
+          [
+            "5",
+            "sigmaX"
+          ]
+        ],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "title": "CV Sharpen.json",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "b7e3a1d4-5c8f-4a92-9f16-2d8e7c0b5a34",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 9,
+          "lastLinkId": 113,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Sharpen.json",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            128,
+            108
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            1476.8694033833378,
+            209.25046927326164,
+            128,
+            67.99999999999997
+          ]
+        },
+        "inputs": [
+          {
+            "id": "5ae3ffbe-bc7c-5105-a862-b5fcba8f144c",
+            "name": "image",
+            "type": "IMAGE",
+            "linkIds": [
+              101,
+              106
+            ],
+            "localized_name": "image",
+            "pos": [
+              144,
+              224
+            ]
+          },
+          {
+            "id": "e1819280-a4d4-5cc0-b67b-86716072a513",
+            "name": "amount",
+            "type": "FLOAT",
+            "linkIds": [
+              111
+            ],
+            "localized_name": "amount",
+            "pos": [
+              144,
+              244
+            ]
+          },
+          {
+            "id": "4fc3feab-1aff-503e-9cad-84edd5f433e4",
+            "name": "radius",
+            "type": "FLOAT",
+            "linkIds": [
+              102,
+              103
+            ],
+            "localized_name": "radius",
+            "pos": [
+              144,
+              264
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "89ed2f07-b3b5-523d-ab13-cde77e1e7a18",
+            "name": "IMAGE",
+            "type": "IMAGE",
+            "linkIds": [
+              110
+            ],
+            "localized_name": "IMAGE",
+            "pos": [
+              1500.8694033833378,
+              233.25046927326164
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 5,
+            "type": "cv2_GaussianBlur",
+            "pos": [
+              390,
+              240
+            ],
+            "size": [
+              290,
+              282
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 101
+              },
+              {
+                "localized_name": "ksize",
+                "name": "ksize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "ksize"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "sigmaX",
+                "name": "sigmaX",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "sigmaX"
+                },
+                "link": 102
+              },
+              {
+                "localized_name": "sigmaY",
+                "name": "sigmaY",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "sigmaY"
+                },
+                "link": 103
+              },
+              {
+                "localized_name": "borderType",
+                "name": "borderType",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "borderType"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "hint",
+                "name": "hint",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "hint"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  108
+                ]
+              }
+            ],
+            "title": "Gaussian blur",
+            "properties": {
+              "Node name for S&R": "cv2_GaussianBlur"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              11,
+              11,
+              "BORDER_DEFAULT",
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 8,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1090,
+              240
+            ],
+            "size": [
+              290,
+              252
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 106
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 108
+              },
+              {
+                "localized_name": "alpha",
+                "name": "alpha",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": 107
+              },
+              {
+                "localized_name": "beta",
+                "name": "beta",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "beta"
+                },
+                "link": 109
+              },
+              {
+                "localized_name": "gamma",
+                "name": "gamma",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "gamma"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "dtype",
+                "name": "dtype",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  110
+                ]
+              }
+            ],
+            "title": "Blend original + blurred",
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              "same as input"
+            ]
+          },
+          {
+            "id": 7,
+            "type": "MathExpression|pysssss",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "a",
+                "name": "a",
+                "shape": 7,
+                "type": "INT,FLOAT,IMAGE,LATENT",
+                "link": 113
+              },
+              {
+                "localized_name": "b",
+                "name": "b",
+                "shape": 7,
+                "type": "INT,FLOAT,IMAGE,LATENT",
+                "link": null
+              },
+              {
+                "localized_name": "c",
+                "name": "c",
+                "shape": 7,
+                "type": "INT,FLOAT,IMAGE,LATENT",
+                "link": null
+              },
+              {
+                "localized_name": "expression",
+                "name": "expression",
+                "type": "INT,FLOAT,IMAGE,LATENT",
+                "widget": {
+                  "name": "expression"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "title": "beta = -amount",
+            "properties": {
+              "cnr_id": "comfyui-custom-scripts",
+              "ver": "1.2.5",
+              "Node name for S&R": "MathExpression|pysssss"
+            },
+            "widgets_values": [
+              "-a"
+            ]
+          },
+          {
+            "id": 6,
+            "type": "MathExpression|pysssss",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "a",
+                "name": "a",
+                "shape": 7,
+                "type": "INT,FLOAT,IMAGE,LATENT",
+                "link": 112
+              },
+              {
+                "localized_name": "b",
+                "name": "b",
+                "shape": 7,
+                "type": "INT,FLOAT,IMAGE,LATENT",
+                "link": null
+              },
+              {
+                "localized_name": "c",
+                "name": "c",
+                "shape": 7,
+                "type": "INT,FLOAT,IMAGE,LATENT",
+                "link": null
+              },
+              {
+                "localized_name": "expression",
+                "name": "expression",
+                "type": "INT,FLOAT,IMAGE,LATENT",
+                "widget": {
+                  "name": "expression"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "title": "alpha = 1 + amount",
+            "properties": {
+              "cnr_id": "comfyui-custom-scripts",
+              "ver": "1.2.5",
+              "Node name for S&R": "MathExpression|pysssss"
+            },
+            "widgets_values": [
+              "1.0 + a"
+            ]
+          },
+          {
+            "id": 9,
+            "type": "PrimitiveFloat",
+            "pos": [
+              392.8276146721155,
+              95.9833268501793
+            ],
+            "size": [
+              270,
+              58
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 111
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  112,
+                  113
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              1
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 5,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 5,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 106,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 107,
+            "origin_id": 6,
+            "origin_slot": 1,
+            "target_id": 8,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 108,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": 7,
+            "origin_slot": 1,
+            "target_id": 8,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 110,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 112,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 113,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "FLOAT"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "extra": {}
+}

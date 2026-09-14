@@ -1,0 +1,456 @@
+{
+  "id": "dd2eb6c2-8252-41df-82fe-811014b3bfc5",
+  "revision": 0,
+  "last_node_id": 9,
+  "last_link_id": 11,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        42.93475753154274,
+        24.34795983177196
+      ],
+      "size": [
+        759.984375,
+        175.203125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Chessboard corner detection\n\nThe first step of camera calibration: locate the inner corners of a chessboard. \n'cv2.findChessboardCorners' returns the 9x6 grid of corners (plus a 'found' flag) and 'cv2.drawChessboardCorners' overlays the standard connected colour pattern. patternSize counts INNER corners per row/column, not squares. \nFeed several views into cv2.calibrateCamera to recover the intrinsics, or one view + cv2.solvePnP for the board's pose. \nNon-chessboard images yield found=false and pass through unmarked."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            4
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "calib_board_07_extra_distorted.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_Tuple",
+      "pos": [
+        402.35075096941534,
+        386.4326456829513
+      ],
+      "size": [
+        291.953125,
+        184
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "tuple",
+          "type": "CV_TUPLE",
+          "links": [
+            2,
+            5
+          ]
+        },
+        {
+          "name": "array",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "literal",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "Pattern size (9 x 6 inner corners)",
+      "properties": {
+        "Node name for S&R": "CV_Tuple"
+      },
+      "widgets_values": [
+        2,
+        "int",
+        9.0,
+        6.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "cv2_findChessboardCorners",
+      "pos": [
+        740,
+        285.6890780705409
+      ],
+      "size": [
+        448.3125,
+        306
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 1
+        },
+        {
+          "localized_name": "patternSize",
+          "name": "patternSize",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "patternSize"
+          },
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bool",
+          "type": "BOOLEAN",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            7,
+            10
+          ]
+        }
+      ],
+      "title": "Find 9x6 inner corners",
+      "properties": {
+        "Node name for S&R": "cv2_findChessboardCorners"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_NORMALIZE_IMAGE"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "cv2_drawChessboardCorners",
+      "pos": [
+        1254.015093593552,
+        210.33119847042303
+      ],
+      "size": [
+        281.328125,
+        188
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 4
+        },
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "localized_name": "patternSize",
+          "name": "patternSize",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "patternSize"
+          },
+          "link": 5
+        },
+        {
+          "name": "patternWasFound",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "patternWasFound"
+          },
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "Draw the corner grid",
+      "properties": {
+        "Node name for S&R": "cv2_drawChessboardCorners"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        false
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_CVPreview",
+      "pos": [
+        1621.6605306414874,
+        194.57634396333992
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Detected corners",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_CVInspect",
+      "pos": [
+        1258.5840014006078,
+        461.84957270858496
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "title": "Corners (54 expected)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "PreviewAny",
+      "pos": [
+        1622.7720356809762,
+        602.2253263666944
+      ],
+      "size": [
+        291.046875,
+        162
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "title": "Preview as Text: Corners (54 expected)"
+    },
+    {
+      "id": 9,
+      "type": "Note",
+      "pos": [
+        61.7095037305524,
+        619.7889764174911
+      ],
+      "size": [
+        264.96875,
+        152.125
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "calib_board_07_extra_distorted.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   calib_board_07_extra_distorted.png\nCreator: generated (this repo) - the heavily distorted variant\nLicense: no third-party rights (synthetic render)\nSource:  synthetic\nSize:    800x600\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      1,
+      "CV_TUPLE"
+    ],
+    [
+      4,
+      2,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      3,
+      0,
+      5,
+      2,
+      "CV_TUPLE"
+    ],
+    [
+      7,
+      4,
+      1,
+      5,
+      1,
+      "NPARRAY"
+    ],
+    [
+      8,
+      4,
+      0,
+      5,
+      3,
+      "BOOLEAN"
+    ],
+    [
+      9,
+      5,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      4,
+      1,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      7,
+      0,
+      8,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1.236899457956846,
+      "offset": [
+        -38.38823372130183,
+        -31.419167293903
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

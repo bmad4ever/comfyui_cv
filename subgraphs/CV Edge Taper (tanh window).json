@@ -1,0 +1,1955 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "e5f6a7b8-c9d0-4123-ef01-456789012345",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        340,
+        132
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "gamma",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "beta",
+          "type": "FLOAT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "window",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Edge Taper (tanh window)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "e5f6a7b8-c9d0-4123-ef01-456789012345",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 28,
+          "lastLinkId": 154,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Edge Taper (tanh window)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "3b20be09-46d8-561d-a0a1-56274af38c3f",
+            "name": "image",
+            "type": "NPARRAY",
+            "linkIds": [
+              101,
+              102,
+              151
+            ],
+            "localized_name": "image",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "b5147003-06e1-5316-86e8-8546ce1796c3",
+            "name": "gamma",
+            "type": "FLOAT",
+            "linkIds": [
+              103
+            ],
+            "localized_name": "gamma",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "ec9e8cf6-f898-518b-a4fd-71abfe5900a2",
+            "name": "beta",
+            "type": "FLOAT",
+            "linkIds": [
+              104
+            ],
+            "localized_name": "beta",
+            "pos": [
+              140,
+              260
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "3dc21272-c936-5d42-9dca-f6d7196513a5",
+            "name": "image",
+            "type": "NPARRAY",
+            "linkIds": [
+              153
+            ],
+            "localized_name": "image",
+            "pos": [
+              2100,
+              220
+            ]
+          },
+          {
+            "id": "f801b2d3-e2e8-5bae-b2ec-1529a4833940",
+            "name": "window",
+            "type": "NPARRAY",
+            "linkIds": [
+              154
+            ],
+            "localized_name": "window",
+            "pos": [
+              2100,
+              240
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_IdentityMap",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "NPARRAY",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "name": "map_x",
+                "type": "NPARRAY",
+                "links": [
+                  113,
+                  114,
+                  121,
+                  122
+                ]
+              },
+              {
+                "name": "map_y",
+                "type": "NPARRAY",
+                "links": [
+                  131,
+                  132,
+                  139,
+                  140
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_IdentityMap"
+            },
+            "widgets_values": [],
+            "title": "Pixel coordinate maps (x, y)"
+          },
+          {
+            "id": 2,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              390,
+              240
+            ],
+            "size": [
+              290,
+              170
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "name": "height",
+                "type": "INT",
+                "links": [
+                  112
+                ]
+              },
+              {
+                "name": "width",
+                "type": "INT",
+                "links": [
+                  110
+                ]
+              },
+              {
+                "name": "channels",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "name": "size",
+                "type": "CV_TUPLE",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            },
+            "widgets_values": [],
+            "title": "Shape"
+          },
+          {
+            "id": 3,
+            "type": "PrimitiveFloat",
+            "pos": [
+              40,
+              440
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  105,
+                  107
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              5.0
+            ],
+            "title": "gamma (flat-top width)"
+          },
+          {
+            "id": 4,
+            "type": "PrimitiveFloat",
+            "pos": [
+              40,
+              640
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  106,
+                  108,
+                  109,
+                  111
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              0.2
+            ],
+            "title": "beta (roll-off softness)"
+          },
+          {
+            "id": 5,
+            "type": "ComfyMathExpression",
+            "pos": [
+              390,
+              440
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 105
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 106
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  116,
+                  134
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "-(2 * 3.141592653589793 + a) / b"
+            ],
+            "title": "offset q = -(2pi + gamma)/beta"
+          },
+          {
+            "id": 6,
+            "type": "ComfyMathExpression",
+            "pos": [
+              390,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 107
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 108
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  124,
+                  142
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "-(2 * 3.141592653589793 - a) / b"
+            ],
+            "title": "offset p = -(2pi - gamma)/beta"
+          },
+          {
+            "id": 7,
+            "type": "ComfyMathExpression",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 109
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 110
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  115,
+                  123
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "4 * 3.141592653589793 / (a * b)"
+            ],
+            "title": "slope x = 4pi/(beta*width)"
+          },
+          {
+            "id": 8,
+            "type": "ComfyMathExpression",
+            "pos": [
+              740,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 111
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 112
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  133,
+                  141
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "4 * 3.141592653589793 / (a * b)"
+            ],
+            "title": "slope y = 4pi/(beta*height)"
+          },
+          {
+            "id": 9,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1090,
+              900
+            ],
+            "size": [
+              290,
+              252
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 113
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 114
+              },
+              {
+                "name": "alpha",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": 115
+              },
+              {
+                "name": "gamma",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "gamma"
+                },
+                "link": 116
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  117
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              0.0,
+              0.0,
+              0.0,
+              "same as input"
+            ],
+            "title": "2q = alpha*x + offset"
+          },
+          {
+            "id": 10,
+            "type": "cv2_exp",
+            "pos": [
+              1440,
+              900
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 117
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  118,
+                  119
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_exp"
+            },
+            "widgets_values": [],
+            "title": "exp(2q)"
+          },
+          {
+            "id": 11,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1790,
+              900
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 118
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 119
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  120
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              1.0,
+              0.0,
+              1.0,
+              "same as input"
+            ],
+            "title": "1 + exp(2q)"
+          },
+          {
+            "id": 12,
+            "type": "cv2_divide_1",
+            "pos": [
+              2140,
+              900
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 120
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  129
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_divide_1"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "1 / (1 + exp(2q))"
+          },
+          {
+            "id": 13,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1090,
+              1240
+            ],
+            "size": [
+              290,
+              252
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 121
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 122
+              },
+              {
+                "name": "alpha",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": 123
+              },
+              {
+                "name": "gamma",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "gamma"
+                },
+                "link": 124
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  125
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              0.0,
+              0.0,
+              0.0,
+              "same as input"
+            ],
+            "title": "2p = alpha*x + offset"
+          },
+          {
+            "id": 14,
+            "type": "cv2_exp",
+            "pos": [
+              1440,
+              1240
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 125
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  126,
+                  127
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_exp"
+            },
+            "widgets_values": [],
+            "title": "exp(2p)"
+          },
+          {
+            "id": 15,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1790,
+              1240
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 126
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 127
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  128
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              1.0,
+              0.0,
+              1.0,
+              "same as input"
+            ],
+            "title": "1 + exp(2p)"
+          },
+          {
+            "id": 16,
+            "type": "cv2_divide_1",
+            "pos": [
+              2140,
+              1240
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 128
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  130
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_divide_1"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "1 / (1 + exp(2p))"
+          },
+          {
+            "id": 17,
+            "type": "cv2_subtract",
+            "pos": [
+              2490,
+              1070
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 129
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 130
+              },
+              {
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  149
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ],
+            "title": "window along x"
+          },
+          {
+            "id": 18,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1090,
+              1620
+            ],
+            "size": [
+              290,
+              252
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 131
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 132
+              },
+              {
+                "name": "alpha",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": 133
+              },
+              {
+                "name": "gamma",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "gamma"
+                },
+                "link": 134
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  135
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              0.0,
+              0.0,
+              0.0,
+              "same as input"
+            ],
+            "title": "2q = alpha*y + offset"
+          },
+          {
+            "id": 19,
+            "type": "cv2_exp",
+            "pos": [
+              1440,
+              1620
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 18,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 135
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  136,
+                  137
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_exp"
+            },
+            "widgets_values": [],
+            "title": "exp(2q)"
+          },
+          {
+            "id": 20,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1790,
+              1620
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 19,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 136
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 137
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  138
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              1.0,
+              0.0,
+              1.0,
+              "same as input"
+            ],
+            "title": "1 + exp(2q)"
+          },
+          {
+            "id": 21,
+            "type": "cv2_divide_1",
+            "pos": [
+              2140,
+              1620
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 20,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 138
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  147
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_divide_1"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "1 / (1 + exp(2q))"
+          },
+          {
+            "id": 22,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1090,
+              1960
+            ],
+            "size": [
+              290,
+              252
+            ],
+            "flags": {},
+            "order": 21,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 139
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 140
+              },
+              {
+                "name": "alpha",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "alpha"
+                },
+                "link": 141
+              },
+              {
+                "name": "gamma",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "gamma"
+                },
+                "link": 142
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  143
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              0.0,
+              0.0,
+              0.0,
+              "same as input"
+            ],
+            "title": "2p = alpha*y + offset"
+          },
+          {
+            "id": 23,
+            "type": "cv2_exp",
+            "pos": [
+              1440,
+              1960
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 22,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 143
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  144,
+                  145
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_exp"
+            },
+            "widgets_values": [],
+            "title": "exp(2p)"
+          },
+          {
+            "id": 24,
+            "type": "cv2_addWeighted",
+            "pos": [
+              1790,
+              1960
+            ],
+            "size": [
+              290,
+              208
+            ],
+            "flags": {},
+            "order": 23,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 144
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 145
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  146
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              1.0,
+              0.0,
+              1.0,
+              "same as input"
+            ],
+            "title": "1 + exp(2p)"
+          },
+          {
+            "id": 25,
+            "type": "cv2_divide_1",
+            "pos": [
+              2140,
+              1960
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 24,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 146
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  148
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_divide_1"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "1 / (1 + exp(2p))"
+          },
+          {
+            "id": 26,
+            "type": "cv2_subtract",
+            "pos": [
+              2490,
+              1790
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 25,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 147
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 148
+              },
+              {
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  150
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ],
+            "title": "window along y"
+          },
+          {
+            "id": 27,
+            "type": "cv2_multiply",
+            "pos": [
+              2840,
+              1240
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 26,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 149
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 150
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  152,
+                  154
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "window = w(y) * w(x)"
+          },
+          {
+            "id": 28,
+            "type": "cv2_multiply",
+            "pos": [
+              3190,
+              1240
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 27,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 151
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 152
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  153
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1.0,
+              "same as input"
+            ],
+            "title": "Tapered image"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 104,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 105,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 106,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 107,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 108,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 109,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 110,
+            "origin_id": 2,
+            "origin_slot": 1,
+            "target_id": 7,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 111,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 112,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 113,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 116,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 117,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 118,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 122,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 123,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 124,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 125,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 127,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 129,
+            "origin_id": 12,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 130,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 131,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": 18,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 132,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": 18,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 133,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 134,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 135,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": 19,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 136,
+            "origin_id": 19,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 137,
+            "origin_id": 19,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 138,
+            "origin_id": 20,
+            "origin_slot": 0,
+            "target_id": 21,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 139,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": 22,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 140,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": 22,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 141,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 22,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 142,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 22,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 143,
+            "origin_id": 22,
+            "origin_slot": 0,
+            "target_id": 23,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 144,
+            "origin_id": 23,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 145,
+            "origin_id": 23,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 146,
+            "origin_id": 24,
+            "origin_slot": 0,
+            "target_id": 25,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 147,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 26,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 148,
+            "origin_id": 25,
+            "origin_slot": 0,
+            "target_id": 26,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 149,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 27,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 150,
+            "origin_id": 26,
+            "origin_slot": 0,
+            "target_id": 27,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 151,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 28,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 152,
+            "origin_id": 27,
+            "origin_slot": 0,
+            "target_id": 28,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 153,
+            "origin_id": 28,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 154,
+            "origin_id": 27,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          }
+        ]
+      }
+    ]
+  }
+}

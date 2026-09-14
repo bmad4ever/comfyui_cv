@@ -1,0 +1,1888 @@
+{
+  "id": "34d27930-1e9d-4a10-9fb9-1ad5bbf50ef2",
+  "revision": 0,
+  "last_node_id": 65,
+  "last_link_id": 129,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40.54470179235702,
+        -31.90629426498886
+      ],
+      "size": [
+        1011.765625,
+        390.171875
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Three inpaints, two OPPOSITE mask conventions - read this before wiring one\n\ncv2.inpaint (photo module), cv2.xphoto.inpaint (contrib) and cv2.ft.inpaint (fuzzy F-transform, contrib) all do the same job and take a mask with the SAME name and OPPOSITE meanings:\n\n    cv2.inpaint          mask non-zero = the HOLE  (repair these pixels)\n    cv2.xphoto.inpaint   mask non-zero = KNOWN     (trust these pixels)\n    cv2.ft.inpaint       mask non-zero = KNOWN     (trust these pixels, same as xphoto)\n\nSo the SAME mask wired into all three repairs the subject in cv2.inpaint and repairs everything EXCEPT the subject in the other two. That is why they are separate nodes with the module kept in the id, and why 'cv2.bitwise_not' sits between the shared mask and the xphoto/ft branches here. The nodes' tooltips say so too, and the three previews here show it directly.\n\nALGORITHMS: cv2.inpaint offers TELEA (fast marching) and NS (Navier-Stokes); both diffuse surrounding colour inwards and blur across large holes. xphoto adds FSR_FAST / FSR_BEST (frequency-selective extrapolation, which reconstructs TEXTURE and periodic structure rather than smearing) and SHIFTMAP (patch offsets, best for repeating content). FSR is much slower but is the one to reach for on a textured background. ft (the fuzzy F-transform) rebuilds missing structure with ONE_STEP / MULTI_STEP / ITERATIVE refinement. \n\nVERIFYING THE REPAIR: 'CV Image Hash Compare' (cv2.img_hash) checks the result still LOOKS like the original. Careful: cv2's own compare() is inconsistent - most algorithms return a distance (0 = identical) but RadialVarianceHash returns a SIMILARITY (1.0 = identical). The node normalises every algorithm to '0 = identical', so 'distance <= threshold' always means 'similar'."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        440
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load the image to repair",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_ImageToCV",
+      "pos": [
+        399.3342059546097,
+        438.44429900756506
+      ],
+      "size": [
+        290,
+        168
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            35,
+            39,
+            54
+          ]
+        }
+      ],
+      "title": "-> BGR ndarray",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        840
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2,
+            70
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Load the damage map (white = damaged)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "inpaint_mask_holes.png",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_ImageToCV",
+      "pos": [
+        390,
+        840
+      ],
+      "size": [
+        298.984375,
+        168
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "title": "-> GRAY (3 channels)",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "cv2_threshold",
+      "pos": [
+        740,
+        840
+      ],
+      "size": [
+        270.140625,
+        264
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            56
+          ]
+        }
+      ],
+      "title": "HOLE mask (non-zero = damaged)",
+      "properties": {
+        "Node name for S&R": "cv2_threshold"
+      },
+      "widgets_values": [
+        127,
+        255,
+        "THRESH_BINARY_INV"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "cv2_bitwise_not",
+      "pos": [
+        1031.2086452222568,
+        1147.8807924572125
+      ],
+      "size": [
+        361.515625,
+        96
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 71
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            15,
+            67,
+            72,
+            114,
+            116,
+            124
+          ]
+        }
+      ],
+      "title": "KNOWN mask = NOT hole (xphoto's convention)",
+      "properties": {
+        "Node name for S&R": "cv2_bitwise_not"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "CV_CVPreview",
+      "pos": [
+        1090,
+        240
+      ],
+      "size": [
+        290,
+        368
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Damaged input",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 10,
+      "type": "cv2_inpaint",
+      "pos": [
+        1446.9840673061053,
+        273.1743197039988
+      ],
+      "size": [
+        351.109375,
+        134
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 61
+        },
+        {
+          "name": "inpaintMask",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 76
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            105
+          ]
+        }
+      ],
+      "title": "cv2.inpaint TELEA",
+      "properties": {
+        "Node name for S&R": "cv2_inpaint"
+      },
+      "widgets_values": [
+        5,
+        "INPAINT_TELEA"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "cv2_inpaint",
+      "pos": [
+        1440,
+        440
+      ],
+      "size": [
+        363.328125,
+        134
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 59
+        },
+        {
+          "name": "inpaintMask",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 75
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            106
+          ]
+        }
+      ],
+      "title": "cv2.inpaint NS",
+      "properties": {
+        "Node name for S&R": "cv2_inpaint"
+      },
+      "widgets_values": [
+        5,
+        "INPAINT_NS"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "cv2_xphoto_inpaint",
+      "pos": [
+        1443.007645282582,
+        1433.8572226715846
+      ],
+      "size": [
+        384.6875,
+        106
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 60
+        },
+        {
+          "name": "mask",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 67
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            36,
+            40,
+            129
+          ]
+        }
+      ],
+      "title": "cv2.xphoto.inpaint FSR_BEST  ( SLOW )",
+      "properties": {
+        "Node name for S&R": "cv2_xphoto_inpaint"
+      },
+      "widgets_values": [
+        "INPAINT_FSR_BEST"
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 13,
+      "type": "cv2_xphoto_inpaint",
+      "pos": [
+        1436.7730552532494,
+        739.243422936403
+      ],
+      "size": [
+        386.640625,
+        106
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 62
+        },
+        {
+          "name": "mask",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            111
+          ]
+        }
+      ],
+      "title": "cv2.xphoto.inpaint FSR_FAST",
+      "properties": {
+        "Node name for S&R": "cv2_xphoto_inpaint"
+      },
+      "widgets_values": [
+        "INPAINT_FSR_FAST"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "cv2_xphoto_inpaint",
+      "pos": [
+        1438.4820305492494,
+        601.0768648053001
+      ],
+      "size": [
+        377.484375,
+        106
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 63
+        },
+        {
+          "name": "mask",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 72
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            110
+          ]
+        }
+      ],
+      "title": "cv2.xphoto.inpaint SHIFTMAP",
+      "properties": {
+        "Node name for S&R": "cv2_xphoto_inpaint"
+      },
+      "widgets_values": [
+        "INPAINT_SHIFTMAP"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_DrawText",
+      "pos": [
+        2355.7955652328337,
+        628.5827377412485
+      ],
+      "size": [
+        234.171875,
+        270
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 97
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 96
+        },
+        {
+          "name": "color",
+          "type": "STRING",
+          "widget": {
+            "name": "color"
+          },
+          "link": 88
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            99
+          ]
+        }
+      ],
+      "title": "Add Label",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "damaged",
+        8,
+        26,
+        0.7,
+        "(0, 255, 0)",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 27,
+      "type": "CV_ImageHashCompare",
+      "pos": [
+        2644.0832908344664,
+        1679.161222792708
+      ],
+      "size": [
+        317.921875,
+        208
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "type": "NPARRAY,IMAGE",
+          "link": 35
+        },
+        {
+          "name": "image_b",
+          "type": "NPARRAY,IMAGE",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": [
+            37
+          ]
+        },
+        {
+          "name": "similar",
+          "type": "BOOLEAN",
+          "links": [
+            38
+          ]
+        },
+        {
+          "name": "hash_a",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "hash_b",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "pHash: repaired vs original",
+      "properties": {
+        "Node name for S&R": "CV_ImageHashCompare"
+      },
+      "widgets_values": [
+        "pHash (DCT, best all-round)",
+        10
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 28,
+      "type": "CV_CVInspect",
+      "pos": [
+        3027.2576105384637,
+        1679.1612227927078
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "title": "pHash distance (0 = identical)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": [],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 29,
+      "type": "CV_CVInspect",
+      "pos": [
+        3027.2576105384637,
+        1879.1612227927078
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "title": "Within threshold?",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": [],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 30,
+      "type": "CV_ImageQuality",
+      "pos": [
+        2677.2576105384633,
+        2079.1612227927058
+      ],
+      "size": [
+        291.734375,
+        152
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "reference",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 39
+        },
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "score",
+          "type": "FLOAT",
+          "links": [
+            41
+          ]
+        },
+        {
+          "name": "higher_is_better",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "quality_map",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "PSNR: repaired vs original",
+      "properties": {
+        "Node name for S&R": "CV_ImageQuality"
+      },
+      "widgets_values": [
+        "PSNR (dB)"
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 31,
+      "type": "CV_CVInspect",
+      "pos": [
+        3027.2576105384637,
+        2079.1612227927058
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            44
+          ]
+        }
+      ],
+      "title": "Repair PSNR (dB)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": [],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 32,
+      "type": "PreviewAny",
+      "pos": [
+        3357.2576105384605,
+        1679.1612227927078
+      ],
+      "size": [
+        350.375,
+        162
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: pHash distance (0 = identical)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 33,
+      "type": "PreviewAny",
+      "pos": [
+        3357.2576105384605,
+        1879.1612227927078
+      ],
+      "size": [
+        266.65625,
+        162
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 43
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Within threshold?",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 34,
+      "type": "PreviewAny",
+      "pos": [
+        3357.2576105384605,
+        2079.1612227927058
+      ],
+      "size": [
+        267.109375,
+        162
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Repair PSNR (dB)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 41,
+      "type": "cv2_bitwise_and",
+      "pos": [
+        743.129570091342,
+        441.1079392574654
+      ],
+      "size": [
+        282.0625,
+        120
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 54
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 56
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            55,
+            59,
+            60,
+            61,
+            62,
+            63,
+            104,
+            113,
+            117,
+            123
+          ]
+        }
+      ],
+      "title": "Punch the holes into the photo",
+      "properties": {
+        "Node name for S&R": "cv2_bitwise_and"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 51,
+      "type": "CV_ImageToCV",
+      "pos": [
+        712.1607596516684,
+        1147.1500283658524
+      ],
+      "size": [
+        298.984375,
+        168
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 70
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            71,
+            75,
+            76
+          ]
+        }
+      ],
+      "title": "-> GRAY",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "GRAY",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 53,
+      "type": "CreateList",
+      "pos": [
+        2077.4308872030188,
+        624.9786229795615
+      ],
+      "size": [
+        225,
+        240
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "input0",
+          "name": "inputs.input0",
+          "type": "NPARRAY",
+          "link": 104
+        },
+        {
+          "label": "input1",
+          "name": "inputs.input1",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 105
+        },
+        {
+          "label": "input2",
+          "name": "inputs.input2",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 106
+        },
+        {
+          "label": "input3",
+          "name": "inputs.input3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 110
+        },
+        {
+          "label": "input4",
+          "name": "inputs.input4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 111
+        },
+        {
+          "label": "input5",
+          "name": "inputs.input5",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 120
+        },
+        {
+          "label": "input6",
+          "name": "inputs.input6",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 121
+        },
+        {
+          "label": "input7",
+          "name": "inputs.input7",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 122
+        },
+        {
+          "label": "input8",
+          "name": "inputs.input8",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "list",
+          "shape": 6,
+          "type": "NPARRAY",
+          "links": [
+            97
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "CreateList"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 54,
+      "type": "CV_ColorFromHex",
+      "pos": [
+        2037.0209888052245,
+        937.0377987203071
+      ],
+      "size": [
+        270,
+        168
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "tuple_string",
+          "type": "STRING",
+          "links": [
+            88
+          ]
+        }
+      ],
+      "title": "Labels color",
+      "properties": {
+        "Node name for S&R": "CV_ColorFromHex"
+      },
+      "widgets_values": [
+        "#000000",
+        "COLOR_RGB2BGR",
+        false
+      ]
+    },
+    {
+      "id": 55,
+      "type": "PrimitiveStringMultiline",
+      "pos": [
+        2016.855017265913,
+        202.28481509942182
+      ],
+      "size": [
+        283.34375,
+        185.640625
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            95
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PrimitiveStringMultiline"
+      },
+      "widgets_values": [
+        "damaged;TELEA;NS;xphoto SHIFTMAP;xphoto FRS FAST;ft (fuzzy transform) ONE_STEP;ft (fuzzy transform) MULTI_STEP;ft (fuzzy transform) ITERATIVE"
+      ]
+    },
+    {
+      "id": 56,
+      "type": "Basic data handling: RegexSplitDataList",
+      "pos": [
+        2073.7782074846664,
+        432.10809554860066
+      ],
+      "size": [
+        225,
+        144
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "string",
+          "type": "STRING",
+          "widget": {
+            "name": "string"
+          },
+          "link": 95
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": [
+            96
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: RegexSplitDataList"
+      },
+      "widgets_values": [
+        "",
+        ";"
+      ]
+    },
+    {
+      "id": 58,
+      "type": "CV_CVPreview",
+      "pos": [
+        2621.338686230704,
+        353.9461295313871
+      ],
+      "size": [
+        934.90625,
+        1069.9375
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 99
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Inpaint sheet (last tile is the trap)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 59,
+      "type": "cv2_ft_inpaint",
+      "pos": [
+        1440.2408352451928,
+        1059.5982675813736
+      ],
+      "size": [
+        393.78125,
+        162
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 113
+        },
+        {
+          "name": "mask",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 114
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            121
+          ]
+        }
+      ],
+      "title": "cv2.ft.inpaint MULTI STEP",
+      "properties": {
+        "Node name for S&R": "cv2_ft_inpaint"
+      },
+      "widgets_values": [
+        5,
+        "LINEAR",
+        "MULTI_STEP"
+      ]
+    },
+    {
+      "id": 61,
+      "type": "cv2_ft_inpaint",
+      "pos": [
+        1441.5742036091935,
+        1229.8614505192256
+      ],
+      "size": [
+        389.453125,
+        162
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 117
+        },
+        {
+          "name": "mask",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 116
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            122
+          ]
+        }
+      ],
+      "title": "cv2.ft.inpaint ITERATIVE",
+      "properties": {
+        "Node name for S&R": "cv2_ft_inpaint"
+      },
+      "widgets_values": [
+        5,
+        "LINEAR",
+        "ITERATIVE"
+      ]
+    },
+    {
+      "id": 62,
+      "type": "cv2_ft_inpaint",
+      "pos": [
+        1437.2310768477957,
+        876.1821624230007
+      ],
+      "size": [
+        395.21875,
+        162
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 123
+        },
+        {
+          "name": "mask",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 124
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            120
+          ]
+        }
+      ],
+      "title": "cv2.ft.inpaint ONE_STEP",
+      "properties": {
+        "Node name for S&R": "cv2_ft_inpaint"
+      },
+      "widgets_values": [
+        5,
+        "LINEAR",
+        "ONE_STEP"
+      ]
+    },
+    {
+      "id": 64,
+      "type": "CV_CVPreview",
+      "pos": [
+        3582.012337488863,
+        1141.2574507602649
+      ],
+      "size": [
+        323.34375,
+        474.875
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 129
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "xphoto FSR_BEST",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 65,
+      "type": "Note",
+      "pos": [
+        -489.3856184740794,
+        844.971121344765
+      ],
+      "size": [
+        514.234375,
+        154.5625
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "inpaint_mask_holes.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   inpaint_mask_holes.png\nCreator: generated (this repo) - synthetic mask image\nLicense: no third-party rights (synthetic binary mask; white spots on black)\nSource:  synthetic; bundled as example_inputs/inpaint_mask_holes.png\nSize:    768x768\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      4,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      5,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      15,
+      7,
+      0,
+      13,
+      1,
+      "NPARRAY"
+    ],
+    [
+      35,
+      3,
+      0,
+      27,
+      0,
+      "NPARRAY"
+    ],
+    [
+      36,
+      12,
+      0,
+      27,
+      1,
+      "NPARRAY"
+    ],
+    [
+      37,
+      27,
+      0,
+      28,
+      0,
+      "FLOAT"
+    ],
+    [
+      38,
+      27,
+      1,
+      29,
+      0,
+      "BOOLEAN"
+    ],
+    [
+      39,
+      3,
+      0,
+      30,
+      0,
+      "NPARRAY"
+    ],
+    [
+      40,
+      12,
+      0,
+      30,
+      1,
+      "NPARRAY"
+    ],
+    [
+      41,
+      30,
+      0,
+      31,
+      0,
+      "FLOAT"
+    ],
+    [
+      42,
+      28,
+      0,
+      32,
+      0,
+      "STRING"
+    ],
+    [
+      43,
+      29,
+      0,
+      33,
+      0,
+      "STRING"
+    ],
+    [
+      44,
+      31,
+      0,
+      34,
+      0,
+      "STRING"
+    ],
+    [
+      54,
+      3,
+      0,
+      41,
+      0,
+      "NPARRAY"
+    ],
+    [
+      55,
+      41,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      56,
+      6,
+      1,
+      41,
+      1,
+      "NPARRAY"
+    ],
+    [
+      59,
+      41,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      60,
+      41,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      61,
+      41,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      62,
+      41,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      63,
+      41,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      67,
+      7,
+      0,
+      12,
+      1,
+      "NPARRAY"
+    ],
+    [
+      70,
+      4,
+      0,
+      51,
+      0,
+      "IMAGE"
+    ],
+    [
+      71,
+      51,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      72,
+      7,
+      0,
+      14,
+      1,
+      "NPARRAY"
+    ],
+    [
+      75,
+      51,
+      0,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      76,
+      51,
+      0,
+      10,
+      1,
+      "NPARRAY"
+    ],
+    [
+      88,
+      54,
+      0,
+      15,
+      2,
+      "STRING"
+    ],
+    [
+      95,
+      55,
+      0,
+      56,
+      0,
+      "STRING"
+    ],
+    [
+      96,
+      56,
+      0,
+      15,
+      1,
+      "STRING"
+    ],
+    [
+      97,
+      53,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      99,
+      15,
+      0,
+      58,
+      0,
+      "NPARRAY"
+    ],
+    [
+      104,
+      41,
+      0,
+      53,
+      0,
+      "NPARRAY"
+    ],
+    [
+      105,
+      10,
+      0,
+      53,
+      1,
+      "NPARRAY"
+    ],
+    [
+      106,
+      11,
+      0,
+      53,
+      2,
+      "NPARRAY"
+    ],
+    [
+      110,
+      14,
+      0,
+      53,
+      3,
+      "NPARRAY"
+    ],
+    [
+      111,
+      13,
+      0,
+      53,
+      4,
+      "NPARRAY"
+    ],
+    [
+      113,
+      41,
+      0,
+      59,
+      0,
+      "NPARRAY"
+    ],
+    [
+      114,
+      7,
+      0,
+      59,
+      1,
+      "NPARRAY"
+    ],
+    [
+      116,
+      7,
+      0,
+      61,
+      1,
+      "NPARRAY"
+    ],
+    [
+      117,
+      41,
+      0,
+      61,
+      0,
+      "NPARRAY"
+    ],
+    [
+      120,
+      62,
+      0,
+      53,
+      5,
+      "NPARRAY"
+    ],
+    [
+      121,
+      59,
+      0,
+      53,
+      6,
+      "NPARRAY"
+    ],
+    [
+      122,
+      61,
+      0,
+      53,
+      7,
+      "NPARRAY"
+    ],
+    [
+      123,
+      41,
+      0,
+      62,
+      0,
+      "NPARRAY"
+    ],
+    [
+      124,
+      7,
+      0,
+      62,
+      1,
+      "NPARRAY"
+    ],
+    [
+      129,
+      12,
+      0,
+      64,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.18249011857708478,
+      "offset": [
+        931.2305986951274,
+        1558.5899271123137
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

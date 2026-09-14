@@ -1,0 +1,2086 @@
+{
+  "id": "ffefb5d9-0832-422f-88a0-d5c51c99efbf",
+  "revision": 0,
+  "last_node_id": 139,
+  "last_link_id": 179,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        197.77971521732616,
+        92.63898076498168
+      ],
+      "size": [
+        559.96875,
+        255.734375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "HDR playground",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "HDR / exposure-bracketing playground\n\nFour tripod exposures of the St. Louis Arch (EV -4.72 / -1.82 / +1.51 / +4.09) are stacked darkest-to-brightest into ONE image batch with core 'Batch Images'. Two HDR paths run from that batch post alignment:\n\n1. 'HDR Exposure Fusion (Mertens)' blends the best-exposed regions of every frame straight into a display-ready picture - no exposure times, no tonemapping.\n2. 'HDR Merge to Radiance' recovers the camera response from the shutter times and fuses a float RADIANCE map (values well past 1.0). It is not directly displayable, so it is shown through 'Preview CV Array' (heatmap) and compressed back to a picture by three 'HDR Tonemap' operators - Reinhard, Drago and Mantiuk - so you can compare their looks.\n"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        -475.25022583893247,
+        399.8177621841097
+      ],
+      "size": [
+        225,
+        346
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            17
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Exposure 1 (-4.72)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "hdr_stlouis_ev-4.72.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        -2.3073105441925463,
+        402.8410177243214
+      ],
+      "size": [
+        225,
+        346
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            18
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Exposure 2 (-1.82)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "hdr_stlouis_ev-1.82.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LoadImage",
+      "pos": [
+        -239,
+        474.7225889665653
+      ],
+      "size": [
+        225,
+        346
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            19
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Exposure 3 (+1.51)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "hdr_stlouis_ev+1.51.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "LoadImage",
+      "pos": [
+        227.51218424032083,
+        478.1147687247294
+      ],
+      "size": [
+        225,
+        346
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            20
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Exposure 4 (+4.09)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "hdr_stlouis_ev+4.09.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CV_HDRMergeMertens",
+      "pos": [
+        2431,
+        1038.2291769134013
+      ],
+      "size": [
+        321.15625,
+        168
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 176
+        }
+      ],
+      "outputs": [
+        {
+          "name": "fused",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "[CV HDR Exposure Fusion (Mertens)]",
+      "properties": {
+        "Node name for S&R": "CV_HDRMergeMertens"
+      },
+      "widgets_values": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 10,
+      "type": "PreviewImage",
+      "pos": [
+        2427,
+        714.6818862532821
+      ],
+      "size": [
+        300,
+        290
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Fused (LDR)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "CV_HDRMergeToRadiance",
+      "pos": [
+        2775,
+        1964.8126074142674
+      ],
+      "size": [
+        470,
+        168
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 174
+        }
+      ],
+      "outputs": [
+        {
+          "name": "radiance",
+          "type": "NPARRAY",
+          "links": [
+            10,
+            11,
+            13,
+            15
+          ]
+        }
+      ],
+      "title": "[CV HDR Merge to Radiance] Merge to radiance (Debevec)",
+      "properties": {
+        "Node name for S&R": "CV_HDRMergeToRadiance"
+      },
+      "widgets_values": [
+        "0.0333, 0.25, 2.5, 15",
+        "Debevec",
+        70
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_CVPreview",
+      "pos": [
+        2747,
+        2200.6454900935214
+      ],
+      "size": [
+        300,
+        364
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Radiance (heatmap)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        true
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_HDRTonemap",
+      "pos": [
+        3847,
+        1614.2642397240297
+      ],
+      "size": [
+        350,
+        356
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 17,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "radiance",
+          "type": "NPARRAY",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "title": "[CV HDR Tonemap] Tonemap (Reinhard)",
+      "properties": {
+        "Node name for S&R": "CV_HDRTonemap"
+      },
+      "widgets_values": [
+        "Reinhard",
+        2.2,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 14,
+      "type": "PreviewImage",
+      "pos": [
+        4209,
+        1614.2642397240297
+      ],
+      "size": [
+        300,
+        290
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Reinhard (LDR)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 15,
+      "type": "CV_HDRTonemap",
+      "pos": [
+        3845,
+        2037.7120928430418
+      ],
+      "size": [
+        330,
+        356
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 18,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "radiance",
+          "type": "NPARRAY",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "[CV HDR Tonemap] Tonemap (Drago)",
+      "properties": {
+        "Node name for S&R": "CV_HDRTonemap"
+      },
+      "widgets_values": [
+        "Drago",
+        2.2,
+        1,
+        0.85,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 16,
+      "type": "PreviewImage",
+      "pos": [
+        4209,
+        2035.8503600732042
+      ],
+      "size": [
+        300,
+        290
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Drago (LDR)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CV_HDRTonemap",
+      "pos": [
+        3852,
+        2457.8395871807875
+      ],
+      "size": [
+        340,
+        356
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "radiance",
+          "type": "NPARRAY",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "title": "[CV HDR Tonemap] Tonemap (Mantiuk)",
+      "properties": {
+        "Node name for S&R": "CV_HDRTonemap"
+      },
+      "widgets_values": [
+        "Mantiuk",
+        2.2,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0.7
+      ]
+    },
+    {
+      "id": 18,
+      "type": "PreviewImage",
+      "pos": [
+        4210,
+        2458.6884627423456
+      ],
+      "size": [
+        300,
+        290
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Mantiuk (LDR)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 19,
+      "type": "BatchImagesNode",
+      "pos": [
+        539,
+        401.0010310697874
+      ],
+      "size": [
+        225,
+        144
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image0",
+          "name": "images.image0",
+          "type": "IMAGE",
+          "link": 17
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 18
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 19
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 20
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            163,
+            166,
+            171
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "BatchImagesNode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 20,
+      "type": "CV_HDRMergeMertens",
+      "pos": [
+        3707,
+        1034.0521809793513
+      ],
+      "size": [
+        321.15625,
+        168
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 177
+        }
+      ],
+      "outputs": [
+        {
+          "name": "fused",
+          "type": "IMAGE",
+          "links": [
+            28,
+            104,
+            157
+          ]
+        }
+      ],
+      "title": "[CV HDR Exposure Fusion (Mertens)]",
+      "properties": {
+        "Node name for S&R": "CV_HDRMergeMertens"
+      },
+      "widgets_values": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 21,
+      "type": "PreviewImage",
+      "pos": [
+        3397,
+        716.0202065846279
+      ],
+      "size": [
+        300,
+        290
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Fused (LDR)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "CV_HDRMergeMertens",
+      "pos": [
+        2737,
+        541.9733560584739
+      ],
+      "size": [
+        321.15625,
+        168
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 179
+        }
+      ],
+      "outputs": [
+        {
+          "name": "fused",
+          "type": "IMAGE",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "title": "[CV HDR Exposure Fusion (Mertens)]",
+      "properties": {
+        "Node name for S&R": "CV_HDRMergeMertens"
+      },
+      "widgets_values": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 23,
+      "type": "PreviewImage",
+      "pos": [
+        2740,
+        212.68008478936122
+      ],
+      "size": [
+        300,
+        290
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Fused (LDR)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 24,
+      "type": "CV_HDRMergeMertens",
+      "pos": [
+        3067,
+        540.4529621079005
+      ],
+      "size": [
+        321.15625,
+        168
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 178
+        }
+      ],
+      "outputs": [
+        {
+          "name": "fused",
+          "type": "IMAGE",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "title": "[CV HDR Exposure Fusion (Mertens)]",
+      "properties": {
+        "Node name for S&R": "CV_HDRMergeMertens"
+      },
+      "widgets_values": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "id": 25,
+      "type": "PreviewImage",
+      "pos": [
+        3060,
+        214.60877213618983
+      ],
+      "size": [
+        300,
+        290
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Fused (LDR)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 47,
+      "type": "CV_ImageToCV",
+      "pos": [
+        4423,
+        573.9323918304428
+      ],
+      "size": [
+        236.65625,
+        168
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 104
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            129
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "RGB",
+        "float32 (0-1)",
+        0
+      ]
+    },
+    {
+      "id": 62,
+      "type": "ImageCompare",
+      "pos": [
+        5415,
+        586.996734828037
+      ],
+      "size": [
+        472.734375,
+        444.203125
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 157
+        },
+        {
+          "name": "image_b",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 156
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "ImageCompare"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 72,
+      "type": "cv2_transform",
+      "pos": [
+        4729,
+        740.8884332411869
+      ],
+      "size": [
+        261.046875,
+        96
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY",
+          "link": 141
+        },
+        {
+          "name": "m",
+          "type": "NPARRAY",
+          "link": 140
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            127
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "cv2_transform"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 90,
+      "type": "4d888098-0415-492d-ac2c-55f8ddf5be0b",
+      "pos": [
+        4731,
+        876.8084693480052
+      ],
+      "size": [
+        265.390625,
+        82
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 127
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            151
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 91,
+      "type": "CV_CVPreview",
+      "pos": [
+        5130,
+        666.4467196225776
+      ],
+      "size": [
+        270,
+        364
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 150
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            156
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 92,
+      "type": "cv2_pow",
+      "pos": [
+        4724,
+        601.0299731435969
+      ],
+      "size": [
+        254.953125,
+        104
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 129
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            141
+          ]
+        }
+      ],
+      "title": "sRGB decode (pow 2.2)",
+      "properties": {
+        "Node name for S&R": "cv2_pow"
+      },
+      "widgets_values": [
+        2.2
+      ]
+    },
+    {
+      "id": 115,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        4271,
+        791.9777199024197
+      ],
+      "size": [
+        391.671875,
+        234
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            140
+          ]
+        }
+      ],
+      "title": "Parse Matrix (linear transform in RGB space)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0.6274 0.3293 0.0433 \n0.0691 0.9195 0.0114 \n0.0164 0.0880 0.8956 ",
+        "CV_32F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 119,
+      "type": "cv2_cvtColor",
+      "pos": [
+        4733,
+        993.3446708869076
+      ],
+      "size": [
+        303.359375,
+        132
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 151
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            150
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "cv2_cvtColor"
+      },
+      "widgets_values": [
+        "COLOR_RGB2BGR",
+        3,
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 127,
+      "type": "CV_AlignMTB",
+      "pos": [
+        702,
+        953.2337700080511
+      ],
+      "size": [
+        270,
+        164
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 166
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            172
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_AlignMTB"
+      },
+      "widgets_values": [
+        4,
+        2,
+        true
+      ]
+    },
+    {
+      "id": 128,
+      "type": "PreviewImage",
+      "pos": [
+        1015,
+        953.7158438428397
+      ],
+      "size": [
+        584.078125,
+        493.5625
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 172
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Images Post Alignment  ( aligned to the 3rd image, not configurable )",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 130,
+      "type": "PreviewImage",
+      "pos": [
+        1013,
+        400.7765941576906
+      ],
+      "size": [
+        584.078125,
+        493.5625
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 171
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Original Images ( Prior to Alignment )",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 133,
+      "type": "CV_AlignMTBToReference",
+      "pos": [
+        633,
+        1525.0390175294215
+      ],
+      "size": [
+        319.25,
+        196
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 163
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            173
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_AlignMTBToReference"
+      },
+      "widgets_values": [
+        3,
+        4,
+        2,
+        true
+      ]
+    },
+    {
+      "id": 134,
+      "type": "PreviewImage",
+      "pos": [
+        1016,
+        1524.6841015470156
+      ],
+      "size": [
+        584.078125,
+        493.5625
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 173
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            174,
+            175
+          ]
+        }
+      ],
+      "title": "Images Post Alignment ( forcefully aligned to the last, brightest, image )",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 135,
+      "type": "Reroute",
+      "pos": [
+        2193,
+        813.901448030425
+      ],
+      "size": [
+        82,
+        26
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 175
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            176,
+            177,
+            178,
+            179
+          ]
+        }
+      ],
+      "properties": {
+        "showOutputText": true,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 137,
+      "type": "Note",
+      "pos": [
+        4262,
+        1062.3627054335975
+      ],
+      "size": [
+        436.21875,
+        129.4375
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Custom linear transforms can be used as a crutch; the handling of specific color transforms or output formats falls outside the scope of the library."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 138,
+      "type": "Note",
+      "pos": [
+        -247,
+        875.0329198691876
+      ],
+      "size": [
+        752.921875,
+        176.484375
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "hdr_stlouis_ev-4.72.jpg / ev-1.82.jpg / ev+1.51.jpg / ev+4.09.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   St. Louis Arch, multi-exposure bracket (EV -4.72 / -1.82 / +1.51 / +4.09)\nCreator: Kevin McCoy (Wikimedia user Kmccoy)\nLicense: CC BY-SA 3.0 (attribution + share-alike)\n         https://creativecommons.org/licenses/by-sa/3.0/\nSource:  https://commons.wikimedia.org/wiki/File:StLouisArchMultExpEV-4.72.JPG (and the EV -1.82 / +1.51 / +4.09 siblings)\nSize:    1200x900 each (downscaled from the 2816x2112 originals); four tripod exposures of the same scene\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      8,
+      9,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      11,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      11,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      13,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      11,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      15,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      11,
+      0,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      17,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      2,
+      0,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      3,
+      0,
+      19,
+      1,
+      "IMAGE"
+    ],
+    [
+      19,
+      4,
+      0,
+      19,
+      2,
+      "IMAGE"
+    ],
+    [
+      20,
+      5,
+      0,
+      19,
+      3,
+      "IMAGE"
+    ],
+    [
+      28,
+      20,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      30,
+      22,
+      0,
+      23,
+      0,
+      "IMAGE"
+    ],
+    [
+      32,
+      24,
+      0,
+      25,
+      0,
+      "IMAGE"
+    ],
+    [
+      104,
+      20,
+      0,
+      47,
+      0,
+      "IMAGE"
+    ],
+    [
+      127,
+      72,
+      0,
+      90,
+      0,
+      "NPARRAY"
+    ],
+    [
+      129,
+      47,
+      0,
+      92,
+      0,
+      "NPARRAY"
+    ],
+    [
+      140,
+      115,
+      0,
+      72,
+      1,
+      "NPARRAY"
+    ],
+    [
+      141,
+      92,
+      0,
+      72,
+      0,
+      "NPARRAY"
+    ],
+    [
+      150,
+      119,
+      0,
+      91,
+      0,
+      "NPARRAY"
+    ],
+    [
+      151,
+      90,
+      0,
+      119,
+      0,
+      "NPARRAY"
+    ],
+    [
+      156,
+      91,
+      0,
+      62,
+      1,
+      "IMAGE"
+    ],
+    [
+      157,
+      20,
+      0,
+      62,
+      0,
+      "IMAGE"
+    ],
+    [
+      163,
+      19,
+      0,
+      133,
+      0,
+      "IMAGE"
+    ],
+    [
+      166,
+      19,
+      0,
+      127,
+      0,
+      "IMAGE"
+    ],
+    [
+      171,
+      19,
+      0,
+      130,
+      0,
+      "IMAGE"
+    ],
+    [
+      172,
+      127,
+      0,
+      128,
+      0,
+      "IMAGE"
+    ],
+    [
+      173,
+      133,
+      0,
+      134,
+      0,
+      "IMAGE"
+    ],
+    [
+      174,
+      134,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      175,
+      134,
+      0,
+      135,
+      0,
+      "IMAGE"
+    ],
+    [
+      176,
+      135,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      177,
+      135,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      178,
+      135,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      179,
+      135,
+      0,
+      22,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "4d888098-0415-492d-ac2c-55f8ddf5be0b",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 139,
+          "lastLinkId": 179,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Adjust Range [0, N] to [0, 1]",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            1106.2186845119008,
+            740.3587984951848,
+            128,
+            68
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2395.5402389119,
+            740.3587984951848,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "4d4279fe-a58c-4ca8-b1dc-65e1a69b6bfc",
+            "name": "nparray",
+            "type": "NPARRAY",
+            "linkIds": [
+              88,
+              87
+            ],
+            "localized_name": "nparray",
+            "pos": [
+              51,
+              24
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "27e513ae-e229-4b1e-91e9-4e7c8d033cd8",
+            "name": "nparray",
+            "type": "NPARRAY",
+            "linkIds": [
+              96
+            ],
+            "localized_name": "nparray",
+            "pos": [
+              24,
+              24
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 86,
+            "type": "CV_ArrayStat",
+            "pos": [
+              1294.2186845119008,
+              850.7907112451849
+            ],
+            "size": [
+              210,
+              78
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 88
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "text",
+                "name": "text",
+                "type": "STRING",
+                "links": [
+                  89
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ArrayStat"
+            },
+            "widgets_values": [
+              "max"
+            ]
+          },
+          {
+            "id": 87,
+            "type": "cv2_threshold",
+            "pos": [
+              2098.5402389119,
+              648.9268857451848
+            ],
+            "size": [
+              237,
+              174
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 95
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  96
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              1,
+              1,
+              "THRESH_TRUNC"
+            ]
+          },
+          {
+            "id": 88,
+            "type": "CV_ScalarArray",
+            "pos": [
+              1533.2186845119008,
+              847.7907112451849
+            ],
+            "size": [
+              210,
+              82
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "STRING",
+                "widget": {
+                  "name": "values"
+                },
+                "link": 89
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  90
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ScalarArray"
+            },
+            "widgets_values": [
+              "",
+              "float32"
+            ]
+          },
+          {
+            "id": 89,
+            "type": "cv2_divide_0",
+            "pos": [
+              1775.2186845119008,
+              649.7907112451849
+            ],
+            "size": [
+              270,
+              102
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 87
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 90
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  95
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_divide_0"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 95,
+            "origin_id": 89,
+            "origin_slot": 0,
+            "target_id": 87,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 89,
+            "origin_id": 86,
+            "origin_slot": 1,
+            "target_id": 88,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 90,
+            "origin_id": 88,
+            "origin_slot": 0,
+            "target_id": 89,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 88,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 86,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 87,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 89,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 96,
+            "origin_id": 87,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "frontendVersion": "1.48.7",
+    "ds": {
+      "scale": 0.14641000000000004,
+      "offset": [
+        1953.867993977012,
+        2176.7976937112335
+      ]
+    }
+  },
+  "version": 0.4
+}

@@ -1,0 +1,7739 @@
+{
+  "id": "e0ff8fe7-7e18-4d63-99e1-bb896d0fdaf8",
+  "revision": 0,
+  "last_node_id": 178,
+  "last_link_id": 149,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        36,
+        -44.60287689144533
+      ],
+      "size": [
+        1179.984375,
+        267.171875
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "cv2.rapid: tracking a REAL 3D model (not a hand-typed cube - see 95)",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "RAPID (Harris & Stennett 1990) is an edge TRACKER, not a detector. Each frame it samples control points along the model's projected silhouette, searches perpendicular to the contour for the strongest image gradient, and refines the pose by PnP - starting from the previous frame's answer. It needs a starting pose that is already close and small motion between frames.\n\nWHAT THIS GRAPH DOES\n1. 'Load 3D (Advanced)' loads the GLB; 'CV Mesh From 3D Model' turns it into pts3d (Nx3) + tris (Mx3). Nothing else in the pack could read a mesh INTO the graph before - the same arrays also feed ICP / PPF / point-cloud normals.\n2. Four 'CV Preview 3D (Calibrated Camera)' nodes render the truck over a market photo at four KNOWN camera poses. That is the observation: a textured, shaded render over real clutter, not a wireframe the tracker drew itself. 'Batch Images' stacks the four into one IMAGE batch.\n3. Two 'CV Rapid Track (Sequence)' nodes track that batch from the SAME frame-0 pose. TOP lane gets the mesh straight from the file; BOTTOM lane gets it through 'CV Mesh Split Long Edges'.\n4. The last frame's tracked pose is projected and compared with the true pose - read the two 'mean error' outputs, and look at the overlay. It draws each lane's SILHOUETTE, which is what cv2.rapid actually aligns: RED is the raw-mesh pose, GREEN the split-mesh pose. There is no line for the truth because the rendered truck IS the truth - a lane is right exactly when its outline hugs the vehicle. (Drawing the full 3624-triangle wireframe instead is an unreadable hairball over a photo; and feeding drawWireframe the SPLIT indices with the ORIGINAL projected points fans garbage lines across the image, because it does not bounds-check tris against pts2d.)"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "Load3DAdvanced",
+      "pos": [
+        60,
+        705.0861610570531
+      ],
+      "size": [
+        330,
+        480
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D",
+          "links": [
+            1,
+            9,
+            15,
+            21,
+            27,
+            107,
+            113
+          ]
+        },
+        {
+          "name": "model_3d_info",
+          "type": "LOAD3D_MODEL_INFO",
+          "links": []
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": []
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Load the truck GLB",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "Load3DAdvanced",
+        "Camera Config": {
+          "cameraType": "perspective",
+          "fov": 35,
+          "state": {
+            "position": {
+              "x": 9.737820177156895,
+              "y": 6.126699767506032,
+              "z": 9.74136501861749
+            },
+            "target": {
+              "x": 0,
+              "y": 1.2577896789275858,
+              "z": 0.0035448414605958605
+            },
+            "zoom": 1,
+            "cameraType": "perspective",
+            "quaternion": {
+              "x": -0.1562298570518912,
+              "y": 0.3771722397422857,
+              "z": 0.06471252563850326,
+              "w": 0.9105743365364628
+            },
+            "fov": 35,
+            "aspect": 1,
+            "near": 0.01,
+            "far": 10000,
+            "frustum": {
+              "left": -5,
+              "right": 5,
+              "top": 5,
+              "bottom": -5
+            }
+          }
+        },
+        "Light Config": {
+          "intensity": 3,
+          "hdri": {
+            "enabled": false,
+            "hdriPath": "",
+            "showAsBackground": false,
+            "intensity": 1
+          }
+        },
+        "Scene Config": {
+          "showGrid": true,
+          "backgroundColor": "#282828",
+          "backgroundImage": "",
+          "backgroundRenderMode": "tiled",
+          "models": [
+            {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "quaternion": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            }
+          ]
+        }
+      },
+      "widgets_values": [
+        "3d/MilkTruck.glb",
+        "",
+        1024,
+        1024
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_MeshFrom3DModel",
+      "pos": [
+        430,
+        705.0861610570531
+      ],
+      "size": [
+        462.6875,
+        262
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_GLB,FILE_3D_GLTF,FILE_3D",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "links": [
+            2,
+            37,
+            48,
+            52,
+            56
+          ]
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            38,
+            78,
+            82
+          ]
+        },
+        {
+          "name": "center",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "diameter",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "vertex_count",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "triangle_count",
+          "type": "INT",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "loaded",
+          "type": "BOOLEAN",
+          "links": []
+        }
+      ],
+      "title": "[CV Mesh From 3D Model] Mesh -> pts3d + tris (3624 triangles)",
+      "properties": {
+        "Node name for S&R": "CV_MeshFrom3DModel"
+      },
+      "widgets_values": [
+        "OpenCV (Y down, Z into the scene)",
+        "keep model origin",
+        1
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_MeshSplitLongEdges",
+      "pos": [
+        430,
+        1225.086161057053
+      ],
+      "size": [
+        330,
+        180
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "link": 2
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "links": [
+            43,
+            90,
+            97,
+            125
+          ]
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY",
+          "links": [
+            44,
+            91,
+            98,
+            126
+          ]
+        },
+        {
+          "name": "triangle_count",
+          "type": "INT",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "Split edges > 80 px on screen (-> 5960 tris)",
+      "properties": {
+        "Node name for S&R": "CV_MeshSplitLongEdges"
+      },
+      "widgets_values": [
+        0.711,
+        24
+      ]
+    },
+    {
+      "id": 5,
+      "type": "PreviewAny",
+      "pos": [
+        900,
+        1225.086161057053
+      ],
+      "size": [
+        330,
+        162
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "triangles after splitting",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "PreviewAny",
+      "pos": [
+        900,
+        705.0861610570531
+      ],
+      "size": [
+        330,
+        162
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "triangles in the file",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "CV_CameraMatrix",
+      "pos": [
+        60,
+        1607.9772797727712
+      ],
+      "size": [
+        330,
+        170
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            6,
+            12,
+            18,
+            24,
+            39,
+            45,
+            51,
+            55,
+            59,
+            92,
+            99,
+            104,
+            118,
+            127,
+            136
+          ]
+        }
+      ],
+      "title": "K: fx = fy = 900, centre 400 x 300",
+      "properties": {
+        "Node name for S&R": "CV_CameraMatrix"
+      },
+      "widgets_values": [
+        900,
+        900,
+        400,
+        300
+      ]
+    },
+    {
+      "id": 8,
+      "type": "LoadImage",
+      "pos": [
+        60,
+        1225.086161057053
+      ],
+      "size": [
+        330,
+        346
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            11,
+            17,
+            23,
+            29
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "Backdrop: a real cluttered photo",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "market_scene.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        60,
+        1860
+      ],
+      "size": [
+        240,
+        160
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            7,
+            40,
+            46
+          ]
+        }
+      ],
+      "title": "frame 0: TRUE rvec",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0.12\n0.55\n0.0",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        560,
+        1860
+      ],
+      "size": [
+        240,
+        160
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "frame 1: TRUE rvec",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0.12\n0.58\n0.0",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        968,
+        1860
+      ],
+      "size": [
+        240,
+        160
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "title": "frame 2: TRUE rvec",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0.12\n0.61\n0.0",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        1486,
+        1860
+      ],
+      "size": [
+        240,
+        160
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            25,
+            49
+          ]
+        }
+      ],
+      "title": "frame 3: TRUE rvec",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0.12\n0.64\n0.0",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        60,
+        2050
+      ],
+      "size": [
+        240,
+        160
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            8,
+            41,
+            47
+          ]
+        }
+      ],
+      "title": "frame 0: TRUE tvec",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-0.4\n1.25\n8.0",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 21,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        560,
+        2050
+      ],
+      "size": [
+        240,
+        160
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "frame 1: TRUE tvec",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-0.355\n1.25\n7.97",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        968,
+        2050
+      ],
+      "size": [
+        240,
+        160
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "frame 2: TRUE tvec",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-0.31\n1.25\n7.94",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 23,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        1486,
+        2050
+      ],
+      "size": [
+        240,
+        160
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            26,
+            50
+          ]
+        }
+      ],
+      "title": "frame 3: TRUE tvec",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-0.265\n1.25\n7.91",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 30,
+      "type": "CV_CameraPoseTo3DView",
+      "pos": [
+        60,
+        2240
+      ],
+      "size": [
+        300,
+        200
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 6
+        },
+        {
+          "name": "rvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "name": "tvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 8
+        },
+        {
+          "name": "orbit_anchor",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": [
+            10
+          ]
+        },
+        {
+          "name": "fov_y_deg",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "frame 0: camera",
+      "properties": {
+        "Node name for S&R": "CV_CameraPoseTo3DView"
+      },
+      "widgets_values": [
+        800,
+        600,
+        1
+      ]
+    },
+    {
+      "id": 31,
+      "type": "CV_CameraPoseTo3DView",
+      "pos": [
+        560,
+        2240
+      ],
+      "size": [
+        300,
+        200
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "rvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 13
+        },
+        {
+          "name": "tvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 14
+        },
+        {
+          "name": "orbit_anchor",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "fov_y_deg",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "frame 1: camera",
+      "properties": {
+        "Node name for S&R": "CV_CameraPoseTo3DView"
+      },
+      "widgets_values": [
+        800,
+        600,
+        1
+      ]
+    },
+    {
+      "id": 32,
+      "type": "CV_CameraPoseTo3DView",
+      "pos": [
+        968,
+        2240
+      ],
+      "size": [
+        300,
+        200
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 18
+        },
+        {
+          "name": "rvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 19
+        },
+        {
+          "name": "tvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 20
+        },
+        {
+          "name": "orbit_anchor",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": [
+            22
+          ]
+        },
+        {
+          "name": "fov_y_deg",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "frame 2: camera",
+      "properties": {
+        "Node name for S&R": "CV_CameraPoseTo3DView"
+      },
+      "widgets_values": [
+        800,
+        600,
+        1
+      ]
+    },
+    {
+      "id": 33,
+      "type": "CV_CameraPoseTo3DView",
+      "pos": [
+        1486,
+        2240
+      ],
+      "size": [
+        300,
+        200
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 24
+        },
+        {
+          "name": "rvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 25
+        },
+        {
+          "name": "tvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 26
+        },
+        {
+          "name": "orbit_anchor",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": [
+            28
+          ]
+        },
+        {
+          "name": "fov_y_deg",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "frame 3: camera",
+      "properties": {
+        "Node name for S&R": "CV_CameraPoseTo3DView"
+      },
+      "widgets_values": [
+        800,
+        600,
+        1
+      ]
+    },
+    {
+      "id": 40,
+      "type": "CV_Preview3DCalibrated",
+      "pos": [
+        60,
+        2480
+      ],
+      "size": [
+        380,
+        460
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_GLB,FILE_3D_GLTF,FILE_3D",
+          "link": 9
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "link": 10
+        },
+        {
+          "name": "bg_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 11
+        },
+        {
+          "name": "scene_depth",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "render",
+          "type": "IMAGE",
+          "links": [
+            140
+          ]
+        },
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "occlusion",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth_metric",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "frame 0: render the observation",
+      "properties": {
+        "Node name for S&R": "CV_Preview3DCalibrated"
+      },
+      "widgets_values": [
+        "lambert (headlight)",
+        1,
+        "2x supersample",
+        "",
+        0
+      ]
+    },
+    {
+      "id": 41,
+      "type": "CV_Preview3DCalibrated",
+      "pos": [
+        560,
+        2480
+      ],
+      "size": [
+        380,
+        460
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_GLB,FILE_3D_GLTF,FILE_3D",
+          "link": 15
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "link": 16
+        },
+        {
+          "name": "bg_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 17
+        },
+        {
+          "name": "scene_depth",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "render",
+          "type": "IMAGE",
+          "links": [
+            141
+          ]
+        },
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "occlusion",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth_metric",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "frame 1: render the observation",
+      "properties": {
+        "Node name for S&R": "CV_Preview3DCalibrated"
+      },
+      "widgets_values": [
+        "lambert (headlight)",
+        1,
+        "2x supersample",
+        "",
+        0
+      ]
+    },
+    {
+      "id": 42,
+      "type": "CV_Preview3DCalibrated",
+      "pos": [
+        968,
+        2480
+      ],
+      "size": [
+        380,
+        460
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_GLB,FILE_3D_GLTF,FILE_3D",
+          "link": 21
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "link": 22
+        },
+        {
+          "name": "bg_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 23
+        },
+        {
+          "name": "scene_depth",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "render",
+          "type": "IMAGE",
+          "links": [
+            142
+          ]
+        },
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "occlusion",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth_metric",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "frame 2: render the observation",
+      "properties": {
+        "Node name for S&R": "CV_Preview3DCalibrated"
+      },
+      "widgets_values": [
+        "lambert (headlight)",
+        1,
+        "2x supersample",
+        "",
+        0
+      ]
+    },
+    {
+      "id": 43,
+      "type": "CV_Preview3DCalibrated",
+      "pos": [
+        1486,
+        2480
+      ],
+      "size": [
+        380,
+        460
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_GLB,FILE_3D_GLTF,FILE_3D",
+          "link": 27
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "link": 28
+        },
+        {
+          "name": "bg_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 29
+        },
+        {
+          "name": "scene_depth",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "render",
+          "type": "IMAGE",
+          "links": [
+            72,
+            109,
+            143
+          ]
+        },
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "occlusion",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth_metric",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "frame 3: render the observation",
+      "properties": {
+        "Node name for S&R": "CV_Preview3DCalibrated"
+      },
+      "widgets_values": [
+        "lambert (headlight)",
+        1,
+        "2x supersample",
+        "",
+        0
+      ]
+    },
+    {
+      "id": 60,
+      "type": "CV_RapidTrackSequence",
+      "pos": [
+        60,
+        3174.019755979256
+      ],
+      "size": [
+        460.515625,
+        290
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": 148
+        },
+        {
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "link": 37
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY",
+          "link": 38
+        },
+        {
+          "name": "K",
+          "type": "NPARRAY",
+          "link": 39
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 40
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rvecs",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "tvecs",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "ratios",
+          "type": "NPARRAY",
+          "links": [
+            68
+          ]
+        },
+        {
+          "name": "rmsds",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "links": [
+            53
+          ]
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "links": [
+            54
+          ]
+        },
+        {
+          "name": "tracked",
+          "type": "BOOLEAN",
+          "links": []
+        }
+      ],
+      "title": "[CV Rapid Track (Sequence)] LANE A: track with the RAW mesh",
+      "properties": {
+        "Node name for S&R": "CV_RapidTrackSequence"
+      },
+      "widgets_values": [
+        128,
+        12,
+        2,
+        1
+      ],
+      "color": "#533",
+      "bgcolor": "#755"
+    },
+    {
+      "id": 61,
+      "type": "CV_RapidTrackSequence",
+      "pos": [
+        60,
+        3509.9285633846303
+      ],
+      "size": [
+        470,
+        290
+      ],
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": 149
+        },
+        {
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "link": 43
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY",
+          "link": 44
+        },
+        {
+          "name": "K",
+          "type": "NPARRAY",
+          "link": 45
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 46
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rvecs",
+          "type": "NPARRAY",
+          "links": [
+            93
+          ]
+        },
+        {
+          "name": "tvecs",
+          "type": "NPARRAY",
+          "links": [
+            94
+          ]
+        },
+        {
+          "name": "ratios",
+          "type": "NPARRAY",
+          "links": [
+            70
+          ]
+        },
+        {
+          "name": "rmsds",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "links": [
+            57,
+            100,
+            105,
+            116,
+            128,
+            134
+          ]
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "links": [
+            58,
+            101,
+            102,
+            117,
+            129,
+            135
+          ]
+        },
+        {
+          "name": "tracked",
+          "type": "BOOLEAN",
+          "links": []
+        }
+      ],
+      "title": "[CV Rapid Track (Sequence)] LANE B: track with the SPLIT mesh",
+      "properties": {
+        "Node name for S&R": "CV_RapidTrackSequence"
+      },
+      "widgets_values": [
+        128,
+        12,
+        2,
+        1
+      ],
+      "color": "#353",
+      "bgcolor": "#575"
+    },
+    {
+      "id": 70,
+      "type": "cv2_projectPoints",
+      "pos": [
+        60,
+        3879.343483582425
+      ],
+      "size": [
+        280,
+        170
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "objectPoints",
+          "type": "NPARRAY",
+          "link": 48
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 49
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 50
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 51
+        },
+        {
+          "name": "distCoeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "imagePoints",
+          "type": "NPARRAY",
+          "links": [
+            60,
+            64
+          ]
+        },
+        {
+          "name": "jacobian",
+          "type": "NPARRAY",
+          "links": []
+        }
+      ],
+      "title": "frame 3: TRUE projection",
+      "properties": {
+        "Node name for S&R": "cv2_projectPoints"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 71,
+      "type": "cv2_projectPoints",
+      "pos": [
+        400,
+        3879.343483582425
+      ],
+      "size": [
+        280,
+        170
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "objectPoints",
+          "type": "NPARRAY",
+          "link": 52
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 53
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 54
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 55
+        },
+        {
+          "name": "distCoeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "imagePoints",
+          "type": "NPARRAY",
+          "links": [
+            61,
+            73
+          ]
+        },
+        {
+          "name": "jacobian",
+          "type": "NPARRAY",
+          "links": []
+        }
+      ],
+      "title": "frame 3: LANE A projection",
+      "properties": {
+        "Node name for S&R": "cv2_projectPoints"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 72,
+      "type": "cv2_projectPoints",
+      "pos": [
+        400,
+        4089.3434835824232
+      ],
+      "size": [
+        280,
+        170
+      ],
+      "flags": {},
+      "order": 47,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "objectPoints",
+          "type": "NPARRAY",
+          "link": 56
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 57
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 58
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 59
+        },
+        {
+          "name": "distCoeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "imagePoints",
+          "type": "NPARRAY",
+          "links": [
+            65,
+            74
+          ]
+        },
+        {
+          "name": "jacobian",
+          "type": "NPARRAY",
+          "links": []
+        }
+      ],
+      "title": "frame 3: LANE B projection",
+      "properties": {
+        "Node name for S&R": "cv2_projectPoints"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 73,
+      "type": "cv2_absdiff",
+      "pos": [
+        819,
+        3879.343483582425
+      ],
+      "size": [
+        240,
+        100
+      ],
+      "flags": {},
+      "order": 52,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 60
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 61
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            62
+          ]
+        }
+      ],
+      "title": "|lane A (raw mesh) - truth|",
+      "properties": {
+        "Node name for S&R": "cv2_absdiff"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 74,
+      "type": "cv2_absdiff",
+      "pos": [
+        819,
+        4089.3434835824232
+      ],
+      "size": [
+        240,
+        100
+      ],
+      "flags": {},
+      "order": 57,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 64
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 65
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            66
+          ]
+        }
+      ],
+      "title": "|lane B (split mesh) - truth|",
+      "properties": {
+        "Node name for S&R": "cv2_absdiff"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 80,
+      "type": "CV_ImageToCV",
+      "pos": [
+        60,
+        4519.343483582419
+      ],
+      "size": [
+        300,
+        142
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 72
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            84,
+            114,
+            131,
+            132
+          ]
+        }
+      ],
+      "title": "frame 3 as BGR (the canvas)",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 83,
+      "type": "CV_ArrayStat",
+      "pos": [
+        1235,
+        3879.343483582425
+      ],
+      "size": [
+        270.953125,
+        110
+      ],
+      "flags": {},
+      "order": 62,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 62
+        }
+      ],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "NPARRAY",
+          "links": [
+            63
+          ]
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "lane A (raw mesh): mean error (px)",
+      "properties": {
+        "Node name for S&R": "CV_ArrayStat"
+      },
+      "widgets_values": [
+        "mean"
+      ]
+    },
+    {
+      "id": 84,
+      "type": "CV_ArrayStat",
+      "pos": [
+        1235,
+        4089.3434835824232
+      ],
+      "size": [
+        280,
+        110
+      ],
+      "flags": {},
+      "order": 64,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 66
+        }
+      ],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "NPARRAY",
+          "links": [
+            67
+          ]
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "lane B (split mesh): mean error (px)",
+      "properties": {
+        "Node name for S&R": "CV_ArrayStat"
+      },
+      "widgets_values": [
+        "mean"
+      ]
+    },
+    {
+      "id": 93,
+      "type": "PreviewAny",
+      "pos": [
+        1555,
+        3879.343483582425
+      ],
+      "size": [
+        280,
+        162
+      ],
+      "flags": {},
+      "order": 71,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 63
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "lane A (raw mesh): mean error (px)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 94,
+      "type": "PreviewAny",
+      "pos": [
+        1555,
+        4089.3434835824232
+      ],
+      "size": [
+        280,
+        162
+      ],
+      "flags": {},
+      "order": 73,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 67
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "lane B (split mesh): mean error (px)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 95,
+      "type": "CV_CVInspect",
+      "pos": [
+        576.6814699579954,
+        3214.5245303859665
+      ],
+      "size": [
+        260,
+        90
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 68
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            69
+          ]
+        }
+      ],
+      "title": "lane A: ratio per frame",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 96,
+      "type": "CV_CVInspect",
+      "pos": [
+        586.6814699579954,
+        3553.1042576239797
+      ],
+      "size": [
+        260,
+        90
+      ],
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 70
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            71
+          ]
+        }
+      ],
+      "title": "lane B: ratio per frame",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 97,
+      "type": "PreviewAny",
+      "pos": [
+        885.6814699579954,
+        3214.5245303859665
+      ],
+      "size": [
+        300,
+        162
+      ],
+      "flags": {},
+      "order": 51,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 69
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "lane A: ratio per frame",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 98,
+      "type": "PreviewAny",
+      "pos": [
+        886.6814699579954,
+        3553.1042576239797
+      ],
+      "size": [
+        300,
+        162
+      ],
+      "flags": {},
+      "order": 56,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 71
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "lane B: ratio per frame",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 100,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        819,
+        4299.343483582419
+      ],
+      "size": [
+        260,
+        138
+      ],
+      "flags": {},
+      "order": 53,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 73
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            77
+          ]
+        }
+      ],
+      "title": "(N,1,2) -> (N,2)",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        0,
+        2,
+        0
+      ]
+    },
+    {
+      "id": 101,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        821,
+        4540.599522389872
+      ],
+      "size": [
+        260,
+        138
+      ],
+      "flags": {},
+      "order": 58,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            81
+          ]
+        }
+      ],
+      "title": "(N,1,2) -> (N,2)",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        0,
+        2,
+        0
+      ]
+    },
+    {
+      "id": 106,
+      "type": "CV_CVPreview",
+      "pos": [
+        2383,
+        4299.343483582419
+      ],
+      "size": [
+        422.828125,
+        448.515625
+      ],
+      "flags": {},
+      "order": 80,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 88
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "the truck IS the truth: red = raw mesh, blue = split mesh",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 108,
+      "type": "SolidMask",
+      "pos": [
+        60,
+        4299.343483582419
+      ],
+      "size": [
+        260,
+        142
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            75
+          ]
+        }
+      ],
+      "title": "black canvas, frame-sized",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "SolidMask"
+      },
+      "widgets_values": [
+        0,
+        800,
+        600
+      ]
+    },
+    {
+      "id": 109,
+      "type": "CV_MaskToCV",
+      "pos": [
+        400,
+        4299.343483582419
+      ],
+      "size": [
+        260,
+        114
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 75
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            76,
+            80
+          ]
+        }
+      ],
+      "title": "canvas as uint8",
+      "properties": {
+        "Node name for S&R": "CV_MaskToCV"
+      },
+      "widgets_values": [
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 110,
+      "type": "cv2_rapid_drawWireframe",
+      "pos": [
+        1235,
+        4299.343483582419
+      ],
+      "size": [
+        280,
+        180
+      ],
+      "flags": {},
+      "order": 63,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "img",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 76
+        },
+        {
+          "name": "pts2d",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 77
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 78
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            79
+          ]
+        }
+      ],
+      "title": "LANE A pose -> silhouette mask",
+      "properties": {
+        "Node name for S&R": "cv2_rapid_drawWireframe"
+      },
+      "widgets_values": [
+        "(255, 255, 255)",
+        8,
+        true
+      ]
+    },
+    {
+      "id": 111,
+      "type": "cv2_rapid_drawWireframe",
+      "pos": [
+        1236,
+        4540.599522389872
+      ],
+      "size": [
+        280,
+        180
+      ],
+      "flags": {},
+      "order": 65,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "img",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 80
+        },
+        {
+          "name": "pts2d",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 81
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 82
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            83
+          ]
+        }
+      ],
+      "title": "LANE B pose -> silhouette mask",
+      "properties": {
+        "Node name for S&R": "cv2_rapid_drawWireframe"
+      },
+      "widgets_values": [
+        "(255, 255, 255)",
+        8,
+        true
+      ]
+    },
+    {
+      "id": 112,
+      "type": "CV_FindContours",
+      "pos": [
+        1555,
+        4299.343483582419
+      ],
+      "size": [
+        260,
+        162
+      ],
+      "flags": {},
+      "order": 72,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 79
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            85
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "outer outline of that pose",
+      "properties": {
+        "Node name for S&R": "CV_FindContours"
+      },
+      "widgets_values": [
+        "RETR_EXTERNAL",
+        "CHAIN_APPROX_SIMPLE",
+        20
+      ]
+    },
+    {
+      "id": 113,
+      "type": "CV_FindContours",
+      "pos": [
+        1556,
+        4540.599522389872
+      ],
+      "size": [
+        260,
+        162
+      ],
+      "flags": {},
+      "order": 74,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 83
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            87
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "outer outline of that pose",
+      "properties": {
+        "Node name for S&R": "CV_FindContours"
+      },
+      "widgets_values": [
+        "RETR_EXTERNAL",
+        "CHAIN_APPROX_SIMPLE",
+        20
+      ]
+    },
+    {
+      "id": 114,
+      "type": "CV_DrawContours",
+      "pos": [
+        1973,
+        4299.343483582419
+      ],
+      "size": [
+        280,
+        226
+      ],
+      "flags": {},
+      "order": 78,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 84
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 85
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            86
+          ]
+        }
+      ],
+      "title": "draw LANE A outline (red)",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "(0, 0, 255)",
+        2,
+        false,
+        0,
+        "solid"
+      ]
+    },
+    {
+      "id": 115,
+      "type": "CV_DrawContours",
+      "pos": [
+        1975,
+        4540.599522389872
+      ],
+      "size": [
+        280,
+        226
+      ],
+      "flags": {},
+      "order": 79,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 86
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 87
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            88
+          ]
+        }
+      ],
+      "title": "+ LANE B outline (blue)",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "(255, 128, 64)",
+        2,
+        false,
+        0,
+        "solid"
+      ]
+    },
+    {
+      "id": 120,
+      "type": "CV_RasterizeMesh",
+      "pos": [
+        619,
+        4832.61626697877
+      ],
+      "size": [
+        340,
+        260
+      ],
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "link": 90
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY",
+          "link": 91
+        },
+        {
+          "name": "K",
+          "type": "NPARRAY",
+          "link": 92
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 93
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 94
+        }
+      ],
+      "outputs": [
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": [
+            95
+          ]
+        },
+        {
+          "name": "depth",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "coverage",
+          "type": "FLOAT",
+          "links": [
+            96
+          ]
+        }
+      ],
+      "title": "USE 1: matte + metric depth, every frame",
+      "properties": {
+        "Node name for S&R": "CV_RasterizeMesh"
+      },
+      "widgets_values": [
+        800,
+        600
+      ]
+    },
+    {
+      "id": 121,
+      "type": "MaskPreview",
+      "pos": [
+        1000,
+        4832.61626697877
+      ],
+      "size": [
+        320,
+        300
+      ],
+      "flags": {},
+      "order": 54,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 95
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "rotoscope: one mask per frame",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "MaskPreview"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 122,
+      "type": "PreviewAny",
+      "pos": [
+        641,
+        5135.109605982033
+      ],
+      "size": [
+        320,
+        162
+      ],
+      "flags": {},
+      "order": 55,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 96
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "mean frame coverage",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 123,
+      "type": "CV_RasterizeMesh",
+      "pos": [
+        605,
+        5398.280300574968
+      ],
+      "size": [
+        340,
+        260
+      ],
+      "flags": {},
+      "order": 48,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "link": 97
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY",
+          "link": 98
+        },
+        {
+          "name": "K",
+          "type": "NPARRAY",
+          "link": 99
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 100
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 101
+        }
+      ],
+      "outputs": [
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth",
+          "type": "NPARRAY",
+          "links": [
+            110,
+            119
+          ]
+        },
+        {
+          "name": "coverage",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "depth of the TRACKED truck, last frame",
+      "properties": {
+        "Node name for S&R": "CV_RasterizeMesh"
+      },
+      "widgets_values": [
+        800,
+        600
+      ]
+    },
+    {
+      "id": 124,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        986,
+        5398.280300574968
+      ],
+      "size": [
+        280,
+        160
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            103
+          ]
+        }
+      ],
+      "title": "offset: 1.6 m left, 3 m further away",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-1.6\n0\n3.0",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 125,
+      "type": "cv2_add",
+      "pos": [
+        1420,
+        5398.280300574968
+      ],
+      "size": [
+        260,
+        126
+      ],
+      "flags": {},
+      "order": 49,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 102
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 103
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            106
+          ]
+        }
+      ],
+      "title": "second copy's tvec",
+      "properties": {
+        "Node name for S&R": "cv2_add"
+      },
+      "widgets_values": [
+        "same as input"
+      ]
+    },
+    {
+      "id": 126,
+      "type": "CV_CameraPoseTo3DView",
+      "pos": [
+        1819,
+        5398.280300574968
+      ],
+      "size": [
+        300,
+        200
+      ],
+      "flags": {},
+      "order": 60,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 104
+        },
+        {
+          "name": "rvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 105
+        },
+        {
+          "name": "tvec",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 106
+        },
+        {
+          "name": "orbit_anchor",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "links": [
+            108
+          ]
+        },
+        {
+          "name": "fov_y_deg",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": []
+        }
+      ],
+      "title": "camera for the second copy",
+      "properties": {
+        "Node name for S&R": "CV_CameraPoseTo3DView"
+      },
+      "widgets_values": [
+        800,
+        600,
+        1
+      ]
+    },
+    {
+      "id": 127,
+      "type": "CV_Preview3DCalibrated",
+      "pos": [
+        2249,
+        5398.280300574968
+      ],
+      "size": [
+        389.237890625,
+        460
+      ],
+      "flags": {},
+      "order": 68,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_GLB,FILE_3D_GLTF,FILE_3D",
+          "link": 107
+        },
+        {
+          "name": "camera_info",
+          "type": "LOAD3D_CAMERA",
+          "link": 108
+        },
+        {
+          "name": "bg_image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 109
+        },
+        {
+          "name": "scene_depth",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 110
+        }
+      ],
+      "outputs": [
+        {
+          "name": "render",
+          "type": "IMAGE",
+          "links": [
+            111
+          ]
+        },
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "depth",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "occlusion",
+          "type": "MASK",
+          "links": [
+            112
+          ]
+        },
+        {
+          "name": "depth_metric",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "USE 2: second copy, cut by the tracked one",
+      "properties": {
+        "Node name for S&R": "CV_Preview3DCalibrated"
+      },
+      "widgets_values": [
+        "lambert (headlight)",
+        1,
+        "2x supersample",
+        "",
+        0
+      ]
+    },
+    {
+      "id": 128,
+      "type": "PreviewImage",
+      "pos": [
+        2669,
+        5398.280300574968
+      ],
+      "size": [
+        360,
+        320
+      ],
+      "flags": {},
+      "order": 76,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 111
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "the far copy is hidden where the near truck is",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 129,
+      "type": "MaskPreview",
+      "pos": [
+        2669,
+        5768.3119455228625
+      ],
+      "size": [
+        360,
+        300
+      ],
+      "flags": {},
+      "order": 77,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 112
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "exactly which pixels got cut",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "MaskPreview"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 130,
+      "type": "CV_AnnotateModelPoints",
+      "pos": [
+        609,
+        6170.665574450006
+      ],
+      "size": [
+        605.515625,
+        440
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model_3d",
+          "type": "FILE_3D_GLB,FILE_3D_GLTF,FILE_3D",
+          "link": 113
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points_3d",
+          "type": "NPARRAY",
+          "links": [
+            115
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "[CV Annotate Points On Model] USE 3a: click the anchors on the model itself",
+      "properties": {
+        "Node name for S&R": "CV_AnnotateModelPoints"
+      },
+      "widgets_values": [
+        "[[0.0, 1.0, 2.3], [0.0, 1.0, -2.3], [1.35, 1.5, 0.0], [-1.35, 1.5, 0.0]]",
+        "OpenCV (Y down, Z into the scene)"
+      ]
+    },
+    {
+      "id": 131,
+      "type": "a1b2c3d4-e5f6-4789-9abc-def012345602",
+      "pos": [
+        1251.4029371360034,
+        6170.665574450006
+      ],
+      "size": [
+        505.3125,
+        220
+      ],
+      "flags": {},
+      "order": 59,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 114
+        },
+        {
+          "name": "points_3d",
+          "type": "NPARRAY",
+          "link": 115
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 116
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 117
+        },
+        {
+          "name": "K",
+          "type": "NPARRAY",
+          "link": 118
+        },
+        {
+          "name": "scene_depth",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 119
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 120
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "NPARRAY",
+          "links": [
+            121
+          ]
+        },
+        {
+          "name": "points_2d",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "visible",
+          "type": "NPARRAY",
+          "links": [
+            123
+          ]
+        }
+      ],
+      "title": "[CV Annotate Model] USE 3: CV Annotate Model (hidden-line removal)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "a1b2c3d4-e5f6-4789-9abc-def012345602",
+        "previewExposures": []
+      },
+      "widgets_values": [
+        0.02
+      ],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 132,
+      "type": "CV_CVPreview",
+      "pos": [
+        2041.7980567211166,
+        6170.665574450006
+      ],
+      "size": [
+        564.671875,
+        553.71875
+      ],
+      "flags": {},
+      "order": 66,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 121
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "only the anchors facing the camera are drawn",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 134,
+      "type": "CV_CVInspect",
+      "pos": [
+        1459.7868051056635,
+        6448.682900202381
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 67,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 123
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            124
+          ]
+        }
+      ],
+      "title": "which anchors are visible",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 135,
+      "type": "PreviewAny",
+      "pos": [
+        1461.7868051056635,
+        6585.000898506201
+      ],
+      "size": [
+        300,
+        162
+      ],
+      "flags": {},
+      "order": 75,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 124
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "visible flags",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 136,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        620,
+        6969.614401692369
+      ],
+      "size": [
+        337.921875,
+        160
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            130
+          ]
+        }
+      ],
+      "title": "two clicked pixels (swap in 'Annotate Points')",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "52 420\n587 303",
+        "CV_32F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 139,
+      "type": "a1b2c3d4-e5f6-4789-9abc-def012345601",
+      "pos": [
+        1013,
+        6969.614401692369
+      ],
+      "size": [
+        550.328125,
+        240
+      ],
+      "flags": {},
+      "order": 50,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "link": 125
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY",
+          "link": 126
+        },
+        {
+          "name": "K",
+          "type": "NPARRAY",
+          "link": 127
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 128
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 129
+        },
+        {
+          "name": "points_2d",
+          "type": "NPARRAY",
+          "link": 130
+        },
+        {
+          "name": "frame",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 131
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points_3d",
+          "type": "NPARRAY",
+          "links": [
+            133
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "name": "depth",
+          "type": "NPARRAY",
+          "links": []
+        },
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "[CV Pick Point On Mesh] USE 4a: CV Pick Point On Mesh (click -> 3D anchor)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "a1b2c3d4-e5f6-4789-9abc-def012345601",
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 142,
+      "type": "a1b2c3d4-e5f6-4789-9abc-def012345603",
+      "pos": [
+        1628.65369924213,
+        6969.614401692369
+      ],
+      "size": [
+        463.5625,
+        200
+      ],
+      "flags": {},
+      "order": 61,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 132
+        },
+        {
+          "name": "points_3d",
+          "type": "NPARRAY",
+          "link": 133
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 134
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 135
+        },
+        {
+          "name": "K",
+          "type": "NPARRAY",
+          "link": 136
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "NPARRAY",
+          "links": [
+            138
+          ]
+        },
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": [
+            137
+          ]
+        },
+        {
+          "name": "points_2d",
+          "type": "NPARRAY",
+          "links": []
+        }
+      ],
+      "title": "[CV Draw 3D Measurement] USE 4b: CV Draw 3D Measurement",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "a1b2c3d4-e5f6-4789-9abc-def012345603",
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 143,
+      "type": "PreviewAny",
+      "pos": [
+        1757.1060263262725,
+        7208.459438744191
+      ],
+      "size": [
+        336.75,
+        162
+      ],
+      "flags": {},
+      "order": 70,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 137
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "corner-to-corner distance (~5.0 model units)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 144,
+      "type": "CV_TextToArray",
+      "pos": [
+        918.4826478659386,
+        6654.4499059382815
+      ],
+      "size": [
+        300,
+        200
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            120
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "one caption per anchor, in order",
+      "properties": {
+        "Node name for S&R": "CV_TextToArray"
+      },
+      "widgets_values": [
+        "nose\ntail\nleft flank\nright flank",
+        "one per line",
+        false
+      ]
+    },
+    {
+      "id": 145,
+      "type": "CV_CVPreview",
+      "pos": [
+        2165.276506581568,
+        6969.614401692369
+      ],
+      "size": [
+        500.234375,
+        510.609375
+      ],
+      "flags": {},
+      "order": 69,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 138
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "the dimension line, captioned on the footage",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 147,
+      "type": "Note",
+      "pos": [
+        -372,
+        711.4042285069177
+      ],
+      "size": [
+        416.109375,
+        282.578125
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "MilkTruck.glb",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Milk Truck - de-branded derivative of the glTF-Binary\n         sample model \"Cesium Milk Truck\"\nCreator: Cesium (2017); logo removed 2026\nLicense: CC BY 4.0 International - attribution required\n         https://creativecommons.org/licenses/by/4.0/\n         Upstream carries a trademark limitation on the Cesium\n         logo texture (LicenseRef-LegalMark-Cesium); the four\n         logo roundels are painted out of this copy's baked\n         JPEG, so only the CC BY 4.0 terms apply. Geometry and\n         UVs are unmodified.\nSource:  https://github.com/KhronosGroup/glTF-Sample-Assets\n         (Models/CesiumMilkTruck)\nSize:    mesh bounds ~4.9 x 2.8 x 3.0 scene units\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 150,
+      "type": "Note",
+      "pos": [
+        37,
+        261.6029968382904
+      ],
+      "size": [
+        1179.984375,
+        142.296875
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "WHY THE SPLIT MATTERS (this is the lesson)",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "cv2.rapid's extractControlPoints builds each 3D control point by interpolating LINEARLY between two consecutive silhouette VERTICES, with the blend factor taken from screen-space distance. Between far-apart vertices that is wrong by about L_px^2/(16*fx) in depth - and on this model, at fx=900 and 8 m, the raw mesh puts control points up to 23 px away from their own 3D points. The tracker then fits a corrupted correspondence set and walks away from the truth even when it starts perfectly on it.\nSplitting long edges until they are <= 80 px on screen (max_edge = 80 * distance / fx = 0.711) drops that to 0.9 px, for 5960 triangles instead of 3624 and about 14% more tracking time. Rendering at a HIGHER RESOLUTION does not help - the error is geometric, not raster."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 151,
+      "type": "Note",
+      "pos": [
+        39,
+        446.41161956070795
+      ],
+      "size": [
+        1179.96875,
+        152.8125
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "KNOBS WORTH TURNING",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "- max_edge on 'CV Mesh Split Long Edges': set it to 0 to pass the mesh through untouched and watch the bottom lane become the top one.\n- scale on 'CV Rapid Track (Sequence)': the capture-range knob. Prefer it over search_length, which buys range by letting texture edges outvote the silhouette.\n- ratio / rmsd outputs: ratio is the fraction of search lines that matched (a health signal); rmsd is the 2D reprojection difference in pixels. Neither is an accuracy measure - a confidently wrong pose scores well.\n\nThe GLB must sit in ComfyUI/input/3d/MilkTruck.glb (copy it from example_inputs/, see sources.txt)."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 152,
+      "type": "Note",
+      "pos": [
+        60,
+        4832.61626697877
+      ],
+      "size": [
+        420,
+        300
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "USE 1 - MATTE",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "1. MATTE. 'CV Rasterize Mesh' takes the whole Bx3x1 pose stack and returns one silhouette MASK per frame plus METRIC camera-space depth. That is rotoscoping for free once the object is tracked - feed it to compositing, inpainting or a depth ControlNet."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 153,
+      "type": "Note",
+      "pos": [
+        46,
+        5398.280300574968
+      ],
+      "size": [
+        420,
+        300
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "USE 2 - OCCLUSION",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "2. OCCLUSION. The same node's depth is exactly what 'CV Preview 3D (Calibrated Camera)'.scene_depth wants, so a SECOND copy of the truck (same rotation, pushed 1.6 m left and 3 m back in camera space, so it follows the track) is CUT where the tracked one stands in front of it. The occlusion MASK shows which pixels were removed."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 154,
+      "type": "Note",
+      "pos": [
+        50,
+        6170.665574450006
+      ],
+      "size": [
+        420,
+        460
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "USE 3 - CALLOUTS",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "3. CALLOUTS. The anchors are AUTHORED in 'CV Annotate Points On Model': run the graph once, then orbit that node's 3D view and click the surface - a plain orbit viewer, no pose and no lens, because you are pointing at geometry. The picks are in the MODEL's own frame, which is what makes them ride the object. 'CV Annotate Model' then projects them through the tracked pose and compares each one's depth with the rendered surface. Anchors on the far side come back as NaN, and the drawing nodes skip non-finite points - so they vanish while the labels keep their numbers. Filtering them out instead would renumber every caption."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 155,
+      "type": "Note",
+      "pos": [
+        61,
+        6953.42711060054
+      ],
+      "size": [
+        420,
+        460
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "USE 4 - MEASURE",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "4. MEASURE. The OTHER way to pick: where lane 3 clicks the model, this one clicks the FOOTAGE, and 'CV Draw 3D Measurement' puts the answer back ON the frame - a dimension line between the two ends, captioned at its midpoint with the distance between the 3D POINTS (a real length in the calibration's units, NOT the pixel span of the line). 'CV Pick Point On Mesh' turns two CLICKED PIXELS into two points in the model's own frame (rasterize -> read the depth under the click -> unproject -> inverse pose), and 'cv2 norm' gives the distance between them in the calibration's units. Swap the literal pixel pairs for an 'CV Annotate Points' node to click them on the image instead. A click that misses the object reads valid=0 rather than inventing a point - which is also why the shipped pixels sit well INSIDE the silhouette."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 156,
+      "type": "Note",
+      "pos": [
+        -408,
+        1228.7067483117983
+      ],
+      "size": [
+        450,
+        211
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "market_scene.jpg",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "Title:   Fruits and vegetables at market\nCreator: Santeri Viinamaki\nLicense: CC BY-SA 4.0 (attribution + share-alike)\n         https://creativecommons.org/licenses/by-sa/4.0/\nSource:  https://commons.wikimedia.org/wiki/File:Fruits_and_vegetables_at_market.jpg\nSize:    market_scene.jpg 1000x750 (downscaled from 4592x3448).\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 178,
+      "type": "BatchImagesNode",
+      "pos": [
+        77,
+        3070.887246434072
+      ],
+      "size": [
+        225,
+        0
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image0",
+          "name": "images.image0",
+          "type": "IMAGE",
+          "link": 140
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 141
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 142
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 143
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            148,
+            149
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "BatchImagesNode"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "FILE_3D"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      3,
+      1,
+      4,
+      1,
+      "NPARRAY"
+    ],
+    [
+      4,
+      4,
+      2,
+      5,
+      0,
+      "INT"
+    ],
+    [
+      5,
+      3,
+      5,
+      6,
+      0,
+      "INT"
+    ],
+    [
+      6,
+      7,
+      0,
+      30,
+      0,
+      "NPARRAY"
+    ],
+    [
+      7,
+      10,
+      0,
+      30,
+      1,
+      "NPARRAY"
+    ],
+    [
+      8,
+      20,
+      0,
+      30,
+      2,
+      "NPARRAY"
+    ],
+    [
+      9,
+      2,
+      0,
+      40,
+      0,
+      "FILE_3D"
+    ],
+    [
+      10,
+      30,
+      0,
+      40,
+      1,
+      "LOAD3D_CAMERA"
+    ],
+    [
+      11,
+      8,
+      0,
+      40,
+      2,
+      "IMAGE"
+    ],
+    [
+      12,
+      7,
+      0,
+      31,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      11,
+      0,
+      31,
+      1,
+      "NPARRAY"
+    ],
+    [
+      14,
+      21,
+      0,
+      31,
+      2,
+      "NPARRAY"
+    ],
+    [
+      15,
+      2,
+      0,
+      41,
+      0,
+      "FILE_3D"
+    ],
+    [
+      16,
+      31,
+      0,
+      41,
+      1,
+      "LOAD3D_CAMERA"
+    ],
+    [
+      17,
+      8,
+      0,
+      41,
+      2,
+      "IMAGE"
+    ],
+    [
+      18,
+      7,
+      0,
+      32,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      12,
+      0,
+      32,
+      1,
+      "NPARRAY"
+    ],
+    [
+      20,
+      22,
+      0,
+      32,
+      2,
+      "NPARRAY"
+    ],
+    [
+      21,
+      2,
+      0,
+      42,
+      0,
+      "FILE_3D"
+    ],
+    [
+      22,
+      32,
+      0,
+      42,
+      1,
+      "LOAD3D_CAMERA"
+    ],
+    [
+      23,
+      8,
+      0,
+      42,
+      2,
+      "IMAGE"
+    ],
+    [
+      24,
+      7,
+      0,
+      33,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      13,
+      0,
+      33,
+      1,
+      "NPARRAY"
+    ],
+    [
+      26,
+      23,
+      0,
+      33,
+      2,
+      "NPARRAY"
+    ],
+    [
+      27,
+      2,
+      0,
+      43,
+      0,
+      "FILE_3D"
+    ],
+    [
+      28,
+      33,
+      0,
+      43,
+      1,
+      "LOAD3D_CAMERA"
+    ],
+    [
+      29,
+      8,
+      0,
+      43,
+      2,
+      "IMAGE"
+    ],
+    [
+      37,
+      3,
+      0,
+      60,
+      1,
+      "NPARRAY"
+    ],
+    [
+      38,
+      3,
+      1,
+      60,
+      2,
+      "NPARRAY"
+    ],
+    [
+      39,
+      7,
+      0,
+      60,
+      3,
+      "NPARRAY"
+    ],
+    [
+      40,
+      10,
+      0,
+      60,
+      4,
+      "NPARRAY"
+    ],
+    [
+      41,
+      20,
+      0,
+      60,
+      5,
+      "NPARRAY"
+    ],
+    [
+      43,
+      4,
+      0,
+      61,
+      1,
+      "NPARRAY"
+    ],
+    [
+      44,
+      4,
+      1,
+      61,
+      2,
+      "NPARRAY"
+    ],
+    [
+      45,
+      7,
+      0,
+      61,
+      3,
+      "NPARRAY"
+    ],
+    [
+      46,
+      10,
+      0,
+      61,
+      4,
+      "NPARRAY"
+    ],
+    [
+      47,
+      20,
+      0,
+      61,
+      5,
+      "NPARRAY"
+    ],
+    [
+      48,
+      3,
+      0,
+      70,
+      0,
+      "NPARRAY"
+    ],
+    [
+      49,
+      13,
+      0,
+      70,
+      1,
+      "NPARRAY"
+    ],
+    [
+      50,
+      23,
+      0,
+      70,
+      2,
+      "NPARRAY"
+    ],
+    [
+      51,
+      7,
+      0,
+      70,
+      3,
+      "NPARRAY"
+    ],
+    [
+      52,
+      3,
+      0,
+      71,
+      0,
+      "NPARRAY"
+    ],
+    [
+      53,
+      60,
+      4,
+      71,
+      1,
+      "NPARRAY"
+    ],
+    [
+      54,
+      60,
+      5,
+      71,
+      2,
+      "NPARRAY"
+    ],
+    [
+      55,
+      7,
+      0,
+      71,
+      3,
+      "NPARRAY"
+    ],
+    [
+      56,
+      3,
+      0,
+      72,
+      0,
+      "NPARRAY"
+    ],
+    [
+      57,
+      61,
+      4,
+      72,
+      1,
+      "NPARRAY"
+    ],
+    [
+      58,
+      61,
+      5,
+      72,
+      2,
+      "NPARRAY"
+    ],
+    [
+      59,
+      7,
+      0,
+      72,
+      3,
+      "NPARRAY"
+    ],
+    [
+      60,
+      70,
+      0,
+      73,
+      0,
+      "NPARRAY"
+    ],
+    [
+      61,
+      71,
+      0,
+      73,
+      1,
+      "NPARRAY"
+    ],
+    [
+      62,
+      73,
+      0,
+      83,
+      0,
+      "NPARRAY"
+    ],
+    [
+      63,
+      83,
+      0,
+      93,
+      0,
+      "FLOAT"
+    ],
+    [
+      64,
+      70,
+      0,
+      74,
+      0,
+      "NPARRAY"
+    ],
+    [
+      65,
+      72,
+      0,
+      74,
+      1,
+      "NPARRAY"
+    ],
+    [
+      66,
+      74,
+      0,
+      84,
+      0,
+      "NPARRAY"
+    ],
+    [
+      67,
+      84,
+      0,
+      94,
+      0,
+      "FLOAT"
+    ],
+    [
+      68,
+      60,
+      2,
+      95,
+      0,
+      "NPARRAY"
+    ],
+    [
+      69,
+      95,
+      0,
+      97,
+      0,
+      "STRING"
+    ],
+    [
+      70,
+      61,
+      2,
+      96,
+      0,
+      "NPARRAY"
+    ],
+    [
+      71,
+      96,
+      0,
+      98,
+      0,
+      "STRING"
+    ],
+    [
+      72,
+      43,
+      0,
+      80,
+      0,
+      "IMAGE"
+    ],
+    [
+      73,
+      71,
+      0,
+      100,
+      0,
+      "NPARRAY"
+    ],
+    [
+      74,
+      72,
+      0,
+      101,
+      0,
+      "NPARRAY"
+    ],
+    [
+      75,
+      108,
+      0,
+      109,
+      0,
+      "MASK"
+    ],
+    [
+      76,
+      109,
+      0,
+      110,
+      0,
+      "NPARRAY"
+    ],
+    [
+      77,
+      100,
+      0,
+      110,
+      1,
+      "NPARRAY"
+    ],
+    [
+      78,
+      3,
+      1,
+      110,
+      2,
+      "NPARRAY"
+    ],
+    [
+      79,
+      110,
+      0,
+      112,
+      0,
+      "NPARRAY"
+    ],
+    [
+      80,
+      109,
+      0,
+      111,
+      0,
+      "NPARRAY"
+    ],
+    [
+      81,
+      101,
+      0,
+      111,
+      1,
+      "NPARRAY"
+    ],
+    [
+      82,
+      3,
+      1,
+      111,
+      2,
+      "NPARRAY"
+    ],
+    [
+      83,
+      111,
+      0,
+      113,
+      0,
+      "NPARRAY"
+    ],
+    [
+      84,
+      80,
+      0,
+      114,
+      0,
+      "NPARRAY"
+    ],
+    [
+      85,
+      112,
+      0,
+      114,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      86,
+      114,
+      0,
+      115,
+      0,
+      "NPARRAY"
+    ],
+    [
+      87,
+      113,
+      0,
+      115,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      88,
+      115,
+      0,
+      106,
+      0,
+      "NPARRAY"
+    ],
+    [
+      90,
+      4,
+      0,
+      120,
+      0,
+      "NPARRAY"
+    ],
+    [
+      91,
+      4,
+      1,
+      120,
+      1,
+      "NPARRAY"
+    ],
+    [
+      92,
+      7,
+      0,
+      120,
+      2,
+      "NPARRAY"
+    ],
+    [
+      93,
+      61,
+      0,
+      120,
+      3,
+      "NPARRAY"
+    ],
+    [
+      94,
+      61,
+      1,
+      120,
+      4,
+      "NPARRAY"
+    ],
+    [
+      95,
+      120,
+      0,
+      121,
+      0,
+      "MASK"
+    ],
+    [
+      96,
+      120,
+      2,
+      122,
+      0,
+      "FLOAT"
+    ],
+    [
+      97,
+      4,
+      0,
+      123,
+      0,
+      "NPARRAY"
+    ],
+    [
+      98,
+      4,
+      1,
+      123,
+      1,
+      "NPARRAY"
+    ],
+    [
+      99,
+      7,
+      0,
+      123,
+      2,
+      "NPARRAY"
+    ],
+    [
+      100,
+      61,
+      4,
+      123,
+      3,
+      "NPARRAY"
+    ],
+    [
+      101,
+      61,
+      5,
+      123,
+      4,
+      "NPARRAY"
+    ],
+    [
+      102,
+      61,
+      5,
+      125,
+      0,
+      "NPARRAY"
+    ],
+    [
+      103,
+      124,
+      0,
+      125,
+      1,
+      "NPARRAY"
+    ],
+    [
+      104,
+      7,
+      0,
+      126,
+      0,
+      "NPARRAY"
+    ],
+    [
+      105,
+      61,
+      4,
+      126,
+      1,
+      "NPARRAY"
+    ],
+    [
+      106,
+      125,
+      0,
+      126,
+      2,
+      "NPARRAY"
+    ],
+    [
+      107,
+      2,
+      0,
+      127,
+      0,
+      "FILE_3D"
+    ],
+    [
+      108,
+      126,
+      0,
+      127,
+      1,
+      "LOAD3D_CAMERA"
+    ],
+    [
+      109,
+      43,
+      0,
+      127,
+      2,
+      "IMAGE"
+    ],
+    [
+      110,
+      123,
+      1,
+      127,
+      3,
+      "NPARRAY"
+    ],
+    [
+      111,
+      127,
+      0,
+      128,
+      0,
+      "IMAGE"
+    ],
+    [
+      112,
+      127,
+      3,
+      129,
+      0,
+      "MASK"
+    ],
+    [
+      113,
+      2,
+      0,
+      130,
+      0,
+      "FILE_3D"
+    ],
+    [
+      114,
+      80,
+      0,
+      131,
+      0,
+      "NPARRAY"
+    ],
+    [
+      115,
+      130,
+      0,
+      131,
+      1,
+      "NPARRAY"
+    ],
+    [
+      116,
+      61,
+      4,
+      131,
+      2,
+      "NPARRAY"
+    ],
+    [
+      117,
+      61,
+      5,
+      131,
+      3,
+      "NPARRAY"
+    ],
+    [
+      118,
+      7,
+      0,
+      131,
+      4,
+      "NPARRAY"
+    ],
+    [
+      119,
+      123,
+      1,
+      131,
+      5,
+      "NPARRAY"
+    ],
+    [
+      120,
+      144,
+      0,
+      131,
+      6,
+      "NPARRAY"
+    ],
+    [
+      121,
+      131,
+      0,
+      132,
+      0,
+      "NPARRAY"
+    ],
+    [
+      123,
+      131,
+      2,
+      134,
+      0,
+      "NPARRAY"
+    ],
+    [
+      124,
+      134,
+      0,
+      135,
+      0,
+      "STRING"
+    ],
+    [
+      125,
+      4,
+      0,
+      139,
+      0,
+      "NPARRAY"
+    ],
+    [
+      126,
+      4,
+      1,
+      139,
+      1,
+      "NPARRAY"
+    ],
+    [
+      127,
+      7,
+      0,
+      139,
+      2,
+      "NPARRAY"
+    ],
+    [
+      128,
+      61,
+      4,
+      139,
+      3,
+      "NPARRAY"
+    ],
+    [
+      129,
+      61,
+      5,
+      139,
+      4,
+      "NPARRAY"
+    ],
+    [
+      130,
+      136,
+      0,
+      139,
+      5,
+      "NPARRAY"
+    ],
+    [
+      131,
+      80,
+      0,
+      139,
+      6,
+      "NPARRAY,IMAGE,MASK"
+    ],
+    [
+      132,
+      80,
+      0,
+      142,
+      0,
+      "NPARRAY,IMAGE,MASK"
+    ],
+    [
+      133,
+      139,
+      0,
+      142,
+      1,
+      "NPARRAY"
+    ],
+    [
+      134,
+      61,
+      4,
+      142,
+      2,
+      "NPARRAY"
+    ],
+    [
+      135,
+      61,
+      5,
+      142,
+      3,
+      "NPARRAY"
+    ],
+    [
+      136,
+      7,
+      0,
+      142,
+      4,
+      "NPARRAY"
+    ],
+    [
+      137,
+      142,
+      1,
+      143,
+      0,
+      "FLOAT"
+    ],
+    [
+      138,
+      142,
+      0,
+      145,
+      0,
+      "NPARRAY"
+    ],
+    [
+      140,
+      40,
+      0,
+      178,
+      0,
+      "IMAGE"
+    ],
+    [
+      141,
+      41,
+      0,
+      178,
+      1,
+      "IMAGE"
+    ],
+    [
+      142,
+      42,
+      0,
+      178,
+      2,
+      "IMAGE"
+    ],
+    [
+      143,
+      43,
+      0,
+      178,
+      3,
+      "IMAGE"
+    ],
+    [
+      148,
+      178,
+      0,
+      60,
+      0,
+      "IMAGE"
+    ],
+    [
+      149,
+      178,
+      0,
+      61,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "READ THIS FIRST",
+      "bounding": [
+        16,
+        -125.66937723593172,
+        1230,
+        761.4325640932493
+      ],
+      "color": "#4b4b4b",
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "1. THE MODEL - a real GLB into arrays, the camera, the backdrop, and the split that fixes the control points",
+      "bounding": [
+        16,
+        645.0861610570531,
+        1258,
+        1144
+      ],
+      "color": "#8A8",
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "2. THE OBSERVATION - the truck rendered over a real photo at four KNOWN poses, batched into one sequence",
+      "bounding": [
+        16,
+        1800,
+        1886,
+        1294
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 4,
+      "title": "3. THE TRACK - the same frame-0 pose, two meshes: RAW file vs SPLIT edges",
+      "bounding": [
+        16,
+        3100,
+        1172,
+        714.2723303675239
+      ],
+      "color": "#88A",
+      "flags": {}
+    },
+    {
+      "id": 5,
+      "title": "4. SCORE IT - last frame vs truth in pixels, and as silhouettes over the frame (red = raw mesh, blue = split)",
+      "bounding": [
+        16,
+        3819.343483582425,
+        2805,
+        948.360715469048
+      ],
+      "color": "#a1309b",
+      "flags": {}
+    },
+    {
+      "id": 6,
+      "title": "5. USE 1 - MATTE: one silhouette mask + metric depth per frame (rotoscoping for free)",
+      "bounding": [
+        16,
+        4772.61626697877,
+        1348,
+        534
+      ],
+      "color": "#b58b2a",
+      "flags": {}
+    },
+    {
+      "id": 7,
+      "title": "6. USE 2 - OCCLUSION: a SECOND copy of the truck, cut where the tracked one stands in front of it",
+      "bounding": [
+        16,
+        5314.341095638052,
+        3021,
+        774.0316449478942
+      ],
+      "color": "#b06634",
+      "flags": {}
+    },
+    {
+      "id": 8,
+      "title": "7. USE 3 - CALLOUTS: anchors clicked on the MODEL, projected through the tracked pose",
+      "bounding": [
+        16,
+        6095.801211647591,
+        2666.7789875547733,
+        776.5738981186487
+      ],
+      "color": "#6b7a8f",
+      "flags": {}
+    },
+    {
+      "id": 9,
+      "title": "8. USE 4 - MEASURE: two pixels clicked on the FOOTAGE, captioned with the 3D distance",
+      "bounding": [
+        17,
+        6878.193071095229,
+        2668.069794176302,
+        612.4875502562872
+      ],
+      "color": "#A88",
+      "flags": {}
+    }
+  ],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "a1b2c3d4-e5f6-4789-9abc-def012345601",
+        "version": 1,
+        "state": {
+          "lastGroupId": 10,
+          "lastNodeId": 178,
+          "lastLinkId": 149,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Pick Point On Mesh",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -360,
+            40,
+            128,
+            250
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2160,
+            40,
+            128,
+            190
+          ]
+        },
+        "inputs": [
+          {
+            "id": "1ff2dcf9-1dee-5308-9bd6-35f487d603d2",
+            "name": "pts3d",
+            "type": "NPARRAY",
+            "linkIds": [
+              2
+            ],
+            "localized_name": "pts3d",
+            "pos": [
+              -212,
+              60
+            ]
+          },
+          {
+            "id": "83854e62-5eb4-53ab-b365-882aee6a5e2d",
+            "name": "tris",
+            "type": "NPARRAY",
+            "linkIds": [
+              3
+            ],
+            "localized_name": "tris",
+            "pos": [
+              -212,
+              90
+            ]
+          },
+          {
+            "id": "bda60d61-7cee-519e-9313-5ff7e1e03edb",
+            "name": "K",
+            "type": "NPARRAY",
+            "linkIds": [
+              4,
+              13
+            ],
+            "localized_name": "K",
+            "pos": [
+              -212,
+              120
+            ]
+          },
+          {
+            "id": "e4249952-5b1c-515f-a515-20acc68c41e4",
+            "name": "rvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              5,
+              14
+            ],
+            "localized_name": "rvec",
+            "pos": [
+              -212,
+              150
+            ]
+          },
+          {
+            "id": "70435670-25d7-50f6-8d21-be02f5f7a9e4",
+            "name": "tvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              6,
+              15
+            ],
+            "localized_name": "tvec",
+            "pos": [
+              -212,
+              180
+            ]
+          },
+          {
+            "id": "527fec6d-c5d2-50cd-8633-1b05b72e3959",
+            "name": "points_2d",
+            "type": "NPARRAY",
+            "linkIds": [
+              10,
+              11
+            ],
+            "localized_name": "points_2d",
+            "pos": [
+              -212,
+              210
+            ]
+          },
+          {
+            "id": "bd3911db-5806-5c16-9061-c13f8f22d147",
+            "name": "frame",
+            "type": "NPARRAY,IMAGE,MASK",
+            "linkIds": [
+              1
+            ],
+            "localized_name": "frame",
+            "pos": [
+              -212,
+              240
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "4b5031d8-de65-587e-a097-4c10d27ed84f",
+            "name": "points_3d",
+            "type": "NPARRAY",
+            "linkIds": [
+              18
+            ],
+            "localized_name": "points_3d",
+            "pos": [
+              2140,
+              60
+            ]
+          },
+          {
+            "id": "0e9a446f-c992-5f12-84ec-3ce9685f352c",
+            "name": "valid",
+            "type": "NPARRAY",
+            "linkIds": [
+              19
+            ],
+            "localized_name": "valid",
+            "pos": [
+              2140,
+              90
+            ]
+          },
+          {
+            "id": "9d5cfdf9-f665-55e3-89ad-d29dbed780ca",
+            "name": "count",
+            "type": "INT",
+            "linkIds": [
+              20
+            ],
+            "localized_name": "count",
+            "pos": [
+              2140,
+              120
+            ]
+          },
+          {
+            "id": "bce8c228-20fa-597d-985e-0d804f1bc6f5",
+            "name": "depth",
+            "type": "NPARRAY",
+            "linkIds": [
+              21
+            ],
+            "localized_name": "depth",
+            "pos": [
+              2140,
+              150
+            ]
+          },
+          {
+            "id": "db0a229c-584e-5251-b679-bea51a4788c3",
+            "name": "silhouette",
+            "type": "MASK",
+            "linkIds": [
+              22
+            ],
+            "localized_name": "silhouette",
+            "pos": [
+              2140,
+              180
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 157,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              240,
+              320
+            ],
+            "size": [
+              300,
+              180
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 1
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "height",
+                "name": "height",
+                "type": "INT",
+                "links": [
+                  8
+                ]
+              },
+              {
+                "localized_name": "width",
+                "name": "width",
+                "type": "INT",
+                "links": [
+                  7
+                ]
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "STRING",
+                "links": []
+              },
+              {
+                "localized_name": "size",
+                "name": "size",
+                "type": "CV_TUPLE",
+                "links": []
+              }
+            ],
+            "title": "size the render to the frame",
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 158,
+            "type": "CV_RasterizeMesh",
+            "pos": [
+              620,
+              40
+            ],
+            "size": [
+              326.831640625,
+              240
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "pts3d",
+                "name": "pts3d",
+                "type": "NPARRAY",
+                "link": 2
+              },
+              {
+                "localized_name": "tris",
+                "name": "tris",
+                "type": "NPARRAY",
+                "link": 3
+              },
+              {
+                "localized_name": "K",
+                "name": "K",
+                "type": "NPARRAY",
+                "link": 4
+              },
+              {
+                "localized_name": "rvec",
+                "name": "rvec",
+                "type": "NPARRAY",
+                "link": 5
+              },
+              {
+                "localized_name": "tvec",
+                "name": "tvec",
+                "type": "NPARRAY",
+                "link": 6
+              },
+              {
+                "localized_name": "width",
+                "name": "width",
+                "type": "INT",
+                "widget": {
+                  "name": "width"
+                },
+                "link": 7
+              },
+              {
+                "localized_name": "height",
+                "name": "height",
+                "type": "INT",
+                "widget": {
+                  "name": "height"
+                },
+                "link": 8
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "silhouette",
+                "name": "silhouette",
+                "type": "MASK",
+                "links": [
+                  22
+                ]
+              },
+              {
+                "localized_name": "depth",
+                "name": "depth",
+                "type": "NPARRAY",
+                "links": [
+                  9,
+                  21
+                ]
+              },
+              {
+                "localized_name": "coverage",
+                "name": "coverage",
+                "type": "FLOAT",
+                "links": []
+              }
+            ],
+            "title": "render the mesh at this pose (metric depth)",
+            "properties": {
+              "Node name for S&R": "CV_RasterizeMesh"
+            },
+            "widgets_values": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": 159,
+            "type": "CV_SampleArrayAtPoints",
+            "pos": [
+              1000,
+              40
+            ],
+            "size": [
+              320,
+              180
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 9
+              },
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 10
+              },
+              {
+                "localized_name": "valid_in",
+                "name": "valid_in",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  12
+                ]
+              },
+              {
+                "localized_name": "valid",
+                "name": "valid",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": []
+              }
+            ],
+            "title": "depth under each clicked pixel",
+            "properties": {
+              "Node name for S&R": "CV_SampleArrayAtPoints"
+            },
+            "widgets_values": [
+              "nearest",
+              "in bounds and finite"
+            ]
+          },
+          {
+            "id": 160,
+            "type": "CV_UnprojectPoints",
+            "pos": [
+              1380,
+              40
+            ],
+            "size": [
+              320,
+              180
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points_2d",
+                "name": "points_2d",
+                "type": "NPARRAY",
+                "link": 11
+              },
+              {
+                "localized_name": "depths",
+                "name": "depths",
+                "type": "NPARRAY",
+                "link": 12
+              },
+              {
+                "localized_name": "K",
+                "name": "K",
+                "type": "NPARRAY",
+                "link": 13
+              },
+              {
+                "localized_name": "dist_coeffs",
+                "name": "dist_coeffs",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "points_3d",
+                "name": "points_3d",
+                "type": "NPARRAY",
+                "links": [
+                  16
+                ]
+              },
+              {
+                "localized_name": "valid",
+                "name": "valid",
+                "type": "NPARRAY",
+                "links": [
+                  19
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": [
+                  20
+                ]
+              }
+            ],
+            "title": "pixel + depth -> CAMERA-space point",
+            "properties": {
+              "Node name for S&R": "CV_UnprojectPoints"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 161,
+            "type": "CV_PoseToMatrix",
+            "pos": [
+              1380,
+              300
+            ],
+            "size": [
+              320,
+              160
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "rvec",
+                "name": "rvec",
+                "type": "NPARRAY",
+                "link": 14
+              },
+              {
+                "localized_name": "tvec",
+                "name": "tvec",
+                "type": "NPARRAY",
+                "link": 15
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "matrix_3x4",
+                "name": "matrix_3x4",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "localized_name": "matrix_4x4",
+                "name": "matrix_4x4",
+                "type": "NPARRAY",
+                "links": [
+                  17
+                ]
+              },
+              {
+                "localized_name": "rotation",
+                "name": "rotation",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "title": "the pose as a 4x4",
+            "properties": {
+              "Node name for S&R": "CV_PoseToMatrix"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 162,
+            "type": "CV_TransformPoints3D",
+            "pos": [
+              1760,
+              40
+            ],
+            "size": [
+              320,
+              160
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 16
+              },
+              {
+                "localized_name": "matrix",
+                "name": "matrix",
+                "type": "NPARRAY",
+                "link": 17
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  18
+                ]
+              }
+            ],
+            "title": "camera space -> the MODEL's own frame",
+            "properties": {
+              "Node name for S&R": "CV_TransformPoints3D"
+            },
+            "widgets_values": [
+              "inverse"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 1,
+            "origin_id": -10,
+            "origin_slot": 6,
+            "target_id": 157,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK"
+          },
+          {
+            "id": 2,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 158,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 158,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 4,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 158,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 5,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 158,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 6,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 158,
+            "target_slot": 4,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 7,
+            "origin_id": 157,
+            "origin_slot": 1,
+            "target_id": 158,
+            "target_slot": 5,
+            "type": "INT"
+          },
+          {
+            "id": 8,
+            "origin_id": 157,
+            "origin_slot": 0,
+            "target_id": 158,
+            "target_slot": 6,
+            "type": "INT"
+          },
+          {
+            "id": 9,
+            "origin_id": 158,
+            "origin_slot": 1,
+            "target_id": 159,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 10,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 159,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 11,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 160,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 12,
+            "origin_id": 159,
+            "origin_slot": 0,
+            "target_id": 160,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 13,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 160,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 14,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 161,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 15,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 161,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 16,
+            "origin_id": 160,
+            "origin_slot": 0,
+            "target_id": 162,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 17,
+            "origin_id": 161,
+            "origin_slot": 1,
+            "target_id": 162,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 18,
+            "origin_id": 162,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 19,
+            "origin_id": 160,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 20,
+            "origin_id": 160,
+            "origin_slot": 2,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 21,
+            "origin_id": 158,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 22,
+            "origin_id": 158,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 4,
+            "type": "MASK"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "a1b2c3d4-e5f6-4789-9abc-def012345602",
+        "version": 1,
+        "state": {
+          "lastGroupId": 10,
+          "lastNodeId": 178,
+          "lastLinkId": 149,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Annotate Model",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -360,
+            40,
+            128,
+            280
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2160,
+            40,
+            128,
+            130
+          ]
+        },
+        "inputs": [
+          {
+            "id": "59b82cf4-34cf-5d2d-8ff5-cec5e8bab4ee",
+            "name": "frame",
+            "type": "NPARRAY,IMAGE,MASK",
+            "linkIds": [
+              6
+            ],
+            "localized_name": "frame",
+            "pos": [
+              -212,
+              60
+            ]
+          },
+          {
+            "id": "1e4a2e3e-3f3e-5b02-a1e1-3af387b8ae11",
+            "name": "points_3d",
+            "type": "NPARRAY",
+            "linkIds": [
+              1
+            ],
+            "localized_name": "points_3d",
+            "pos": [
+              -212,
+              90
+            ]
+          },
+          {
+            "id": "f2e2b946-fc86-51dd-b6b3-1852ad3dd72d",
+            "name": "rvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              2
+            ],
+            "localized_name": "rvec",
+            "pos": [
+              -212,
+              120
+            ]
+          },
+          {
+            "id": "5d1947f2-d996-5c2a-ae45-a5495578f27e",
+            "name": "tvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              3
+            ],
+            "localized_name": "tvec",
+            "pos": [
+              -212,
+              150
+            ]
+          },
+          {
+            "id": "914f6f95-c53f-501a-a5ae-c5d3a437c53c",
+            "name": "K",
+            "type": "NPARRAY",
+            "linkIds": [
+              4
+            ],
+            "localized_name": "K",
+            "pos": [
+              -212,
+              180
+            ]
+          },
+          {
+            "id": "8f431574-7e73-5c42-a097-fdd93799622d",
+            "name": "scene_depth",
+            "type": "NPARRAY",
+            "linkIds": [
+              5
+            ],
+            "localized_name": "scene_depth",
+            "pos": [
+              -212,
+              210
+            ]
+          },
+          {
+            "id": "58682af6-afdc-5f89-9b55-cbcb951c56c6",
+            "name": "labels",
+            "type": "NPARRAY",
+            "linkIds": [
+              10
+            ],
+            "localized_name": "labels",
+            "pos": [
+              -212,
+              240
+            ]
+          },
+          {
+            "id": "c7d1e40a-7b62-5a3f-9c11-2f6b8a5d0e94",
+            "name": "depth_tolerance",
+            "type": "FLOAT",
+            "linkIds": [
+              14
+            ],
+            "localized_name": "depth_tolerance",
+            "pos": [
+              -212,
+              270
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "0af3bc99-5644-53f0-8198-696822280181",
+            "name": "overlay",
+            "type": "NPARRAY",
+            "linkIds": [
+              11
+            ],
+            "localized_name": "overlay",
+            "pos": [
+              2140,
+              60
+            ]
+          },
+          {
+            "id": "0c73ae37-001e-52a6-b24c-0d8ec71f381a",
+            "name": "points_2d",
+            "type": "NPARRAY",
+            "linkIds": [
+              12
+            ],
+            "localized_name": "points_2d",
+            "pos": [
+              2140,
+              90
+            ]
+          },
+          {
+            "id": "f3bedbe0-5d92-5c7a-afcb-a696d4d19878",
+            "name": "visible",
+            "type": "NPARRAY",
+            "linkIds": [
+              13
+            ],
+            "localized_name": "visible",
+            "pos": [
+              2140,
+              120
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 163,
+            "type": "CV_ProjectPointsSequence",
+            "pos": [
+              240,
+              40
+            ],
+            "size": [
+              340,
+              240
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points_3d",
+                "name": "points_3d",
+                "type": "NPARRAY",
+                "link": 1
+              },
+              {
+                "localized_name": "rvecs",
+                "name": "rvecs",
+                "type": "NPARRAY",
+                "link": 2
+              },
+              {
+                "localized_name": "tvecs",
+                "name": "tvecs",
+                "type": "NPARRAY",
+                "link": 3
+              },
+              {
+                "localized_name": "K",
+                "name": "K",
+                "type": "NPARRAY",
+                "link": 4
+              },
+              {
+                "localized_name": "dist_coeffs",
+                "name": "dist_coeffs",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "localized_name": "scene_depth",
+                "name": "scene_depth",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 5
+              },
+              {
+                "localized_name": "depth_tolerance",
+                "name": "depth_tolerance",
+                "shape": 7,
+                "type": "FLOAT",
+                "widget": {
+                  "name": "depth_tolerance"
+                },
+                "link": 14
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "points_2d",
+                "name": "points_2d",
+                "type": "NPARRAY",
+                "links": [
+                  7,
+                  9,
+                  12
+                ]
+              },
+              {
+                "localized_name": "visible",
+                "name": "visible",
+                "type": "NPARRAY",
+                "links": [
+                  13
+                ]
+              },
+              {
+                "localized_name": "depths",
+                "name": "depths",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "title": "project the anchors, hide the far-side ones",
+            "properties": {
+              "Node name for S&R": "CV_ProjectPointsSequence"
+            },
+            "widgets_values": [
+              "blank out (NaN)",
+              0.02
+            ]
+          },
+          {
+            "id": 164,
+            "type": "CV_DrawPoints",
+            "pos": [
+              620,
+              40
+            ],
+            "size": [
+              320,
+              180
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 6
+              },
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 7
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE,MASK",
+                "links": [
+                  8
+                ]
+              }
+            ],
+            "title": "markers (NaN anchors are skipped)",
+            "properties": {
+              "Node name for S&R": "CV_DrawPoints"
+            },
+            "widgets_values": [
+              6,
+              "(0, 255, 0)",
+              "filled circle"
+            ]
+          },
+          {
+            "id": 165,
+            "type": "CV_DrawLabels",
+            "pos": [
+              1000,
+              40
+            ],
+            "size": [
+              320,
+              240
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 8
+              },
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 9
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 10
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE,MASK",
+                "links": [
+                  11
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": []
+              }
+            ],
+            "title": "captions, still aligned with their anchors",
+            "properties": {
+              "Node name for S&R": "CV_DrawLabels"
+            },
+            "widgets_values": [
+              0.7,
+              "(0, 255, 255)",
+              2,
+              8,
+              -8,
+              true
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 1,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 163,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 2,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 163,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 163,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 4,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 163,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 5,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 163,
+            "target_slot": 5,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 6,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 164,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK"
+          },
+          {
+            "id": 7,
+            "origin_id": 163,
+            "origin_slot": 0,
+            "target_id": 164,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 8,
+            "origin_id": 164,
+            "origin_slot": 0,
+            "target_id": 165,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK"
+          },
+          {
+            "id": 9,
+            "origin_id": 163,
+            "origin_slot": 0,
+            "target_id": 165,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 10,
+            "origin_id": -10,
+            "origin_slot": 6,
+            "target_id": 165,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 11,
+            "origin_id": 165,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 12,
+            "origin_id": 163,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 13,
+            "origin_id": 163,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 14,
+            "origin_id": -10,
+            "origin_slot": 7,
+            "target_id": 163,
+            "target_slot": 6,
+            "type": "FLOAT"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "a1b2c3d4-e5f6-4789-9abc-def012345603",
+        "version": 1,
+        "state": {
+          "lastGroupId": 10,
+          "lastNodeId": 178,
+          "lastLinkId": 149,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Draw 3D Measurement",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -360,
+            40,
+            128,
+            190
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2160,
+            40,
+            128,
+            130
+          ]
+        },
+        "inputs": [
+          {
+            "id": "608e8198-5b2b-5dbe-83de-1ea19f5fb2c6",
+            "name": "frame",
+            "type": "NPARRAY,IMAGE,MASK",
+            "linkIds": [
+              19
+            ],
+            "localized_name": "frame",
+            "pos": [
+              -212,
+              60
+            ]
+          },
+          {
+            "id": "5e18612a-fb2e-5db7-9be5-a10f1b399ce5",
+            "name": "points_3d",
+            "type": "NPARRAY",
+            "linkIds": [
+              1,
+              7,
+              8
+            ],
+            "localized_name": "points_3d",
+            "pos": [
+              -212,
+              90
+            ]
+          },
+          {
+            "id": "aacab1c9-9bda-547b-aa01-d528b6707fcc",
+            "name": "rvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              2
+            ],
+            "localized_name": "rvec",
+            "pos": [
+              -212,
+              120
+            ]
+          },
+          {
+            "id": "38c9b976-474d-5915-be97-956edcfa3cc5",
+            "name": "tvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              3
+            ],
+            "localized_name": "tvec",
+            "pos": [
+              -212,
+              150
+            ]
+          },
+          {
+            "id": "ffa67b86-6b84-54aa-af20-d32229c3235c",
+            "name": "K",
+            "type": "NPARRAY",
+            "linkIds": [
+              4
+            ],
+            "localized_name": "K",
+            "pos": [
+              -212,
+              180
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "286ca4fc-afb4-52ed-b474-f1f45e3e57ba",
+            "name": "overlay",
+            "type": "NPARRAY",
+            "linkIds": [
+              27
+            ],
+            "localized_name": "overlay",
+            "pos": [
+              2140,
+              60
+            ]
+          },
+          {
+            "id": "38e7f8b1-e02c-508e-854e-363ec453e189",
+            "name": "distance",
+            "type": "FLOAT",
+            "linkIds": [
+              28
+            ],
+            "localized_name": "distance",
+            "pos": [
+              2140,
+              90
+            ]
+          },
+          {
+            "id": "f3996dae-9127-5cd4-9d5f-9459005ae9b8",
+            "name": "points_2d",
+            "type": "NPARRAY",
+            "linkIds": [
+              29
+            ],
+            "localized_name": "points_2d",
+            "pos": [
+              2140,
+              120
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 166,
+            "type": "CV_ProjectPointsSequence",
+            "pos": [
+              240,
+              40
+            ],
+            "size": [
+              330,
+              240
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points_3d",
+                "name": "points_3d",
+                "type": "NPARRAY",
+                "link": 1
+              },
+              {
+                "localized_name": "rvecs",
+                "name": "rvecs",
+                "type": "NPARRAY",
+                "link": 2
+              },
+              {
+                "localized_name": "tvecs",
+                "name": "tvecs",
+                "type": "NPARRAY",
+                "link": 3
+              },
+              {
+                "localized_name": "K",
+                "name": "K",
+                "type": "NPARRAY",
+                "link": 4
+              },
+              {
+                "localized_name": "dist_coeffs",
+                "name": "dist_coeffs",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "localized_name": "scene_depth",
+                "name": "scene_depth",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "points_2d",
+                "name": "points_2d",
+                "type": "NPARRAY",
+                "links": [
+                  5
+                ]
+              },
+              {
+                "localized_name": "visible",
+                "name": "visible",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "localized_name": "depths",
+                "name": "depths",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "title": "the two ends, on the image",
+            "properties": {
+              "Node name for S&R": "CV_ProjectPointsSequence"
+            },
+            "widgets_values": [
+              "keep coordinates",
+              0.02
+            ]
+          },
+          {
+            "id": 167,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              620,
+              40
+            ],
+            "size": [
+              280,
+              110
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 5
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  6,
+                  20,
+                  23,
+                  29
+                ]
+              }
+            ],
+            "title": "(1,N,2) -> (N,2)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              0,
+              2,
+              0
+            ]
+          },
+          {
+            "id": 168,
+            "type": "cv2_reduce",
+            "pos": [
+              620,
+              190
+            ],
+            "size": [
+              280,
+              150
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 6
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  25
+                ]
+              }
+            ],
+            "title": "midpoint: where the caption goes",
+            "properties": {
+              "Node name for S&R": "cv2_reduce"
+            },
+            "widgets_values": [
+              0,
+              "REDUCE_AVG",
+              "same as input"
+            ]
+          },
+          {
+            "id": 169,
+            "type": "CV_SliceArray",
+            "pos": [
+              240,
+              380
+            ],
+            "size": [
+              260,
+              154
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 7
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  9,
+                  17
+                ]
+              }
+            ],
+            "title": "end A",
+            "properties": {
+              "Node name for S&R": "CV_SliceArray"
+            },
+            "widgets_values": [
+              0,
+              0,
+              1,
+              1,
+              true
+            ]
+          },
+          {
+            "id": 170,
+            "type": "CV_SliceArray",
+            "pos": [
+              240,
+              500
+            ],
+            "size": [
+              260,
+              154
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 8
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  10,
+                  18
+                ]
+              }
+            ],
+            "title": "end B",
+            "properties": {
+              "Node name for S&R": "CV_SliceArray"
+            },
+            "widgets_values": [
+              0,
+              1,
+              2,
+              1,
+              true
+            ]
+          },
+          {
+            "id": 171,
+            "type": "cv2_subtract",
+            "pos": [
+              540,
+              380
+            ],
+            "size": [
+              260,
+              130
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 9
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 10
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  11,
+                  12
+                ]
+              }
+            ],
+            "title": "B - A",
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ]
+          },
+          {
+            "id": 172,
+            "type": "cv2_multiply",
+            "pos": [
+              840,
+              380
+            ],
+            "size": [
+              260,
+              150
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 11
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 12
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  13
+                ]
+              }
+            ],
+            "title": "squared components",
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          },
+          {
+            "id": 173,
+            "type": "cv2_reduce",
+            "pos": [
+              1140,
+              380
+            ],
+            "size": [
+              260,
+              150
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 13
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  14
+                ]
+              }
+            ],
+            "title": "sum of squares",
+            "properties": {
+              "Node name for S&R": "cv2_reduce"
+            },
+            "widgets_values": [
+              1,
+              "REDUCE_SUM",
+              "same as input"
+            ]
+          },
+          {
+            "id": 9,
+            "type": "cv2_sqrt",
+            "pos": [
+              1440,
+              380
+            ],
+            "size": [
+              240,
+              90
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 14
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  15
+                ]
+              }
+            ],
+            "title": "distance, in the pose's units",
+            "properties": {
+              "Node name for S&R": "cv2_sqrt"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 174,
+            "type": "CV_ArrayToText",
+            "pos": [
+              1140,
+              560
+            ],
+            "size": [
+              280,
+              190
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 15
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "text",
+                "name": "text",
+                "type": "STRING",
+                "links": [
+                  16
+                ]
+              },
+              {
+                "localized_name": "rows",
+                "name": "rows",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "localized_name": "truncated",
+                "name": "truncated",
+                "type": "BOOLEAN",
+                "links": []
+              }
+            ],
+            "title": "round it for the caption",
+            "properties": {
+              "Node name for S&R": "CV_ArrayToText"
+            },
+            "widgets_values": [
+              "plain (space)",
+              2,
+              "",
+              100000
+            ]
+          },
+          {
+            "id": 175,
+            "type": "CV_TextToArray",
+            "pos": [
+              1440,
+              560
+            ],
+            "size": [
+              280,
+              160
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "text",
+                "name": "text",
+                "type": "STRING",
+                "widget": {
+                  "name": "text"
+                },
+                "link": 16
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  26
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": []
+              }
+            ],
+            "title": "one caption for the midpoint",
+            "properties": {
+              "Node name for S&R": "CV_TextToArray"
+            },
+            "widgets_values": [
+              "",
+              "whitespace",
+              false
+            ]
+          },
+          {
+            "id": 176,
+            "type": "cv2_norm_1",
+            "pos": [
+              1440,
+              200
+            ],
+            "size": [
+              280,
+              150
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 17
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 18
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": [
+                  28
+                ]
+              }
+            ],
+            "title": "the same number as a FLOAT",
+            "properties": {
+              "Node name for S&R": "cv2_norm_1"
+            },
+            "widgets_values": [
+              "NORM_L2"
+            ]
+          },
+          {
+            "id": 177,
+            "type": "CV_ParseMatrix",
+            "pos": [
+              940,
+              40
+            ],
+            "size": [
+              260,
+              160
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  21
+                ]
+              }
+            ],
+            "title": "one edge: end A to end B",
+            "properties": {
+              "Node name for S&R": "CV_ParseMatrix"
+            },
+            "widgets_values": [
+              "0 1",
+              "CV_32S",
+              false,
+              0
+            ]
+          },
+          {
+            "id": 14,
+            "type": "CV_DrawConnections",
+            "pos": [
+              1240,
+              40
+            ],
+            "size": [
+              280,
+              180
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 19
+              },
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 20
+              },
+              {
+                "localized_name": "edges",
+                "name": "edges",
+                "type": "NPARRAY",
+                "link": 21
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE,MASK",
+                "links": [
+                  22
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": []
+              }
+            ],
+            "title": "the dimension line",
+            "properties": {
+              "Node name for S&R": "CV_DrawConnections"
+            },
+            "widgets_values": [
+              2,
+              "(0, 255, 255)"
+            ]
+          },
+          {
+            "id": 15,
+            "type": "CV_DrawPoints",
+            "pos": [
+              1560,
+              40
+            ],
+            "size": [
+              280,
+              160
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 22
+              },
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 23
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE,MASK",
+                "links": [
+                  24
+                ]
+              }
+            ],
+            "title": "end caps",
+            "properties": {
+              "Node name for S&R": "CV_DrawPoints"
+            },
+            "widgets_values": [
+              5,
+              "(0, 255, 255)",
+              "filled circle"
+            ]
+          },
+          {
+            "id": 16,
+            "type": "CV_DrawLabels",
+            "pos": [
+              1880,
+              40
+            ],
+            "size": [
+              280,
+              240
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 24
+              },
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 25
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 26
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE,MASK",
+                "links": [
+                  27
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": []
+              }
+            ],
+            "title": "the distance, at the midpoint",
+            "properties": {
+              "Node name for S&R": "CV_DrawLabels"
+            },
+            "widgets_values": [
+              0.7,
+              "(0, 255, 255)",
+              2,
+              10,
+              -10,
+              true
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 1,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 166,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 2,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 166,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 166,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 4,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 166,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 5,
+            "origin_id": 166,
+            "origin_slot": 0,
+            "target_id": 167,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 6,
+            "origin_id": 167,
+            "origin_slot": 0,
+            "target_id": 168,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 7,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 169,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 8,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 170,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 9,
+            "origin_id": 169,
+            "origin_slot": 0,
+            "target_id": 171,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 10,
+            "origin_id": 170,
+            "origin_slot": 0,
+            "target_id": 171,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 11,
+            "origin_id": 171,
+            "origin_slot": 0,
+            "target_id": 172,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 12,
+            "origin_id": 171,
+            "origin_slot": 0,
+            "target_id": 172,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 13,
+            "origin_id": 172,
+            "origin_slot": 0,
+            "target_id": 173,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 14,
+            "origin_id": 173,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 15,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 174,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 16,
+            "origin_id": 174,
+            "origin_slot": 0,
+            "target_id": 175,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 17,
+            "origin_id": 169,
+            "origin_slot": 0,
+            "target_id": 176,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 18,
+            "origin_id": 170,
+            "origin_slot": 0,
+            "target_id": 176,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 19,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK"
+          },
+          {
+            "id": 20,
+            "origin_id": 167,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 21,
+            "origin_id": 177,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 22,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK"
+          },
+          {
+            "id": 23,
+            "origin_id": 167,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 24,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK"
+          },
+          {
+            "id": 25,
+            "origin_id": 168,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 26,
+            "origin_id": 175,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 27,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 28,
+            "origin_id": 176,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 29,
+            "origin_id": 167,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.13310000000000022,
+      "offset": [
+        2592.0302315096133,
+        -1235.531544191984
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

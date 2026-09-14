@@ -1,0 +1,718 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        320,
+        84
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "spectrum",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Optimal DFT",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 9,
+          "lastLinkId": 114,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Optimal DFT",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "35133ee6-fa3f-530d-b7aa-739933b0034a",
+            "name": "image",
+            "type": "NPARRAY",
+            "linkIds": [
+              101,
+              110
+            ],
+            "localized_name": "image",
+            "pos": [
+              140,
+              220
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "4d3c1efe-5c47-54de-ba1a-156f34086a94",
+            "name": "spectrum",
+            "type": "NPARRAY",
+            "linkIds": [
+              114
+            ],
+            "localized_name": "spectrum",
+            "pos": [
+              2100,
+              220
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              40,
+              40
+            ],
+            "size": [
+              290,
+              170
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "name": "height",
+                "type": "INT",
+                "links": [
+                  102
+                ]
+              },
+              {
+                "name": "width",
+                "type": "INT",
+                "links": [
+                  103
+                ]
+              },
+              {
+                "name": "channels",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "name": "size",
+                "type": "CV_TUPLE",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            },
+            "widgets_values": [],
+            "title": "Get input shape"
+          },
+          {
+            "id": 2,
+            "type": "ComfyMathExpression",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 102
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  104,
+                  107
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a"
+            ],
+            "title": "Height"
+          },
+          {
+            "id": 3,
+            "type": "ComfyMathExpression",
+            "pos": [
+              390,
+              240
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 103
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  105,
+                  109
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a"
+            ],
+            "title": "Width"
+          },
+          {
+            "id": 4,
+            "type": "cv2_getOptimalDFTSize",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "vecsize",
+                "type": "INT",
+                "widget": {
+                  "name": "vecsize"
+                },
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "name": "int",
+                "type": "INT",
+                "links": [
+                  106
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_getOptimalDFTSize"
+            },
+            "widgets_values": [
+              0
+            ],
+            "title": "Opt H"
+          },
+          {
+            "id": 5,
+            "type": "cv2_getOptimalDFTSize",
+            "pos": [
+              740,
+              240
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "vecsize",
+                "type": "INT",
+                "widget": {
+                  "name": "vecsize"
+                },
+                "link": 105
+              }
+            ],
+            "outputs": [
+              {
+                "name": "int",
+                "type": "INT",
+                "links": [
+                  108
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_getOptimalDFTSize"
+            },
+            "widgets_values": [
+              0
+            ],
+            "title": "Opt W"
+          },
+          {
+            "id": 6,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1090,
+              40
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 106
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 107
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  111
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "max(a - b, 0)"
+            ],
+            "title": "Pad bottom"
+          },
+          {
+            "id": 7,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1090,
+              240
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 108
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 109
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  112
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "max(a - b, 0)"
+            ],
+            "title": "Pad right"
+          },
+          {
+            "id": 8,
+            "type": "cv2_copyMakeBorder",
+            "pos": [
+              1440,
+              40
+            ],
+            "size": [
+              290,
+              326
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 110
+              },
+              {
+                "name": "top",
+                "type": "INT",
+                "widget": {
+                  "name": "top"
+                },
+                "link": null
+              },
+              {
+                "name": "bottom",
+                "type": "INT",
+                "widget": {
+                  "name": "bottom"
+                },
+                "link": 111
+              },
+              {
+                "name": "left",
+                "type": "INT",
+                "widget": {
+                  "name": "left"
+                },
+                "link": null
+              },
+              {
+                "name": "right",
+                "type": "INT",
+                "widget": {
+                  "name": "right"
+                },
+                "link": 112
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  113
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_copyMakeBorder"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              0,
+              "BORDER_CONSTANT",
+              ""
+            ],
+            "title": "Pad to optimal"
+          },
+          {
+            "id": 9,
+            "type": "cv2_dft",
+            "pos": [
+              1790,
+              40
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 113
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  114
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_dft"
+            },
+            "widgets_values": [
+              "DFT_COMPLEX_OUTPUT",
+              0
+            ],
+            "title": "DFT"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 103,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 104,
+            "origin_id": 2,
+            "origin_slot": 1,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 105,
+            "origin_id": 3,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 106,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 107,
+            "origin_id": 2,
+            "origin_slot": 1,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 108,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 109,
+            "origin_id": 3,
+            "origin_slot": 1,
+            "target_id": 7,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 110,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 6,
+            "origin_slot": 1,
+            "target_id": 8,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 112,
+            "origin_id": 7,
+            "origin_slot": 1,
+            "target_id": 8,
+            "target_slot": 4,
+            "type": "INT"
+          },
+          {
+            "id": 113,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          }
+        ]
+      }
+    ]
+  }
+}

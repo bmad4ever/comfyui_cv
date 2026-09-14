@@ -1,0 +1,1896 @@
+{
+  "id": "19417015-32d6-4ae1-a5e9-3ebabdf144d3",
+  "revision": 0,
+  "last_node_id": 39,
+  "last_link_id": 44,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        640,
+        420
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Optical flow for motion segmentation\n\nFind what moves DIFFERENTLY from the dominant scene motion. Here: two consecutive frames of a STATIC traffic camera, so the road is the dominant (near-zero) motion and a single crossing car is the only thing that moves.\n\nPipeline:\n1. Dense optical flow (Farneback) between frame A and frame B.\n2. 'CV Array Statistic' (MEDIAN) reduces the HxWx2 flow to the dominant motion vector - the background / camera motion (~0 for a fixed camera). The median is robust: a moving object can contaminate a large minority of pixels without dragging it.\n3. residual = flow - dominant (cv2.subtract broadcasts the 2-vector); its magnitude (cartToPolar) is large only where motion departs from the background - the car.\n4. threshold + open -> a noisy mask. 'Keep Largest Component' drops stray motion (other movers, speckle); close + 'Fill Holes' turn it into a SOLID single-car seed (single-pair flow is patchy over the low-texture roof/hood).\n\n( Additional Refinement via GrabCut )\n5. Erode the solid seed to a confident core (probable foreground) and dilate-then-invert it (gap = 1) into a TIGHT sure-background ring, so GrabCut refines the car's colour boundary without bleeding into the shadow.\n6. Clean the GrabCut output the same way (Fill Holes + Keep Largest Component + a median blur to smooth the edge), then cv2.bitwise_and cuts the car out.\n\nDebug views: flow color wheel, residual heatmap, the dominant-motion vector, the solid seed, the GrabCut label map, and the refined mask. Two identical frames (no motion) -> no seed -> success=false and an empty mask, no error."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        500
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Frame A (earlier)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "traffic_frame_a.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        889.0988489097715
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Frame B (later)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "traffic_frame_b.png",
+        "image"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_OpticalFlowFarneback",
+      "pos": [
+        740,
+        500
+      ],
+      "size": [
+        438.078125,
+        346.65625
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frame_a",
+          "type": "NPARRAY,IMAGE",
+          "link": 3
+        },
+        {
+          "name": "frame_b",
+          "type": "NPARRAY,IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "flow",
+          "type": "NPARRAY",
+          "links": [
+            8,
+            9,
+            10
+          ]
+        },
+        {
+          "name": "magnitude",
+          "type": "NPARRAY",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "angle",
+          "type": "NPARRAY",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "title": "[CV Optical Flow (Farneback)] Dense optical flow A->B",
+      "properties": {
+        "Node name for S&R": "CV_OpticalFlowFarneback"
+      },
+      "widgets_values": [
+        0.5,
+        3,
+        15,
+        3,
+        5,
+        1.2,
+        "box (faster)"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_FlowToColor",
+      "pos": [
+        1382.7650658156815,
+        40
+      ],
+      "size": [
+        290,
+        162.65625
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "angle",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "magnitude",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "Flow -> color wheel",
+      "properties": {
+        "Node name for S&R": "CV_FlowToColor"
+      },
+      "widgets_values": [
+        "radians (0-2*pi, cartToPolar default)",
+        0
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_CVPreview",
+      "pos": [
+        1732.7650658156815,
+        -2.0143807788148855
+      ],
+      "size": [
+        290,
+        366.65625
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Flow direction (debug)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CV_ArrayStat",
+      "pos": [
+        1382.7650658156815,
+        240
+      ],
+      "size": [
+        290,
+        130.65625
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "NPARRAY",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "title": "Dominant motion (median)",
+      "properties": {
+        "Node name for S&R": "CV_ArrayStat"
+      },
+      "widgets_values": [
+        "median (robust dominant value)"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "PreviewAny",
+      "pos": [
+        1382.7650658156815,
+        440
+      ],
+      "size": [
+        290,
+        162
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Dominant motion vector",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "cv2_subtract",
+      "pos": [
+        1732.7650658156815,
+        426.7305812391778
+      ],
+      "size": [
+        290,
+        152
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 9
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 14
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            16,
+            17
+          ]
+        }
+      ],
+      "title": "flow - dominant motion",
+      "properties": {
+        "Node name for S&R": "cv2_subtract"
+      },
+      "widgets_values": [
+        "same as input"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "cv2_extractChannel",
+      "pos": [
+        2082.7650658156817,
+        240
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            18
+          ]
+        }
+      ],
+      "title": "residual dx",
+      "properties": {
+        "Node name for S&R": "cv2_extractChannel"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 13,
+      "type": "cv2_extractChannel",
+      "pos": [
+        2082.7650658156817,
+        440
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "title": "residual dy",
+      "properties": {
+        "Node name for S&R": "cv2_extractChannel"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 14,
+      "type": "cv2_cartToPolar",
+      "pos": [
+        2432.7650658156817,
+        240
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "x",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 18
+        },
+        {
+          "name": "y",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "magnitude",
+          "type": "NPARRAY",
+          "links": [
+            20,
+            21
+          ]
+        },
+        {
+          "name": "angle",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "residual magnitude",
+      "properties": {
+        "Node name for S&R": "cv2_cartToPolar"
+      },
+      "widgets_values": [
+        false
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_CVPreview",
+      "pos": [
+        2430.3081463442086,
+        415.9086791354372
+      ],
+      "size": [
+        290,
+        366.65625
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Residual magnitude (debug)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 16,
+      "type": "cv2_threshold",
+      "pos": [
+        2782.7650658156817,
+        240
+      ],
+      "size": [
+        290,
+        234
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "title": "Threshold residual -> moving car (px)",
+      "properties": {
+        "Node name for S&R": "cv2_threshold"
+      },
+      "widgets_values": [
+        2,
+        255,
+        "THRESH_BINARY"
+      ]
+    },
+    {
+      "id": 17,
+      "type": "CV_CastArray",
+      "pos": [
+        3132.7650658156817,
+        240
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "-> uint8 motion mask",
+      "properties": {
+        "Node name for S&R": "CV_CastArray"
+      },
+      "widgets_values": [
+        "uint8"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "cv2_getStructuringElement",
+      "pos": [
+        3132.7650658156817,
+        551.4042370318623
+      ],
+      "size": [
+        290,
+        202
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            24,
+            25
+          ]
+        }
+      ],
+      "title": "Cleanup kernel (7x7)",
+      "properties": {
+        "Node name for S&R": "cv2_getStructuringElement"
+      },
+      "widgets_values": [
+        "MORPH_ELLIPSE",
+        "(7, 7)",
+        "(-1, -1)"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        3482.7650658156817,
+        240
+      ],
+      "size": [
+        290,
+        270
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 23
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "title": "Open (drop speckle)",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_OPEN",
+        "(-1, -1)",
+        2,
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_KeepLargestComponent",
+      "pos": [
+        3832.7650658156817,
+        240
+      ],
+      "size": [
+        530,
+        154.65625
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            27
+          ]
+        },
+        {
+          "name": "area",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Keep Largest Component] Keep largest blob (drop stray motion)",
+      "properties": {
+        "Node name for S&R": "CV_KeepLargestComponent"
+      },
+      "widgets_values": [
+        "8"
+      ]
+    },
+    {
+      "id": 21,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        4083.862280616451,
+        530.8692500141558
+      ],
+      "size": [
+        290,
+        270
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 27
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "title": "Close (bridge gaps)",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_CLOSE",
+        "(-1, -1)",
+        3,
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CV_FillHoles",
+      "pos": [
+        4490.791433008744,
+        465.7895720215106
+      ],
+      "size": [
+        290,
+        80
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            29,
+            30,
+            31
+          ]
+        }
+      ],
+      "title": "Fill holes -> solid car seed",
+      "properties": {
+        "Node name for S&R": "CV_FillHoles"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "CV_CVPreview",
+      "pos": [
+        4496.068016718324,
+        51.17214160750399
+      ],
+      "size": [
+        290,
+        366.65625
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Solid car seed (before GrabCut)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 24,
+      "type": "cv2_getStructuringElement",
+      "pos": [
+        4490.791433008744,
+        585.7895720215106
+      ],
+      "size": [
+        290,
+        202
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            32,
+            33
+          ]
+        }
+      ],
+      "title": "Seed kernel (15x15)",
+      "properties": {
+        "Node name for S&R": "cv2_getStructuringElement"
+      },
+      "widgets_values": [
+        "MORPH_ELLIPSE",
+        "(15, 15)",
+        "(-1, -1)"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "cv2_erode",
+      "pos": [
+        4840.791433008744,
+        465.7895720215106
+      ],
+      "size": [
+        320,
+        246
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 30
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "title": "Erode -> minimal FG core (GrabCut seed)",
+      "properties": {
+        "Node name for S&R": "cv2_erode"
+      },
+      "widgets_values": [
+        "(-1, -1)",
+        2,
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "cv2_dilate",
+      "pos": [
+        4840.791433008744,
+        765.7895720215106
+      ],
+      "size": [
+        290,
+        246
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 31
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "title": "Dilate the seed (tight gap)",
+      "properties": {
+        "Node name for S&R": "cv2_dilate"
+      },
+      "widgets_values": [
+        "(-1, -1)",
+        1,
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "cv2_bitwise_not",
+      "pos": [
+        5190.791433008744,
+        765.7895720215106
+      ],
+      "size": [
+        300,
+        100
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 35
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            36
+          ]
+        }
+      ],
+      "title": "Invert -> sure-background (static road)",
+      "properties": {
+        "Node name for S&R": "cv2_bitwise_not"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 28,
+      "type": "CV_GrabCut",
+      "pos": [
+        5540.791433008744,
+        665.7895720215106
+      ],
+      "size": [
+        382.078125,
+        220
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 5
+        },
+        {
+          "name": "points",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": 34
+        },
+        {
+          "name": "sure_foreground",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        },
+        {
+          "name": "sure_background",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            37
+          ]
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": [
+            38
+          ]
+        },
+        {
+          "name": "success",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV GrabCut] GrabCut (refine car from colour)",
+      "properties": {
+        "Node name for S&R": "CV_GrabCut"
+      },
+      "widgets_values": [
+        5
+      ]
+    },
+    {
+      "id": 29,
+      "type": "CV_FillHoles",
+      "pos": [
+        5989.5512996720845,
+        665.7895720215106
+      ],
+      "size": [
+        290,
+        80
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "Fill holes (post-GrabCut)",
+      "properties": {
+        "Node name for S&R": "CV_FillHoles"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 30,
+      "type": "CV_KeepLargestComponent",
+      "pos": [
+        5989.5512996720845,
+        785.7895720215106
+      ],
+      "size": [
+        400,
+        154.65625
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            40
+          ]
+        },
+        {
+          "name": "area",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Keep Largest Component] Keep largest blob",
+      "properties": {
+        "Node name for S&R": "CV_KeepLargestComponent"
+      },
+      "widgets_values": [
+        "8"
+      ]
+    },
+    {
+      "id": 31,
+      "type": "cv2_medianBlur",
+      "pos": [
+        5994.5512996720845,
+        997.8682009899311
+      ],
+      "size": [
+        290,
+        110
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            41,
+            42
+          ]
+        }
+      ],
+      "title": "Median blur (smooth the edge)",
+      "properties": {
+        "Node name for S&R": "cv2_medianBlur"
+      },
+      "widgets_values": [
+        7
+      ]
+    },
+    {
+      "id": 32,
+      "type": "CV_CVPreview",
+      "pos": [
+        6426.539329932151,
+        719.486893139102
+      ],
+      "size": [
+        290,
+        366.65625
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Refined car mask (debug)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 33,
+      "type": "CV_CVPreview",
+      "pos": [
+        5632.849999291169,
+        933.1994618499142
+      ],
+      "size": [
+        290,
+        366.65625
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "GrabCut labels (debug)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 34,
+      "type": "cv2_bitwise_and",
+      "pos": [
+        6330.5512996720845,
+        1149.376841013987
+      ],
+      "size": [
+        290,
+        126
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 6
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 7
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "title": "Cut out the moving car",
+      "properties": {
+        "Node name for S&R": "cv2_bitwise_and"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 35,
+      "type": "CV_CVPreview",
+      "pos": [
+        6772.5512996720845,
+        711.5878468471717
+      ],
+      "size": [
+        608.953125,
+        499.203125
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 43
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Segmented moving car (result)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 36,
+      "type": "CV_CVInspect",
+      "pos": [
+        1382.7650658156815,
+        640
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            44
+          ]
+        }
+      ],
+      "title": "Inspect flow field",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 37,
+      "type": "PreviewAny",
+      "pos": [
+        1382.7650658156815,
+        760
+      ],
+      "size": [
+        265.25,
+        162
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect flow field",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 38,
+      "type": "Note",
+      "pos": [
+        -283,
+        747.6328945987527
+      ],
+      "size": [
+        311.0625,
+        237.5625
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "traffic_frame_a.png / traffic_frame_b.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Frames from car-detection.mp4 (sample-videos)\nCreator: Intel IoT Devkit\nLicense: CC BY 4.0\n         https://creativecommons.org/licenses/by/4.0/\nSource:  https://github.com/intel-iot-devkit/sample-videos\nSize:    768x432 - two consecutive frames of a static traffic camera (a crossing car)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      3,
+      2,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      3,
+      0,
+      6,
+      1,
+      "IMAGE"
+    ],
+    [
+      5,
+      3,
+      0,
+      28,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      3,
+      0,
+      34,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      3,
+      0,
+      34,
+      1,
+      "IMAGE"
+    ],
+    [
+      8,
+      6,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      9,
+      6,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      6,
+      0,
+      36,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      6,
+      1,
+      7,
+      1,
+      "NPARRAY"
+    ],
+    [
+      12,
+      6,
+      2,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      7,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      9,
+      0,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      15,
+      9,
+      1,
+      10,
+      0,
+      "STRING"
+    ],
+    [
+      16,
+      11,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      17,
+      11,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      18,
+      12,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      13,
+      0,
+      14,
+      1,
+      "NPARRAY"
+    ],
+    [
+      20,
+      14,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      14,
+      0,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      22,
+      16,
+      1,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      17,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      24,
+      18,
+      0,
+      19,
+      1,
+      "NPARRAY"
+    ],
+    [
+      25,
+      18,
+      0,
+      21,
+      1,
+      "NPARRAY"
+    ],
+    [
+      26,
+      19,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      27,
+      20,
+      0,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      28,
+      21,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      29,
+      22,
+      0,
+      23,
+      0,
+      "NPARRAY"
+    ],
+    [
+      30,
+      22,
+      0,
+      25,
+      0,
+      "NPARRAY"
+    ],
+    [
+      31,
+      22,
+      0,
+      26,
+      0,
+      "NPARRAY"
+    ],
+    [
+      32,
+      24,
+      0,
+      25,
+      1,
+      "NPARRAY"
+    ],
+    [
+      33,
+      24,
+      0,
+      26,
+      1,
+      "NPARRAY"
+    ],
+    [
+      34,
+      25,
+      0,
+      28,
+      2,
+      "NPARRAY"
+    ],
+    [
+      35,
+      26,
+      0,
+      27,
+      0,
+      "NPARRAY"
+    ],
+    [
+      36,
+      27,
+      0,
+      28,
+      4,
+      "NPARRAY"
+    ],
+    [
+      37,
+      28,
+      0,
+      29,
+      0,
+      "NPARRAY"
+    ],
+    [
+      38,
+      28,
+      1,
+      33,
+      0,
+      "NPARRAY"
+    ],
+    [
+      39,
+      29,
+      0,
+      30,
+      0,
+      "NPARRAY"
+    ],
+    [
+      40,
+      30,
+      0,
+      31,
+      0,
+      "NPARRAY"
+    ],
+    [
+      41,
+      31,
+      0,
+      32,
+      0,
+      "NPARRAY"
+    ],
+    [
+      42,
+      31,
+      0,
+      34,
+      2,
+      "NPARRAY"
+    ],
+    [
+      43,
+      34,
+      0,
+      35,
+      0,
+      "IMAGE"
+    ],
+    [
+      44,
+      36,
+      0,
+      37,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6727499949325639,
+      "offset": [
+        -5749.024976322097,
+        -197.9198372349364
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

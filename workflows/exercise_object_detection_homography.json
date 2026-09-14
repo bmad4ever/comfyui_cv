@@ -1,0 +1,2744 @@
+{
+  "id": "c2b8e6a4-1d97-4f30-a8c5-94e07b21d6f3",
+  "revision": 0,
+  "last_node_id": 43,
+  "last_link_id": 46,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        980,
+        200
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Exercise: object instance detection using a homography\n\nGiven a reference image of a planar object (Van Gogh's 'The Starry Night') and a cluttered scene (a wall with three public-domain paintings hung at an angle), locate the object and draw its outline. The 'Feature Match + RANSAC Homography' subgraph detects SIFT features (scale/rotation robust - essential here, the poster appears far smaller and tilted on the wall), filters the reference keypoints, matches them, and estimates the reference->scene homography with RANSAC. The four corners of the reference ('Reference corners') are projected into the scene with cv2.perspectiveTransform and connected with 'Draw Polygon'. Failure-tolerant: if the object is absent the homography node reports found=false and a 'Basic data handling' if/else routes the plain scene to the preview (its lazy inputs bypass the drawing branch entirely).\n\nWhy SIFT + a keypoint filter (open the subgraph): a high-res reference yields thousands of TINY (size ~2px) keypoints. The same painting is smaller and tilted on the wall, so those fine-scale features have no counterpart there - they only add ambiguous matches and burn the descriptor budget. 'Filter Keypoints' (min_size) drops them: ~8000 reference keypoints collapse to ~470 large, structurally meaningful ones, yet the RANSAC inlier count barely changes. A raw 'max_features' count cannot express 'keep the reliable features' - it is the wrong, misleading knob.\n\nDebug previews: keypoints drawn on BOTH images (rich circles sized by scale - compare the filtered reference to the busy scene), the RANSAC inlier matches, and the inlier count (a low count, < ~10, means a likely false positive). Note the scene needs a high max_features (20000): 2000 features spread over a 1500px-wide wall starve the small target and the match fails. The pipeline runs on raw ndarrays; only previews convert back to tensors.\n\nApproach 2 (the parallel branch in the lower band, blue dashed outline): instead of filtering, DOWNSCALE the reference so its features are born at the scene's scale - a different, simpler way to handle the same small-descriptor problem. See its note.\n\nFAILURE IS VISIBLE, NOT SILENT: both lanes fall back to the PLAIN scene when no homography is found, which used to make a failure look exactly like a success. 'found' is still the real answer - branch on it, and read it off the inlier-count previews - but the false branch now also stamps NOT FOUND onto its own copy of the image, so the PICTURE cannot be misread either. That stamp belongs HERE, in the workflow: a node or a subgraph must never bake a message into the data it returns."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        290
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load Image (reference object, planar)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "art_ref_starry.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        701.117572301985
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load Image (cluttered scene)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "art_posters_wall.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ImageToCV",
+      "pos": [
+        408.48339450253513,
+        287.36961775718277
+      ],
+      "size": [
+        310,
+        173.3125
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            8,
+            21
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_ImageToCV",
+      "pos": [
+        420,
+        700
+      ],
+      "size": [
+        310,
+        173.3125
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            4,
+            9,
+            16,
+            22,
+            23,
+            24
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "7f3d9a2c-5b1e-4c8a-9f60-3e2a8d4b7c15",
+      "pos": [
+        2006.5110967158844,
+        423.57777667045275
+      ],
+      "size": [
+        533.48203125,
+        220
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "type": "NPARRAY",
+          "link": 3
+        },
+        {
+          "name": "image_b",
+          "type": "NPARRAY",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "homography",
+          "type": "NPARRAY",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "inlier_mask",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "matches_vis",
+          "type": "NPARRAY",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "inlier_count",
+          "type": "INT",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "keypoints_vis_a",
+          "type": "NPARRAY",
+          "links": [
+            19
+          ]
+        },
+        {
+          "name": "keypoints_vis_b",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "[Feature Match + RANSAC Homography] Reference -> Scene Homography",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 7,
+      "type": "CV_ImageCorners",
+      "pos": [
+        2006.5110967158844,
+        683.0956324534816
+      ],
+      "size": [
+        240,
+        72
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "Reference corners",
+      "properties": {
+        "Node name for S&R": "CV_ImageCorners"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "cv2_perspectiveTransform",
+      "pos": [
+        2636.5128496670127,
+        721.4628757348912
+      ],
+      "size": [
+        280,
+        96
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY",
+          "link": 10
+        },
+        {
+          "name": "m",
+          "type": "NPARRAY",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "title": "Project corners into scene",
+      "properties": {
+        "Node name for S&R": "cv2_perspectiveTransform"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "CV_DrawPolygon",
+      "pos": [
+        2963.647321327158,
+        831.2393573256915
+      ],
+      "size": [
+        332.0884765625,
+        198
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "title": "Draw object outline (approach 1, full-res ref)",
+      "properties": {
+        "Node name for S&R": "CV_DrawPolygon"
+      },
+      "widgets_values": [
+        "(0, 94, 213)",
+        4,
+        true,
+        "solid"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_CVPreview",
+      "pos": [
+        3655.4907444150863,
+        670.5019685135771
+      ],
+      "size": [
+        320,
+        366.65625
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (detected object outline)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_CVPreview",
+      "pos": [
+        3104.0074330547022,
+        262.3368019312272
+      ],
+      "size": [
+        320,
+        366.65625
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (RANSAC inlier matches)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_CVInspect",
+      "pos": [
+        2633.628650944883,
+        262.3368019312272
+      ],
+      "size": [
+        317.5826171875,
+        90
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            18
+          ]
+        }
+      ],
+      "title": "Inspect (inlier count - low = false positive)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "ComfySwitchNode",
+      "pos": [
+        3319.4714985914197,
+        669.9082716483672
+      ],
+      "size": [
+        314.0826171875,
+        124
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "on_false",
+          "type": "NPARRAY",
+          "link": 44
+        },
+        {
+          "name": "on_true",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "NPARRAY",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "title": "if found: outlined scene, else: plain scene",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
+      "id": 14,
+      "type": "PreviewAny",
+      "pos": [
+        2633.628650944883,
+        392.3368019312272
+      ],
+      "size": [
+        429.4595703125,
+        162
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (inlier count - low = false positive)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 15,
+      "type": "CV_CVPreview",
+      "pos": [
+        1960.6334935726877,
+        837.2509175380275
+      ],
+      "size": [
+        301.4361328125,
+        366.65625
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Debug (reference keypoints, after filter)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_CVPreview",
+      "pos": [
+        2280.43230899684,
+        837.2509175380275
+      ],
+      "size": [
+        320,
+        366.65625
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Debug (scene keypoints)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 17,
+      "type": "cv2_resize",
+      "pos": [
+        393,
+        1717.680261401299
+      ],
+      "size": [
+        300,
+        258
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            25,
+            26,
+            27
+          ]
+        }
+      ],
+      "title": "Downscale reference to 25%",
+      "properties": {
+        "Node name for S&R": "cv2_resize"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        0.25,
+        0.25,
+        "INTER_AREA"
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 18,
+      "type": "CV_DetectFeatures",
+      "pos": [
+        734.5863092971715,
+        1716.0939521041275
+      ],
+      "size": [
+        330,
+        214.65625
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 25
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "keypoints",
+          "type": "CV_KEYPOINTS",
+          "links": [
+            28,
+            30
+          ]
+        },
+        {
+          "name": "descriptors",
+          "type": "NPARRAY",
+          "links": [
+            29
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Detect Features (resized ref, SIFT, no filter)",
+      "properties": {
+        "Node name for S&R": "CV_DetectFeatures"
+      },
+      "widgets_values": [
+        "SIFT",
+        2000,
+        false
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_DetectFeatures",
+      "pos": [
+        764.5535673490865,
+        1985.3662942405172
+      ],
+      "size": [
+        300,
+        214.65625
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 22
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "keypoints",
+          "type": "CV_KEYPOINTS",
+          "links": [
+            31
+          ]
+        },
+        {
+          "name": "descriptors",
+          "type": "NPARRAY",
+          "links": [
+            32
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Detect Features (scene, SIFT)",
+      "properties": {
+        "Node name for S&R": "CV_DetectFeatures"
+      },
+      "widgets_values": [
+        "SIFT",
+        0,
+        false
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_MatchFeatures",
+      "pos": [
+        1409.3243451053527,
+        1746.6256107297504
+      ],
+      "size": [
+        320,
+        382
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "keypoints_a",
+          "type": "CV_KEYPOINTS",
+          "link": 28
+        },
+        {
+          "name": "descriptors_a",
+          "type": "NPARRAY",
+          "link": 29
+        },
+        {
+          "name": "keypoints_b",
+          "type": "CV_KEYPOINTS",
+          "link": 31
+        },
+        {
+          "name": "descriptors_b",
+          "type": "NPARRAY",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "matches",
+          "type": "CV_MATCHES",
+          "links": null
+        },
+        {
+          "name": "points_a",
+          "type": "NPARRAY",
+          "links": [
+            33
+          ]
+        },
+        {
+          "name": "points_b",
+          "type": "NPARRAY",
+          "links": [
+            34
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Match Features",
+      "properties": {
+        "Node name for S&R": "CV_MatchFeatures"
+      },
+      "widgets_values": [
+        "BFMatcher",
+        "auto",
+        "ratio test (Lowe)",
+        0.8,
+        2,
+        0,
+        "auto",
+        5,
+        50,
+        6,
+        12,
+        1
+      ]
+    },
+    {
+      "id": 21,
+      "type": "CV_FindHomography",
+      "pos": [
+        1901.7845805988604,
+        1767.680261401299
+      ],
+      "size": [
+        543.571875,
+        242.65625
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "points_a",
+          "type": "NPARRAY",
+          "link": 33
+        },
+        {
+          "name": "points_b",
+          "type": "NPARRAY",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "homography",
+          "type": "NPARRAY",
+          "links": [
+            36
+          ]
+        },
+        {
+          "name": "inlier_mask",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "inlier_count",
+          "type": "INT",
+          "links": [
+            46
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "[CV Find Homography (RANSAC)] Find Homography (RANSAC, robust)",
+      "properties": {
+        "Node name for S&R": "CV_FindHomography"
+      },
+      "widgets_values": [
+        "RANSAC",
+        4,
+        10
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CV_ImageCorners",
+      "pos": [
+        393,
+        2040.3041045097239
+      ],
+      "size": [
+        240,
+        72
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "corners",
+          "type": "NPARRAY",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "title": "Resized reference corners",
+      "properties": {
+        "Node name for S&R": "CV_ImageCorners"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "cv2_perspectiveTransform",
+      "pos": [
+        2503.445130345345,
+        2054.951498753202
+      ],
+      "size": [
+        280,
+        96
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY",
+          "link": 35
+        },
+        {
+          "name": "m",
+          "type": "NPARRAY",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "title": "Project corners into scene",
+      "properties": {
+        "Node name for S&R": "cv2_perspectiveTransform"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 24,
+      "type": "CV_DrawPolygon",
+      "pos": [
+        2822.120680482469,
+        2036.1310056133948
+      ],
+      "size": [
+        335.9029296875,
+        198
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 23
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "title": "Draw object outline (approach 2, resized ref)",
+      "properties": {
+        "Node name for S&R": "CV_DrawPolygon"
+      },
+      "widgets_values": [
+        "(233, 180, 86)",
+        4,
+        true,
+        "dashed"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "ComfySwitchNode",
+      "pos": [
+        3196.8474908096464,
+        1850.0011172624554
+      ],
+      "size": [
+        314.0826171875,
+        124
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "on_false",
+          "type": "NPARRAY",
+          "link": 45
+        },
+        {
+          "name": "on_true",
+          "type": "NPARRAY",
+          "link": 38
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "NPARRAY",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "title": "if found: outlined scene, else: plain scene",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
+      "id": 26,
+      "type": "CV_CVPreview",
+      "pos": [
+        3541.896329615093,
+        1850.510612424929
+      ],
+      "size": [
+        320,
+        366.65625
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Approach 2 - detected outline (resize)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 27,
+      "type": "CV_DrawKeypoints",
+      "pos": [
+        392.4136907028285,
+        2150.967838990835
+      ],
+      "size": [
+        332.3140625,
+        130.65625
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 27
+        },
+        {
+          "name": "keypoints",
+          "type": "CV_KEYPOINTS",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "title": "Draw Keypoints (resized reference, no filter)",
+      "properties": {
+        "Node name for S&R": "CV_DrawKeypoints"
+      },
+      "widgets_values": [
+        "rich (size + orientation)"
+      ]
+    },
+    {
+      "id": 28,
+      "type": "CV_CVPreview",
+      "pos": [
+        422.96725805191494,
+        2326.4058864483877
+      ],
+      "size": [
+        300,
+        366.65625
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Debug (resized reference keypoints)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 30,
+      "type": "PreviewAny",
+      "pos": [
+        3125.0681639345853,
+        1640.713003349384
+      ],
+      "size": [
+        384.29453125,
+        162
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (resize-branch inlier count)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 31,
+      "type": "Note",
+      "pos": [
+        392,
+        1452.4391892928134
+      ],
+      "size": [
+        860.171875,
+        221.90625
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Approach 2: handle small descriptors by RESIZING the reference instead of filtering keypoints.\n\nThe reference is downscaled to 25% (cv2.resize, INTER_AREA) - roughly the size the poster occupies on the wall. SIFT then computes descriptors at scales that actually EXIST in the scene, so no keypoint filtering is needed (Detect Features here has no Filter Keypoints after it). About 350 keypoints give ~52 RANSAC inliers - a far higher inlier RATIO than the full-res branch (52/350 vs ~32/2000), because every feature is born at a matchable scale.\n\nTrade-off vs Approach 1 (Filter Keypoints): resizing is simpler and gives cleaner matches when you know the object's approximate on-scene size, but it bakes in one scale; filtering keeps the full-res descriptors and lets RANSAC pick. The projected outline (GREEN) lands on the same poster as the red one. Corners come from the RESIZED reference, so perspectiveTransform maps resized-ref -> scene correctly."
+      ],
+      "color": "#243",
+      "bgcolor": "#354"
+    },
+    {
+      "id": 40,
+      "type": "Note",
+      "pos": [
+        -371.6043684603384,
+        545.414531701033
+      ],
+      "size": [
+        391.75,
+        278.140625
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "art_ref_starry.png / art_posters_wall.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   The Starry Night / Synthetic composite: three public-domain paintings on a generated plaster wall\nCreator: Vincent van Gogh; generated (this repo)\nLicense: Public domain via Wikimedia Commons; source paintings public domain; wall texture synthetic (no third-party rights)\nSource:  https://commons.wikimedia.org/wiki/File:Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg; synthetic; paintings: art_ref_starry.png (Van Gogh), art_ref_wave.png (Hokusai), art_ref_pearl.png (Vermeer)\nSize:    - / 1500x1050\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 42,
+      "type": "CV_DrawText",
+      "pos": [
+        1091.6814788977229,
+        640
+      ],
+      "size": [
+        764.70078125,
+        270
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            44
+          ]
+        }
+      ],
+      "title": "Stamp NOT FOUND (approach 1 fallback - the boolean is the real signal, this only stops the picture from lying)",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "NOT FOUND",
+        12,
+        42,
+        1.2,
+        "(0, 94, 213)",
+        2,
+        true
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 43,
+      "type": "CV_DrawText",
+      "pos": [
+        1085.3365320944229,
+        946.4503088397751
+      ],
+      "size": [
+        520,
+        270
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            45
+          ]
+        }
+      ],
+      "title": "Stamp NOT FOUND (approach 2 fallback - same, on the resized branch)",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "NOT FOUND",
+        12,
+        42,
+        1.2,
+        "(0, 94, 213)",
+        2,
+        true
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      5,
+      0,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      5,
+      6,
+      0,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      7,
+      6,
+      2,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      8,
+      4,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      9,
+      5,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      7,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      8,
+      0,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      12,
+      9,
+      0,
+      13,
+      1,
+      "NPARRAY"
+    ],
+    [
+      14,
+      6,
+      3,
+      12,
+      0,
+      "INT"
+    ],
+    [
+      15,
+      6,
+      4,
+      13,
+      2,
+      "BOOLEAN"
+    ],
+    [
+      16,
+      5,
+      0,
+      42,
+      0,
+      "NPARRAY"
+    ],
+    [
+      17,
+      13,
+      0,
+      10,
+      0,
+      "*"
+    ],
+    [
+      18,
+      12,
+      0,
+      14,
+      0,
+      "STRING"
+    ],
+    [
+      19,
+      6,
+      5,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      20,
+      6,
+      6,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      4,
+      0,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      22,
+      5,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      5,
+      0,
+      24,
+      0,
+      "NPARRAY"
+    ],
+    [
+      24,
+      5,
+      0,
+      43,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      17,
+      0,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      26,
+      17,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      27,
+      17,
+      0,
+      27,
+      0,
+      "NPARRAY"
+    ],
+    [
+      28,
+      18,
+      0,
+      20,
+      0,
+      "CV_KEYPOINTS"
+    ],
+    [
+      29,
+      18,
+      1,
+      20,
+      1,
+      "NPARRAY"
+    ],
+    [
+      30,
+      18,
+      0,
+      27,
+      1,
+      "CV_KEYPOINTS"
+    ],
+    [
+      31,
+      19,
+      0,
+      20,
+      2,
+      "CV_KEYPOINTS"
+    ],
+    [
+      32,
+      19,
+      1,
+      20,
+      3,
+      "NPARRAY"
+    ],
+    [
+      33,
+      20,
+      1,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      34,
+      20,
+      2,
+      21,
+      1,
+      "NPARRAY"
+    ],
+    [
+      35,
+      22,
+      0,
+      23,
+      0,
+      "NPARRAY"
+    ],
+    [
+      36,
+      21,
+      0,
+      23,
+      1,
+      "NPARRAY"
+    ],
+    [
+      37,
+      23,
+      0,
+      24,
+      1,
+      "NPARRAY"
+    ],
+    [
+      38,
+      24,
+      0,
+      25,
+      1,
+      "NPARRAY"
+    ],
+    [
+      39,
+      21,
+      3,
+      25,
+      2,
+      "BOOLEAN"
+    ],
+    [
+      40,
+      25,
+      0,
+      26,
+      0,
+      "*"
+    ],
+    [
+      41,
+      27,
+      0,
+      28,
+      0,
+      "NPARRAY"
+    ],
+    [
+      44,
+      42,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      45,
+      43,
+      0,
+      25,
+      0,
+      "NPARRAY"
+    ],
+    [
+      46,
+      21,
+      2,
+      30,
+      0,
+      "INT"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "7f3d9a2c-5b1e-4c8a-9f60-3e2a8d4b7c15",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 43,
+          "lastLinkId": 46,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Feature Match + RANSAC Homography",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -620,
+            320,
+            120,
+            100
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            1700,
+            320,
+            120,
+            180
+          ]
+        },
+        "inputs": [
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d901",
+            "name": "image_a",
+            "type": "NPARRAY",
+            "linkIds": [
+              1,
+              2,
+              3
+            ],
+            "localized_name": "image_a",
+            "pos": [
+              -520,
+              340
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d902",
+            "name": "image_b",
+            "type": "NPARRAY",
+            "linkIds": [
+              4,
+              5,
+              6
+            ],
+            "localized_name": "image_b",
+            "pos": [
+              -520,
+              360
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d903",
+            "name": "homography",
+            "type": "NPARRAY",
+            "linkIds": [
+              21
+            ],
+            "localized_name": "homography",
+            "pos": [
+              1720,
+              340
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d904",
+            "name": "inlier_mask",
+            "type": "NPARRAY",
+            "linkIds": [
+              22
+            ],
+            "localized_name": "inlier_mask",
+            "pos": [
+              1720,
+              360
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d905",
+            "name": "matches_vis",
+            "type": "NPARRAY",
+            "linkIds": [
+              23
+            ],
+            "localized_name": "matches_vis",
+            "pos": [
+              1720,
+              380
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d906",
+            "name": "inlier_count",
+            "type": "INT",
+            "linkIds": [
+              24
+            ],
+            "localized_name": "inlier_count",
+            "pos": [
+              1720,
+              400
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d907",
+            "name": "found",
+            "type": "BOOLEAN",
+            "linkIds": [
+              25
+            ],
+            "localized_name": "found",
+            "pos": [
+              1720,
+              420
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d908",
+            "name": "keypoints_vis_a",
+            "type": "NPARRAY",
+            "linkIds": [
+              26
+            ],
+            "localized_name": "keypoints_vis_a",
+            "pos": [
+              1720,
+              440
+            ]
+          },
+          {
+            "id": "5a0d83b1-44c7-49e2-9c3a-8f1b62e0d909",
+            "name": "keypoints_vis_b",
+            "type": "NPARRAY",
+            "linkIds": [
+              27
+            ],
+            "localized_name": "keypoints_vis_b",
+            "pos": [
+              1720,
+              460
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 32,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              -380,
+              100
+            ],
+            "size": [
+              300,
+              170
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 1
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  7
+                ]
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  8
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Detect Features A (reference, SIFT)",
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "SIFT",
+              8000,
+              false
+            ]
+          },
+          {
+            "id": 33,
+            "type": "CV_FilterKeypoints",
+            "pos": [
+              -380,
+              320
+            ],
+            "size": [
+              300,
+              200
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "link": 7
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "link": 8
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  9,
+                  11,
+                  12
+                ]
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  10
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Filter Reference Keypoints (drop tiny)",
+            "properties": {
+              "Node name for S&R": "CV_FilterKeypoints"
+            },
+            "widgets_values": [
+              6,
+              0,
+              0
+            ]
+          },
+          {
+            "id": 34,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              -380,
+              560
+            ],
+            "size": [
+              300,
+              170
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 4
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  13,
+                  15,
+                  16
+                ]
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  14
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Detect Features B (scene, SIFT)",
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "SIFT",
+              20000,
+              false
+            ]
+          },
+          {
+            "id": 35,
+            "type": "CV_MatchFeatures",
+            "pos": [
+              40,
+              320
+            ],
+            "size": [
+              320,
+              382
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "keypoints_a",
+                "name": "keypoints_a",
+                "type": "CV_KEYPOINTS",
+                "link": 9
+              },
+              {
+                "localized_name": "descriptors_a",
+                "name": "descriptors_a",
+                "type": "NPARRAY",
+                "link": 10
+              },
+              {
+                "localized_name": "keypoints_b",
+                "name": "keypoints_b",
+                "type": "CV_KEYPOINTS",
+                "link": 13
+              },
+              {
+                "localized_name": "descriptors_b",
+                "name": "descriptors_b",
+                "type": "NPARRAY",
+                "link": 14
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "matches",
+                "name": "matches",
+                "type": "CV_MATCHES",
+                "links": [
+                  17
+                ]
+              },
+              {
+                "localized_name": "points_a",
+                "name": "points_a",
+                "type": "NPARRAY",
+                "links": [
+                  18
+                ]
+              },
+              {
+                "localized_name": "points_b",
+                "name": "points_b",
+                "type": "NPARRAY",
+                "links": [
+                  19
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_MatchFeatures"
+            },
+            "widgets_values": [
+              "BFMatcher",
+              "auto",
+              "ratio test (Lowe)",
+              0.8,
+              2,
+              0,
+              "auto",
+              5,
+              50,
+              6,
+              12,
+              1
+            ]
+          },
+          {
+            "id": 36,
+            "type": "CV_FindHomography",
+            "pos": [
+              460,
+              320
+            ],
+            "size": [
+              320,
+              190
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points_a",
+                "name": "points_a",
+                "type": "NPARRAY",
+                "link": 18
+              },
+              {
+                "localized_name": "points_b",
+                "name": "points_b",
+                "type": "NPARRAY",
+                "link": 19
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "homography",
+                "name": "homography",
+                "type": "NPARRAY",
+                "links": [
+                  21
+                ]
+              },
+              {
+                "localized_name": "inlier_mask",
+                "name": "inlier_mask",
+                "type": "NPARRAY",
+                "links": [
+                  20,
+                  22
+                ]
+              },
+              {
+                "localized_name": "inlier_count",
+                "name": "inlier_count",
+                "type": "INT",
+                "links": [
+                  24
+                ]
+              },
+              {
+                "localized_name": "found",
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": [
+                  25
+                ]
+              }
+            ],
+            "title": "Find Homography (RANSAC, robust)",
+            "properties": {
+              "Node name for S&R": "CV_FindHomography"
+            },
+            "widgets_values": [
+              "RANSAC",
+              4,
+              10
+            ]
+          },
+          {
+            "id": 37,
+            "type": "CV_DrawMatches",
+            "pos": [
+              880,
+              100
+            ],
+            "size": [
+              320,
+              200
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image_a",
+                "name": "image_a",
+                "type": "NPARRAY",
+                "link": 2
+              },
+              {
+                "localized_name": "keypoints_a",
+                "name": "keypoints_a",
+                "type": "CV_KEYPOINTS",
+                "link": 11
+              },
+              {
+                "localized_name": "image_b",
+                "name": "image_b",
+                "type": "NPARRAY",
+                "link": 5
+              },
+              {
+                "localized_name": "keypoints_b",
+                "name": "keypoints_b",
+                "type": "CV_KEYPOINTS",
+                "link": 15
+              },
+              {
+                "localized_name": "matches",
+                "name": "matches",
+                "type": "CV_MATCHES",
+                "link": 17
+              },
+              {
+                "localized_name": "inlier_mask",
+                "name": "inlier_mask",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 20
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  23
+                ]
+              }
+            ],
+            "title": "Draw Matches (inliers only)",
+            "properties": {
+              "Node name for S&R": "CV_DrawMatches"
+            },
+            "widgets_values": [
+              0,
+              "(0, 255, 0)"
+            ]
+          },
+          {
+            "id": 38,
+            "type": "CV_DrawKeypoints",
+            "pos": [
+              880,
+              360
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 3
+              },
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "link": 12
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  26
+                ]
+              }
+            ],
+            "title": "Draw Keypoints A (filtered reference)",
+            "properties": {
+              "Node name for S&R": "CV_DrawKeypoints"
+            },
+            "widgets_values": [
+              "rich (size + orientation)"
+            ]
+          },
+          {
+            "id": 39,
+            "type": "CV_DrawKeypoints",
+            "pos": [
+              880,
+              540
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 6
+              },
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "link": 16
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  27
+                ]
+              }
+            ],
+            "title": "Draw Keypoints B (scene)",
+            "properties": {
+              "Node name for S&R": "CV_DrawKeypoints"
+            },
+            "widgets_values": [
+              "rich (size + orientation)"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 1,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 32,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 2,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 37,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 38,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 4,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 34,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 5,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 37,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 6,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 39,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 7,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": 33,
+            "target_slot": 0,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 8,
+            "origin_id": 32,
+            "origin_slot": 1,
+            "target_id": 33,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 9,
+            "origin_id": 33,
+            "origin_slot": 0,
+            "target_id": 35,
+            "target_slot": 0,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 10,
+            "origin_id": 33,
+            "origin_slot": 1,
+            "target_id": 35,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 11,
+            "origin_id": 33,
+            "origin_slot": 0,
+            "target_id": 37,
+            "target_slot": 1,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 12,
+            "origin_id": 33,
+            "origin_slot": 0,
+            "target_id": 38,
+            "target_slot": 1,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 13,
+            "origin_id": 34,
+            "origin_slot": 0,
+            "target_id": 35,
+            "target_slot": 2,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 14,
+            "origin_id": 34,
+            "origin_slot": 1,
+            "target_id": 35,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 15,
+            "origin_id": 34,
+            "origin_slot": 0,
+            "target_id": 37,
+            "target_slot": 3,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 16,
+            "origin_id": 34,
+            "origin_slot": 0,
+            "target_id": 39,
+            "target_slot": 1,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 17,
+            "origin_id": 35,
+            "origin_slot": 0,
+            "target_id": 37,
+            "target_slot": 4,
+            "type": "CV_MATCHES"
+          },
+          {
+            "id": 18,
+            "origin_id": 35,
+            "origin_slot": 1,
+            "target_id": 36,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 19,
+            "origin_id": 35,
+            "origin_slot": 2,
+            "target_id": 36,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 20,
+            "origin_id": 36,
+            "origin_slot": 1,
+            "target_id": 37,
+            "target_slot": 5,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 21,
+            "origin_id": 36,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 22,
+            "origin_id": 36,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 23,
+            "origin_id": 37,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 24,
+            "origin_id": 36,
+            "origin_slot": 2,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "INT"
+          },
+          {
+            "id": 25,
+            "origin_id": 36,
+            "origin_slot": 3,
+            "target_id": -20,
+            "target_slot": 4,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 26,
+            "origin_id": 38,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 5,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 27,
+            "origin_id": 39,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 6,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.15091133223263736,
+      "offset": [
+        1264.067596332339,
+        1528.8419711421693
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

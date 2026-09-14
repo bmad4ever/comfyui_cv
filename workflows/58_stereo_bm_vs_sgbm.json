@@ -1,0 +1,978 @@
+{
+  "id": "c2b54948-e2e1-4a82-b014-0a81a515fcca",
+  "revision": 0,
+  "last_node_id": 28,
+  "last_link_id": 27,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        -222.84202329893134
+      ],
+      "size": [
+        1121.96875,
+        418.96875
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "StereoBM vs StereoSGBM vs WLS",
+      "properties": {},
+      "widgets_values": [
+        "Both stereo matchers are cv2 classes behind a *_create factory, so each comes as a curated node rather than a raw cv2.* wrapper.\n\nStereoBM is the classic BLOCK matcher: it slides a SAD window along each scanline and takes the best score, with no global term at all. StereoSGBM adds a semi-global smoothness cost aggregated over 8 directions. BM is several times faster; SGBM fills far more of the image.\n\nThe 'valid_fraction' output is the headline number - BM rejects everything it is not sure about, which on a low-texture wall is most of it. That is what texture_threshold controls: it drops any block whose summed x-gradient is too small. It is a SUM over the window, so it only bites in the hundreds/thousands, not at 10. Measured here: BM 0.71, BM at texture_threshold 2000 only 0.25, SGBM 0.84.\n\nThe third column adds the REFINEMENT stage. 'CV Stereo Disparity (WLS filtered)' runs the same SGBM in both directions, checks the two against each other and smooths the result along the edges of the left image: on this pair the valid fraction goes 0.84 -> 0.90. Its disparity_raw output is the unfiltered map, so the two previews next to each other are exactly what the filter changed, and 'confidence' is where the two directions agreed.\n\nThe filter is not free: its smoothness prior is FRONTO-PARALLEL, so a textureless slanted surface (a road) gets bent towards a staircase even where the matcher already had it right. 59_disparity_refinement compares it against the locally-affine interpolators on the same scene, where that matters.\n\nBOTH MATCHERS SCAN ROWS, so the pair must be RECTIFIED - and that is a prerequisite, not a detail. This CARLA pair comes off a calibrated rig already rectified (median vertical offset 0.16 px over SIFT matches, 85% of them inside 1 px). Feed the same graph an UNRECTIFIED pair and every number above collapses without any error: on stereo_gallery_L/R (rows misaligned by a median 7.7 px, only 13% of matches inside 1 px) SGBM drops to 0.55 and BM to 0.22, and the WLS filter still reports 0.92 valid because it happily interpolates nonsense - coverage is not correctness. exercise_stereo_rectification.json rectifies that pair first; note that uncalibrated (Hartley) rectification re-centres disparity around zero, so it needs min_disparity -48 / num_disparities 96 rather than the 0 / 64 used here.\n\nTry: raise texture_threshold to 2000 and watch valid_fraction fall; compare the two heatmaps at the same num_disparities; drop wls_lambda to 100 and watch the filter stop filling holes."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            8,
+            14,
+            17
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Left (rectified rig)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "stereo_scene_L_000000.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        642.5405296378765
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2,
+            9,
+            15,
+            18
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Right (rectified rig)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "stereo_scene_R_000000.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_StereoDisparityBM",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        430,
+        402
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY,IMAGE",
+          "link": 1
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY,IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "disparity",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "valid_fraction",
+          "type": "FLOAT",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "[CV Stereo Disparity (BM)] StereoBM (block matcher)",
+      "properties": {
+        "Node name for S&R": "CV_StereoDisparityBM"
+      },
+      "widgets_values": [
+        64,
+        15,
+        0,
+        10,
+        10,
+        "x-Sobel",
+        31,
+        100,
+        2,
+        -1
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_CVPreview",
+      "pos": [
+        862,
+        240
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "BM disparity (heatmap)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_CVPreview",
+      "pos": [
+        1175,
+        244.18255303826828
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "BM valid mask",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 9,
+      "type": "PreviewAny",
+      "pos": [
+        1482,
+        244.7482390548663
+      ],
+      "size": [
+        263.40625,
+        158
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: BM valid fraction",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "CV_StereoDisparity",
+      "pos": [
+        394,
+        1351.7948587046772
+      ],
+      "size": [
+        450,
+        312
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY,IMAGE",
+          "link": 8
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY,IMAGE",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "disparity",
+          "type": "NPARRAY",
+          "links": [
+            10
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "title": "[CV Stereo Disparity (SGBM)] StereoSGBM (semi-global)",
+      "properties": {
+        "Node name for S&R": "CV_StereoDisparity"
+      },
+      "widgets_values": [
+        64,
+        7,
+        0,
+        "SGBM (balanced)",
+        10,
+        100,
+        2,
+        -1
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_CVPreview",
+      "pos": [
+        866,
+        1301.1597262952082
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "SGBM disparity (heatmap)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_CVPreview",
+      "pos": [
+        1178,
+        1304.7567884645403
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "SGBM valid mask",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_StereoDisparityBM",
+      "pos": [
+        392,
+        684.9079868374147
+      ],
+      "size": [
+        460,
+        402
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY,IMAGE",
+          "link": 14
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY,IMAGE",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "disparity",
+          "type": "NPARRAY",
+          "links": [
+            27
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "valid_fraction",
+          "type": "FLOAT",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "title": "[CV Stereo Disparity (BM)] BM with texture_threshold 2000",
+      "properties": {
+        "Node name for S&R": "CV_StereoDisparityBM"
+      },
+      "widgets_values": [
+        64,
+        15,
+        0,
+        2000,
+        10,
+        "x-Sobel",
+        31,
+        100,
+        2,
+        -1
+      ]
+    },
+    {
+      "id": 16,
+      "type": "PreviewAny",
+      "pos": [
+        1184,
+        687.2650655660989
+      ],
+      "size": [
+        380.203125,
+        158
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: valid fraction after the texture gate",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CV_StereoDisparityWLS",
+      "pos": [
+        388,
+        1892.2511921759176
+      ],
+      "size": [
+        400,
+        460
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY,IMAGE",
+          "link": 17
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY,IMAGE",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "disparity",
+          "type": "NPARRAY",
+          "links": [
+            21
+          ]
+        },
+        {
+          "name": "confidence",
+          "type": "NPARRAY",
+          "links": [
+            23
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": [
+            25
+          ]
+        },
+        {
+          "name": "disparity_raw",
+          "type": "NPARRAY",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "title": "[CV Stereo Disparity (WLS filtered)] SGBM + WLS filter",
+      "properties": {
+        "Node name for S&R": "CV_StereoDisparityWLS"
+      },
+      "widgets_values": [
+        64,
+        7,
+        0,
+        "SGBM (balanced)",
+        8000,
+        1.5,
+        10,
+        100,
+        2,
+        24,
+        0,
+        -1
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_CVPreview",
+      "pos": [
+        804,
+        1957.6165449226867
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "BEFORE: the same SGBM, unfiltered",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_CVPreview",
+      "pos": [
+        1150,
+        1891.4936329580355
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "AFTER: WLS filtered",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CV_CVPreview",
+      "pos": [
+        1149,
+        2277.8278514289777
+      ],
+      "size": [
+        480,
+        346
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "WLS confidence (left-right agreement, where both directions agree)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 24,
+      "type": "CV_CVPreview",
+      "pos": [
+        798,
+        2352.42569154988
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "WLS valid mask",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 26,
+      "type": "Note",
+      "pos": [
+        -498,
+        534.9112653760735
+      ],
+      "size": [
+        520,
+        170
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "stereo_scene_L_000000.png / stereo_scene_R_000000.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   StereoGeo-CARLA (stereo driving scenes from the CARLA simulator)\nCreator: Meddourimane et al.\nLicense: CC BY 4.0\n         https://creativecommons.org/licenses/by/4.0/\nSource:  https://huggingface.co/datasets/meddourimane/StereoGeo-CARLA\nSize:    640x480 each - synthetic driving frames rendered in the CARLA simulator\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 28,
+      "type": "CV_CVPreview",
+      "pos": [
+        862,
+        685.1235434153839
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "BM disparity (heatmap)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      1,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      4,
+      1,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      7,
+      4,
+      2,
+      9,
+      0,
+      "FLOAT"
+    ],
+    [
+      8,
+      2,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      3,
+      0,
+      10,
+      1,
+      "IMAGE"
+    ],
+    [
+      10,
+      10,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      10,
+      1,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      2,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      3,
+      0,
+      15,
+      1,
+      "IMAGE"
+    ],
+    [
+      16,
+      15,
+      2,
+      16,
+      0,
+      "FLOAT"
+    ],
+    [
+      17,
+      2,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      3,
+      0,
+      17,
+      1,
+      "IMAGE"
+    ],
+    [
+      19,
+      17,
+      3,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      17,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      17,
+      1,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      17,
+      2,
+      24,
+      0,
+      "NPARRAY"
+    ],
+    [
+      27,
+      15,
+      0,
+      28,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9541853195779352,
+      "offset": [
+        311.4177138534949,
+        -1672.4658253633743
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

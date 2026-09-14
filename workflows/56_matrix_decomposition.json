@@ -1,0 +1,2583 @@
+{
+  "id": "9e337c52-0194-436f-af52-9105afa08ae0",
+  "revision": 0,
+  "last_node_id": 52,
+  "last_link_id": 59,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "title": "M = K @ Q (3x3)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "671.557383427  -41.3305831733  164.854108106\n38.4141604653  573.927248732  286.292828328\n0.222426245657  0.110471567008  0.968628336445",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 2,
+      "type": "CV_DecomposeProjectionMatrix",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        444.609375,
+        192
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "matrix",
+          "type": "NPARRAY",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "matrix",
+          "type": "NPARRAY",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "Q",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            16
+          ]
+        },
+        {
+          "name": "R",
+          "type": "NPARRAY",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "Qx",
+          "type": "NPARRAY",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "Qy",
+          "type": "NPARRAY",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "Qz",
+          "type": "NPARRAY",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "[CV Decompose Projection Matrix (RQ)] RQDecomp3x3",
+      "properties": {
+        "Node name for S&R": "CV_DecomposeProjectionMatrix"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 3,
+      "type": "CV_MatMul",
+      "pos": [
+        840,
+        240
+      ],
+      "size": [
+        340,
+        104
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 2
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] Reconstruct R @ Q",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 4,
+      "type": "CV_CVInspect",
+      "pos": [
+        1244,
+        40
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            50
+          ]
+        }
+      ],
+      "title": "Original matrix summary",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "CV_CVInspect",
+      "pos": [
+        1244,
+        240
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            51
+          ]
+        }
+      ],
+      "title": "Reconstructed matrix summary",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        40,
+        1004.092366313742
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "title": "P = K [R | t] (3x4)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "671.557383427  -41.3305831733  164.854108106  155528.556704\n38.4141604653  573.927248732  286.292828328  223045.953858\n0.222426245657  0.110471567008  0.968628336445  599.97547631",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_DecomposeProjectionMatrix",
+      "pos": [
+        390,
+        1004.092366313742
+      ],
+      "size": [
+        519.203125,
+        192
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "matrix",
+          "type": "NPARRAY",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "matrix",
+          "type": "NPARRAY",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "Q",
+          "type": "NPARRAY",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "R",
+          "type": "NPARRAY",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "Qx",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "Qy",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "Qz",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Decompose Projection Matrix (RQ)] RQDecomp3x3 on P (3x4)",
+      "properties": {
+        "Node name for S&R": "CV_DecomposeProjectionMatrix"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "CV_MatMul",
+      "pos": [
+        910,
+        1029.107261192541
+      ],
+      "size": [
+        394.109375,
+        104
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] Reconstruct R @ Q (from P)",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "CV_CVInspect",
+      "pos": [
+        1310,
+        829.1072611925409
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            52
+          ]
+        }
+      ],
+      "title": "Decomposed 3x3 block summary",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "CV_CVInspect",
+      "pos": [
+        1310,
+        1029.107261192541
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            53
+          ]
+        }
+      ],
+      "title": "Reconstructed from P summary",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "CV_MatMul",
+      "pos": [
+        845,
+        505.47172310435997
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 11
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] Qx @ Qy",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "CV_MatMul",
+      "pos": [
+        1245,
+        505.47172310435997
+      ],
+      "size": [
+        310,
+        104
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 13
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] Qx @ Qy @ Qz",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "CV_MatMul",
+      "pos": [
+        1645,
+        505.47172310435997
+      ],
+      "size": [
+        590.828125,
+        104
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] (Qx @ Qy @ Qz) @ Q = I (so the product is Q transposed)",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "CV_CVInspect",
+      "pos": [
+        2245,
+        505.47172310435997
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            54
+          ]
+        }
+      ],
+      "title": "Composition check summary",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 15,
+      "type": "CV_CameraMatrix",
+      "pos": [
+        40,
+        1486.0971182795706
+      ],
+      "size": [
+        290,
+        186
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            24,
+            25,
+            30
+          ]
+        }
+      ],
+      "title": "[CV Camera Matrix] K (fx = fy = 800)",
+      "properties": {
+        "Node name for S&R": "CV_CameraMatrix"
+      },
+      "widgets_values": [
+        800,
+        800,
+        320,
+        240
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        40,
+        1724.9278223403944
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            18
+          ]
+        }
+      ],
+      "title": "Truth rotation (Rodrigues, rad)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0.15  -0.25  0.08",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 17,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        40,
+        1924.9278223403944
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "Truth translation t (mm)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-50\n30\n700",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        40,
+        2124.9278223403944
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            19,
+            33
+          ]
+        }
+      ],
+      "title": "Plane normal n (camera frame)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0\n0\n1",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        40,
+        2324.9278223403944
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Plane points in the source image (px)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "100  100\n400  120\n420  380\n90  360",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 20,
+      "type": "cv2_Rodrigues",
+      "pos": [
+        390,
+        1726.4810505028272
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "NPARRAY",
+          "links": [
+            22,
+            39
+          ]
+        },
+        {
+          "name": "jacobian",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "R = Rodrigues(rvec)",
+      "properties": {
+        "Node name for S&R": "cv2_Rodrigues"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "cv2_transpose",
+      "pos": [
+        390,
+        2124.9278223403944
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            21
+          ]
+        }
+      ],
+      "title": "n^T",
+      "properties": {
+        "Node name for S&R": "cv2_transpose"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "CV_MatMul",
+      "pos": [
+        840,
+        1924.9278223403944
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 20
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] t n^T",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "cv2_addWeighted",
+      "pos": [
+        1244,
+        1724.9278223403944
+      ],
+      "size": [
+        290,
+        208
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 22
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "title": "R + t n^T / d",
+      "properties": {
+        "Node name for S&R": "cv2_addWeighted"
+      },
+      "widgets_values": [
+        1,
+        0.0014285714285714286,
+        0,
+        "same as input"
+      ]
+    },
+    {
+      "id": 24,
+      "type": "cv2_invert",
+      "pos": [
+        390,
+        1486.0971182795706
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "title": "K^-1",
+      "properties": {
+        "Node name for S&R": "cv2_invert"
+      },
+      "widgets_values": [
+        "DECOMP_LU"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "CV_MatMul",
+      "pos": [
+        1644,
+        1486.0971182795706
+      ],
+      "size": [
+        315.046875,
+        104
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 25
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] K (R + t n^T / d)",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 26,
+      "type": "CV_MatMul",
+      "pos": [
+        1994,
+        1486.0971182795706
+      ],
+      "size": [
+        374.671875,
+        104
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 27
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] H = K (R + t n^T / d) K^-1",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 27,
+      "type": "CV_DecomposeHomography",
+      "pos": [
+        2473,
+        1686.0971182795706
+      ],
+      "size": [
+        290,
+        214
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "homography",
+          "type": "NPARRAY",
+          "link": 29
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 30
+        },
+        {
+          "name": "ref_points",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rotations",
+          "type": "NPARRAY",
+          "links": [
+            35,
+            45
+          ]
+        },
+        {
+          "name": "translations",
+          "type": "NPARRAY",
+          "links": [
+            37
+          ]
+        },
+        {
+          "name": "normals",
+          "type": "NPARRAY",
+          "links": [
+            32,
+            46
+          ]
+        },
+        {
+          "name": "visible",
+          "type": "NPARRAY",
+          "links": [
+            47
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "best_index",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "Decompose H (up to 4 candidates)",
+      "properties": {
+        "Node name for S&R": "CV_DecomposeHomography"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 28,
+      "type": "CV_MatMul",
+      "pos": [
+        2823,
+        2086.0971182795706
+      ],
+      "size": [
+        415.203125,
+        104
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 32
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] normals . n (dot per candidate)",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 29,
+      "type": "CV_PickValue",
+      "pos": [
+        3243,
+        2086.0971182795706
+      ],
+      "size": [
+        350,
+        156
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "values",
+          "type": "NPARRAY",
+          "link": 34
+        },
+        {
+          "name": "key",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "links": [
+            36,
+            38
+          ]
+        }
+      ],
+      "title": "Pick the candidate matching the known normal",
+      "properties": {
+        "Node name for S&R": "CV_PickValue"
+      },
+      "widgets_values": [
+        "largest first",
+        1
+      ]
+    },
+    {
+      "id": 30,
+      "type": "CV_IndexBatch",
+      "pos": [
+        3746,
+        1686.0971182795706
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 35
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "widget": {
+            "name": "index"
+          },
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "title": "Chosen rotation",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 31,
+      "type": "CV_IndexBatch",
+      "pos": [
+        3652,
+        2086.0971182795706
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 37
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "widget": {
+            "name": "index"
+          },
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "title": "Chosen translation (t / d)",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 32,
+      "type": "cv2_transpose",
+      "pos": [
+        3746,
+        1486.0971182795706
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "title": "R^T (ground truth)",
+      "properties": {
+        "Node name for S&R": "cv2_transpose"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 33,
+      "type": "CV_MatMul",
+      "pos": [
+        4096,
+        1486.0971182795706
+      ],
+      "size": [
+        342.265625,
+        104
+      ],
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "left",
+          "type": "NPARRAY",
+          "link": 40
+        },
+        {
+          "name": "right",
+          "type": "NPARRAY",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            48
+          ]
+        }
+      ],
+      "title": "[CV Matrix Multiply] R_chosen @ R^T = I",
+      "properties": {
+        "Node name for S&R": "CV_MatMul"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 34,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        4082,
+        2086.0971182795706
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 42
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "title": "Chosen translation as a 3x1 column",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        3,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 35,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        4082,
+        2286.0971182795706
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            44
+          ]
+        }
+      ],
+      "title": "Plane distance d (mm)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "700\n700\n700",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 36,
+      "type": "cv2_multiply",
+      "pos": [
+        4432,
+        2086.0971182795706
+      ],
+      "size": [
+        290,
+        156
+      ],
+      "flags": {},
+      "order": 48,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 43
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            49
+          ]
+        }
+      ],
+      "title": "(t / d) * d = t (mm)",
+      "properties": {
+        "Node name for S&R": "cv2_multiply"
+      },
+      "widgets_values": [
+        1,
+        "same as input"
+      ]
+    },
+    {
+      "id": 37,
+      "type": "CV_CVInspect",
+      "pos": [
+        2823,
+        1286.0971182795706
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 45
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            55
+          ]
+        }
+      ],
+      "title": "Candidate rotations summary",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 38,
+      "type": "CV_CVInspect",
+      "pos": [
+        2823,
+        1486.0971182795706
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            56
+          ]
+        }
+      ],
+      "title": "Candidate plane normals summary",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 39,
+      "type": "CV_CVInspect",
+      "pos": [
+        2823,
+        1686.0971182795706
+      ],
+      "size": [
+        330.9375,
+        82
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            57
+          ]
+        }
+      ],
+      "title": "Visible candidates summary (2 of 4 survive)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 40,
+      "type": "CV_CVInspect",
+      "pos": [
+        4446,
+        1486.0971182795706
+      ],
+      "size": [
+        320,
+        82
+      ],
+      "flags": {},
+      "order": 47,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            58
+          ]
+        }
+      ],
+      "title": "Rotation check summary (identity = exact)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 41,
+      "type": "CV_CVInspect",
+      "pos": [
+        4782,
+        2086.0971182795706
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 50,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 49
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            59
+          ]
+        }
+      ],
+      "title": "Recovered translation summary (mm)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 42,
+      "type": "PreviewAny",
+      "pos": [
+        1624,
+        40
+      ],
+      "size": [
+        320,
+        162
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Original matrix summary",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 43,
+      "type": "PreviewAny",
+      "pos": [
+        1624,
+        240
+      ],
+      "size": [
+        360,
+        162
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 51
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Reconstructed matrix summary",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 44,
+      "type": "PreviewAny",
+      "pos": [
+        1640,
+        829.1072611925409
+      ],
+      "size": [
+        375.609375,
+        162
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 52
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Decomposed 3x3 block summary",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 45,
+      "type": "PreviewAny",
+      "pos": [
+        1640,
+        1029.107261192541
+      ],
+      "size": [
+        361.140625,
+        162
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 53
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Reconstructed from P summary",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 46,
+      "type": "PreviewAny",
+      "pos": [
+        2575,
+        505.47172310435997
+      ],
+      "size": [
+        344.453125,
+        162
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 54
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Composition check summary",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 47,
+      "type": "PreviewAny",
+      "pos": [
+        3296,
+        1286.0971182795706
+      ],
+      "size": [
+        350,
+        162
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Candidate rotations summary",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 48,
+      "type": "PreviewAny",
+      "pos": [
+        3296,
+        1486.0971182795706
+      ],
+      "size": [
+        381.671875,
+        162
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Candidate plane normals summary",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 49,
+      "type": "PreviewAny",
+      "pos": [
+        3296,
+        1686.0971182795706
+      ],
+      "size": [
+        442.8125,
+        162
+      ],
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 57
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Visible candidates summary (2 of 4 survive)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 50,
+      "type": "PreviewAny",
+      "pos": [
+        4776,
+        1486.0971182795706
+      ],
+      "size": [
+        431.828125,
+        162
+      ],
+      "flags": {},
+      "order": 49,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 58
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Rotation check summary (identity = exact)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 51,
+      "type": "PreviewAny",
+      "pos": [
+        5112,
+        2086.0971182795706
+      ],
+      "size": [
+        400,
+        162
+      ],
+      "flags": {},
+      "order": 51,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 59
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Recovered translation summary (mm)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 52,
+      "type": "Note",
+      "pos": [
+        -538.4364779653712,
+        236.79004761091005
+      ],
+      "size": [
+        542.40625,
+        672.265625
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Matrix decomposition: getting the parts back out of a product\n\nThree demonstrations, each one a round trip - build a matrix from known parts,\ndecompose it, and check that what comes back is what went in. The check is the\npoint: a decomposition that does not reconstruct is a decomposition you have\nmisread.\n\nROW 1 - RQDecomp3x3 on a 3x3.  'M = K @ Q' is assembled from a known upper\ntriangular K and a known rotation Q. cv2.RQDecomp3x3 splits it back into R\n(upper triangular, the intrinsics) and Q (orthonormal, the rotation), and\n'Reconstruct R @ Q' multiplies them again - the two summaries must agree\nelement for element. Note the naming trap: OpenCV's R here is the TRIANGULAR\nfactor, not a rotation.\n\nROW 2 - what the three Q's mean.  The same call also returns Qx, Qy and Qz,\nthe per-axis rotations. 'Qx @ Qy @ Qz' composes them and the product times Q\ncomes back as the identity, which is the only honest way to see that they\ncompose in that order and that Q is their product transposed.\n\nROW 3 - the same call on a 3x4 projection.  'P = K [R | t]' is a full camera\nmatrix. RQDecomp3x3 works on its left 3x3 block, so the reconstruction is\ncompared against that block, not against P.\n\nROWS 4-6 - decomposing a HOMOGRAPHY, which is the one with a real ambiguity.\nH = K (R + t n^T / d) K^-1 is built from a known rotation, translation, plane\nnormal and plane distance. cv2.decomposeHomographyMat returns UP TO FOUR\ncandidate (R, t, n) triples - the maths cannot tell them apart from H alone,\nand two of them survive the cheirality (in-front-of-camera) filter. Picking\none needs outside knowledge: here the known plane normal is dotted against\nevery candidate normal and 'Pick the candidate matching the known normal'\ntakes the best. The chosen R times the true R transposed must be the identity,\nand the chosen t (which comes back scaled by 1/d) times d must return the\noriginal translation in millimetres.\n\nWHAT TO READ: every 'Preview as Text' is named after the value it prints, so\nthe recovered numbers can be compared against the 'Truth ...' nodes on the far\nleft. Nothing here is estimated from pixels - the inputs are exact, so any\ndisagreement beyond floating-point noise is a misreading of the API, not a\nmeasurement error."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "NPARRAY"
+    ],
+    [
+      2,
+      2,
+      2,
+      3,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      2,
+      1,
+      3,
+      1,
+      "NPARRAY"
+    ],
+    [
+      4,
+      2,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      3,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      6,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      7,
+      7,
+      2,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      8,
+      7,
+      1,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      9,
+      7,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      8,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      2,
+      3,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      2,
+      4,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      13,
+      11,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      2,
+      5,
+      12,
+      1,
+      "NPARRAY"
+    ],
+    [
+      15,
+      12,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      2,
+      1,
+      13,
+      1,
+      "NPARRAY"
+    ],
+    [
+      17,
+      13,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      18,
+      16,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      18,
+      0,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      20,
+      17,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      21,
+      0,
+      22,
+      1,
+      "NPARRAY"
+    ],
+    [
+      22,
+      20,
+      0,
+      23,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      22,
+      0,
+      23,
+      1,
+      "NPARRAY"
+    ],
+    [
+      24,
+      15,
+      0,
+      24,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      15,
+      0,
+      25,
+      0,
+      "NPARRAY"
+    ],
+    [
+      26,
+      23,
+      0,
+      25,
+      1,
+      "NPARRAY"
+    ],
+    [
+      27,
+      25,
+      0,
+      26,
+      0,
+      "NPARRAY"
+    ],
+    [
+      28,
+      24,
+      1,
+      26,
+      1,
+      "NPARRAY"
+    ],
+    [
+      29,
+      26,
+      0,
+      27,
+      0,
+      "NPARRAY"
+    ],
+    [
+      30,
+      15,
+      0,
+      27,
+      1,
+      "NPARRAY"
+    ],
+    [
+      31,
+      19,
+      0,
+      27,
+      2,
+      "NPARRAY"
+    ],
+    [
+      32,
+      27,
+      2,
+      28,
+      0,
+      "NPARRAY"
+    ],
+    [
+      33,
+      18,
+      0,
+      28,
+      1,
+      "NPARRAY"
+    ],
+    [
+      34,
+      28,
+      0,
+      29,
+      0,
+      "NPARRAY"
+    ],
+    [
+      35,
+      27,
+      0,
+      30,
+      0,
+      "NPARRAY"
+    ],
+    [
+      36,
+      29,
+      1,
+      30,
+      1,
+      "INT"
+    ],
+    [
+      37,
+      27,
+      1,
+      31,
+      0,
+      "NPARRAY"
+    ],
+    [
+      38,
+      29,
+      1,
+      31,
+      1,
+      "INT"
+    ],
+    [
+      39,
+      20,
+      0,
+      32,
+      0,
+      "NPARRAY"
+    ],
+    [
+      40,
+      30,
+      0,
+      33,
+      0,
+      "NPARRAY"
+    ],
+    [
+      41,
+      32,
+      0,
+      33,
+      1,
+      "NPARRAY"
+    ],
+    [
+      42,
+      31,
+      0,
+      34,
+      0,
+      "NPARRAY"
+    ],
+    [
+      43,
+      34,
+      0,
+      36,
+      0,
+      "NPARRAY"
+    ],
+    [
+      44,
+      35,
+      0,
+      36,
+      1,
+      "NPARRAY"
+    ],
+    [
+      45,
+      27,
+      0,
+      37,
+      0,
+      "NPARRAY"
+    ],
+    [
+      46,
+      27,
+      2,
+      38,
+      0,
+      "NPARRAY"
+    ],
+    [
+      47,
+      27,
+      3,
+      39,
+      0,
+      "NPARRAY"
+    ],
+    [
+      48,
+      33,
+      0,
+      40,
+      0,
+      "NPARRAY"
+    ],
+    [
+      49,
+      36,
+      0,
+      41,
+      0,
+      "NPARRAY"
+    ],
+    [
+      50,
+      4,
+      0,
+      42,
+      0,
+      "STRING"
+    ],
+    [
+      51,
+      5,
+      0,
+      43,
+      0,
+      "STRING"
+    ],
+    [
+      52,
+      9,
+      0,
+      44,
+      0,
+      "STRING"
+    ],
+    [
+      53,
+      10,
+      0,
+      45,
+      0,
+      "STRING"
+    ],
+    [
+      54,
+      14,
+      0,
+      46,
+      0,
+      "STRING"
+    ],
+    [
+      55,
+      37,
+      0,
+      47,
+      0,
+      "STRING"
+    ],
+    [
+      56,
+      38,
+      0,
+      48,
+      0,
+      "STRING"
+    ],
+    [
+      57,
+      39,
+      0,
+      49,
+      0,
+      "STRING"
+    ],
+    [
+      58,
+      40,
+      0,
+      50,
+      0,
+      "STRING"
+    ],
+    [
+      59,
+      41,
+      0,
+      51,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.1052697824963735,
+      "offset": [
+        3950.95150969885,
+        2697.6920423363144
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

@@ -1,4 +1,4 @@
-opencv-contrib-python
+opencv-contrib-python-headless~=5.0.0.93
 numpy
 torch
 

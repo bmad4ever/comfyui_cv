@@ -1,0 +1,843 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "a1b2c3d4-e5f6-4789-9abc-def012345601",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        360,
+        208
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pts3d",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "tris",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "K",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "points_2d",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "frame",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points_3d",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "depth",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "silhouette",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Pick Point On Mesh",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "a1b2c3d4-e5f6-4789-9abc-def012345601",
+        "name": "CV Pick Point On Mesh",
+        "revision": 0,
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 6,
+          "lastLinkId": 22,
+          "lastRerouteId": 0
+        },
+        "config": {},
+        "extra": {},
+        "groups": [],
+        "widgets": [],
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -360,
+            40,
+            128,
+            250
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2160,
+            40,
+            128,
+            190
+          ]
+        },
+        "inputs": [
+          {
+            "id": "1ff2dcf9-1dee-5308-9bd6-35f487d603d2",
+            "name": "pts3d",
+            "type": "NPARRAY",
+            "linkIds": [
+              2
+            ],
+            "localized_name": "pts3d",
+            "pos": [
+              -212,
+              60
+            ]
+          },
+          {
+            "id": "83854e62-5eb4-53ab-b365-882aee6a5e2d",
+            "name": "tris",
+            "type": "NPARRAY",
+            "linkIds": [
+              3
+            ],
+            "localized_name": "tris",
+            "pos": [
+              -212,
+              90
+            ]
+          },
+          {
+            "id": "bda60d61-7cee-519e-9313-5ff7e1e03edb",
+            "name": "K",
+            "type": "NPARRAY",
+            "linkIds": [
+              4,
+              13
+            ],
+            "localized_name": "K",
+            "pos": [
+              -212,
+              120
+            ]
+          },
+          {
+            "id": "e4249952-5b1c-515f-a515-20acc68c41e4",
+            "name": "rvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              5,
+              14
+            ],
+            "localized_name": "rvec",
+            "pos": [
+              -212,
+              150
+            ]
+          },
+          {
+            "id": "70435670-25d7-50f6-8d21-be02f5f7a9e4",
+            "name": "tvec",
+            "type": "NPARRAY",
+            "linkIds": [
+              6,
+              15
+            ],
+            "localized_name": "tvec",
+            "pos": [
+              -212,
+              180
+            ]
+          },
+          {
+            "id": "527fec6d-c5d2-50cd-8633-1b05b72e3959",
+            "name": "points_2d",
+            "type": "NPARRAY",
+            "linkIds": [
+              10,
+              11
+            ],
+            "localized_name": "points_2d",
+            "pos": [
+              -212,
+              210
+            ]
+          },
+          {
+            "id": "bd3911db-5806-5c16-9061-c13f8f22d147",
+            "name": "frame",
+            "type": "NPARRAY,IMAGE,MASK",
+            "linkIds": [
+              1
+            ],
+            "localized_name": "frame",
+            "pos": [
+              -212,
+              240
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "4b5031d8-de65-587e-a097-4c10d27ed84f",
+            "name": "points_3d",
+            "type": "NPARRAY",
+            "linkIds": [
+              18
+            ],
+            "localized_name": "points_3d",
+            "pos": [
+              2140,
+              60
+            ]
+          },
+          {
+            "id": "0e9a446f-c992-5f12-84ec-3ce9685f352c",
+            "name": "valid",
+            "type": "NPARRAY",
+            "linkIds": [
+              19
+            ],
+            "localized_name": "valid",
+            "pos": [
+              2140,
+              90
+            ]
+          },
+          {
+            "id": "9d5cfdf9-f665-55e3-89ad-d29dbed780ca",
+            "name": "count",
+            "type": "INT",
+            "linkIds": [
+              20
+            ],
+            "localized_name": "count",
+            "pos": [
+              2140,
+              120
+            ]
+          },
+          {
+            "id": "bce8c228-20fa-597d-985e-0d804f1bc6f5",
+            "name": "depth",
+            "type": "NPARRAY",
+            "linkIds": [
+              21
+            ],
+            "localized_name": "depth",
+            "pos": [
+              2140,
+              150
+            ]
+          },
+          {
+            "id": "db0a229c-584e-5251-b679-bea51a4788c3",
+            "name": "silhouette",
+            "type": "MASK",
+            "linkIds": [
+              22
+            ],
+            "localized_name": "silhouette",
+            "pos": [
+              2140,
+              180
+            ]
+          }
+        ],
+        "nodes": [
+          {
+            "id": 6,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              240,
+              320
+            ],
+            "size": [
+              300,
+              180
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 1
+              }
+            ],
+            "outputs": [
+              {
+                "name": "height",
+                "type": "INT",
+                "links": [
+                  8
+                ]
+              },
+              {
+                "name": "width",
+                "type": "INT",
+                "links": [
+                  7
+                ]
+              },
+              {
+                "name": "channels",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "name": "dsize",
+                "type": "STRING",
+                "links": []
+              },
+              {
+                "name": "size",
+                "type": "CV_TUPLE",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            },
+            "widgets_values": [],
+            "title": "size the render to the frame"
+          },
+          {
+            "id": 1,
+            "type": "CV_RasterizeMesh",
+            "pos": [
+              620,
+              40
+            ],
+            "size": [
+              320,
+              240
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "pts3d",
+                "type": "NPARRAY",
+                "link": 2
+              },
+              {
+                "name": "tris",
+                "type": "NPARRAY",
+                "link": 3
+              },
+              {
+                "name": "K",
+                "type": "NPARRAY",
+                "link": 4
+              },
+              {
+                "name": "rvec",
+                "type": "NPARRAY",
+                "link": 5
+              },
+              {
+                "name": "tvec",
+                "type": "NPARRAY",
+                "link": 6
+              },
+              {
+                "name": "width",
+                "type": "INT",
+                "widget": {
+                  "name": "width"
+                },
+                "link": 7
+              },
+              {
+                "name": "height",
+                "type": "INT",
+                "widget": {
+                  "name": "height"
+                },
+                "link": 8
+              }
+            ],
+            "outputs": [
+              {
+                "name": "silhouette",
+                "type": "MASK",
+                "links": [
+                  22
+                ]
+              },
+              {
+                "name": "depth",
+                "type": "NPARRAY",
+                "links": [
+                  9,
+                  21
+                ]
+              },
+              {
+                "name": "coverage",
+                "type": "FLOAT",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_RasterizeMesh"
+            },
+            "widgets_values": [
+              null,
+              null
+            ],
+            "title": "render the mesh at this pose (metric depth)"
+          },
+          {
+            "id": 2,
+            "type": "CV_SampleArrayAtPoints",
+            "pos": [
+              1000,
+              40
+            ],
+            "size": [
+              320,
+              180
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 9
+              },
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 10
+              },
+              {
+                "name": "valid_in",
+                "type": "NPARRAY",
+                "link": null,
+                "shape": 7
+              }
+            ],
+            "outputs": [
+              {
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  12
+                ]
+              },
+              {
+                "name": "valid",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_SampleArrayAtPoints"
+            },
+            "widgets_values": [
+              "nearest",
+              "in bounds and finite"
+            ],
+            "title": "depth under each clicked pixel"
+          },
+          {
+            "id": 3,
+            "type": "CV_UnprojectPoints",
+            "pos": [
+              1380,
+              40
+            ],
+            "size": [
+              320,
+              180
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points_2d",
+                "type": "NPARRAY",
+                "link": 11
+              },
+              {
+                "name": "depths",
+                "type": "NPARRAY",
+                "link": 12
+              },
+              {
+                "name": "K",
+                "type": "NPARRAY",
+                "link": 13
+              },
+              {
+                "name": "dist_coeffs",
+                "type": "NPARRAY",
+                "link": null,
+                "shape": 7
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points_3d",
+                "type": "NPARRAY",
+                "links": [
+                  16
+                ]
+              },
+              {
+                "name": "valid",
+                "type": "NPARRAY",
+                "links": [
+                  19
+                ]
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": [
+                  20
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_UnprojectPoints"
+            },
+            "widgets_values": [],
+            "title": "pixel + depth -> CAMERA-space point"
+          },
+          {
+            "id": 4,
+            "type": "CV_PoseToMatrix",
+            "pos": [
+              1380,
+              300
+            ],
+            "size": [
+              320,
+              160
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "rvec",
+                "type": "NPARRAY",
+                "link": 14
+              },
+              {
+                "name": "tvec",
+                "type": "NPARRAY",
+                "link": 15
+              }
+            ],
+            "outputs": [
+              {
+                "name": "matrix_3x4",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "name": "matrix_4x4",
+                "type": "NPARRAY",
+                "links": [
+                  17
+                ]
+              },
+              {
+                "name": "rotation",
+                "type": "NPARRAY",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_PoseToMatrix"
+            },
+            "widgets_values": [],
+            "title": "the pose as a 4x4"
+          },
+          {
+            "id": 5,
+            "type": "CV_TransformPoints3D",
+            "pos": [
+              1760,
+              40
+            ],
+            "size": [
+              320,
+              160
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 16
+              },
+              {
+                "name": "matrix",
+                "type": "NPARRAY",
+                "link": 17
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  18
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_TransformPoints3D"
+            },
+            "widgets_values": [
+              "inverse"
+            ],
+            "title": "camera space -> the MODEL's own frame"
+          }
+        ],
+        "links": [
+          {
+            "id": 1,
+            "origin_id": -10,
+            "origin_slot": 6,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK"
+          },
+          {
+            "id": 2,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 1,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 4,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 1,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 5,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 1,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 6,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 1,
+            "target_slot": 4,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 7,
+            "origin_id": 6,
+            "origin_slot": 1,
+            "target_id": 1,
+            "target_slot": 5,
+            "type": "INT"
+          },
+          {
+            "id": 8,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 6,
+            "type": "INT"
+          },
+          {
+            "id": 9,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 10,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 2,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 11,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 12,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 13,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 3,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 14,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 15,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 4,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 16,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 17,
+            "origin_id": 4,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 18,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 19,
+            "origin_id": 3,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 20,
+            "origin_id": 3,
+            "origin_slot": 2,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 21,
+            "origin_id": 1,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 22,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 4,
+            "type": "MASK"
+          }
+        ]
+      }
+    ]
+  }
+}

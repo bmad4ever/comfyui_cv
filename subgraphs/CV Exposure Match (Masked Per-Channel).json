@@ -1,0 +1,957 @@
+{
+  "revision": 0,
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "b9d3e7f1-4a26-4c58-8e70-9f15d2a6c3b4",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        340,
+        134
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_correct",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "image_reference",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "corrected",
+          "name": "corrected",
+          "type": "NPARRAY",
+          "links": []
+        }
+      ],
+      "title": "CV Exposure Match (Masked Per-Channel)",
+      "properties": {
+        "proxyWidgets": [],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "b9d3e7f1-4a26-4c58-8e70-9f15d2a6c3b4",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 14,
+          "lastLinkId": 220,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Exposure Match (Masked Per-Channel)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -320,
+            200,
+            128,
+            108
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2844,
+            100,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "d21a5c8e-7f39-4b06-a481-2c95e7f03d16",
+            "name": "image_correct",
+            "type": "NPARRAY",
+            "linkIds": [
+              200
+            ],
+            "localized_name": "image_correct",
+            "pos": [
+              -196,
+              220
+            ]
+          },
+          {
+            "id": "e32b6d9f-804a-4c17-b592-3da6f8014e27",
+            "name": "image_reference",
+            "type": "NPARRAY",
+            "linkIds": [
+              201
+            ],
+            "localized_name": "image_reference",
+            "pos": [
+              -196,
+              240
+            ]
+          },
+          {
+            "id": "f43c7e0a-915b-4d28-c603-4eb709125f38",
+            "name": "mask",
+            "type": "NPARRAY",
+            "linkIds": [
+              202,
+              203
+            ],
+            "localized_name": "mask",
+            "pos": [
+              -196,
+              260
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "a54d8f1b-026c-4e39-d714-5fc81a236049",
+            "name": "corrected",
+            "type": "NPARRAY",
+            "linkIds": [
+              220
+            ],
+            "localized_name": "corrected",
+            "pos": [
+              2844,
+              120
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_CastArray",
+            "pos": [
+              40,
+              40
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 200
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  204,
+                  214
+                ]
+              }
+            ],
+            "title": "Image to correct as float32",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ]
+          },
+          {
+            "id": 2,
+            "type": "CV_CastArray",
+            "pos": [
+              40,
+              210
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 201
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  205
+                ]
+              }
+            ],
+            "title": "Reference as float32",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ]
+          },
+          {
+            "id": 3,
+            "type": "cv2_meanStdDev",
+            "pos": [
+              400,
+              40
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 204
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 202
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "mean",
+                "name": "mean",
+                "type": "NPARRAY",
+                "links": [
+                  208
+                ]
+              },
+              {
+                "localized_name": "stddev",
+                "name": "stddev",
+                "type": "NPARRAY",
+                "links": [
+                  206
+                ]
+              }
+            ],
+            "title": "stats of CORRECT (inside mask)",
+            "properties": {
+              "Node name for S&R": "cv2_meanStdDev"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 4,
+            "type": "cv2_meanStdDev",
+            "pos": [
+              400,
+              210
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 205
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 203
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "mean",
+                "name": "mean",
+                "type": "NPARRAY",
+                "links": [
+                  209
+                ]
+              },
+              {
+                "localized_name": "stddev",
+                "name": "stddev",
+                "type": "NPARRAY",
+                "links": [
+                  207
+                ]
+              }
+            ],
+            "title": "stats of REFERENCE (inside mask)",
+            "properties": {
+              "Node name for S&R": "cv2_meanStdDev"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 5,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              760,
+              40
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 206
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "reshaped",
+                "name": "reshaped",
+                "type": "NPARRAY",
+                "links": [
+                  210
+                ]
+              }
+            ],
+            "title": "sigma of CORRECT -> (1 row, 3 channels)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 6,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              760,
+              140
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 207
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "reshaped",
+                "name": "reshaped",
+                "type": "NPARRAY",
+                "links": [
+                  212
+                ]
+              }
+            ],
+            "title": "sigma of REFERENCE -> (1 row, 3 channels)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 7,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              760,
+              240
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 208
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "reshaped",
+                "name": "reshaped",
+                "type": "NPARRAY",
+                "links": [
+                  215
+                ]
+              }
+            ],
+            "title": "mean of CORRECT -> (1 row, 3 channels)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 8,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              760,
+              340
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 209
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "reshaped",
+                "name": "reshaped",
+                "type": "NPARRAY",
+                "links": [
+                  219
+                ]
+              }
+            ],
+            "title": "mean of REFERENCE -> (1 row, 3 channels)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 9,
+            "type": "CV_ScalarArray",
+            "pos": [
+              760,
+              480
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  211
+                ]
+              }
+            ],
+            "title": "std floor per channel",
+            "properties": {
+              "Node name for S&R": "CV_ScalarArray"
+            },
+            "widgets_values": [
+              "0.5, 0.5, 0.5",
+              "float64 (cv2 Scalar default)"
+            ]
+          },
+          {
+            "id": 10,
+            "type": "cv2_max",
+            "pos": [
+              1120,
+              40
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 210
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 211
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  213
+                ]
+              }
+            ],
+            "title": "floor sigma of CORRECT",
+            "properties": {
+              "Node name for S&R": "cv2_max"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 11,
+            "type": "cv2_divide_0",
+            "pos": [
+              1480,
+              40
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 212
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 213
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  217
+                ]
+              }
+            ],
+            "title": "per-channel gain = sigma REF / sigma CORRECT",
+            "properties": {
+              "Node name for S&R": "cv2_divide_0"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          },
+          {
+            "id": 12,
+            "type": "cv2_subtract",
+            "pos": [
+              1840,
+              120
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 214
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 215
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "shape": 7,
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  216
+                ]
+              }
+            ],
+            "title": "center on CORRECT means",
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ]
+          },
+          {
+            "id": 13,
+            "type": "cv2_multiply",
+            "pos": [
+              2200,
+              200
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 216
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 217
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  218
+                ]
+              }
+            ],
+            "title": "apply per-channel gain",
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          },
+          {
+            "id": 14,
+            "type": "cv2_add",
+            "pos": [
+              2560,
+              280
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 218
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 219
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "shape": 7,
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  220
+                ]
+              }
+            ],
+            "title": "+ REFERENCE means -> corrected",
+            "properties": {
+              "Node name for S&R": "cv2_add"
+            },
+            "widgets_values": [
+              "same as input"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 200,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 201,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 202,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 3,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 203,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 4,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 204,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 205,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 206,
+            "origin_id": 3,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 207,
+            "origin_id": 4,
+            "origin_slot": 1,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 208,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 209,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 210,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 211,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 212,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 213,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 214,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 215,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 216,
+            "origin_id": 12,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 217,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 218,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 219,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 220,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "extra": {}
+}

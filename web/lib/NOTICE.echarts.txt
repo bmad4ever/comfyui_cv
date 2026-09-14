@@ -1,0 +1,24 @@
+Apache ECharts
+Copyright 2017-2024 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (https://www.apache.org/).
+
+-------------------------------------------------------------------------------
+
+This bundle ships the single file web/lib/echarts.esm.min.js (Apache ECharts
+5.6.0, unmodified), distributed under the Apache License, Version 2.0. The full
+license text is in LICENSE.echarts.txt, alongside this file.
+
+The upstream project's own NOTICE additionally records that ECharts bundles
+the following works:
+
+  zrender
+    Copyright (c) 2013 Baidu Inc.
+    Licensed under the BSD 3-Clause License.
+
+  tslib
+    Copyright (c) Microsoft Corporation.
+    Licensed under the 0BSD License.
+
+See https://github.com/apache/echarts for the canonical NOTICE and source.

@@ -1,0 +1,242 @@
+{
+  "id": "803263ea-d071-4bcd-bb43-5f6cff18faf9",
+  "revision": 0,
+  "last_node_id": 8,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        42,
+        -40.94035720343004
+      ],
+      "size": [
+        1012.078125,
+        243.125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Vision-language captioning with OpenCV 5's native VLM support - no Python ML framework:\n\n  'CV VLM Generate'      decoder-only VLM of the PaliGemma shape: a vision encoder turns the image into feature tokens, the prompt is embedded, and the language model continues [image features | text embeddings]. Here paligemma2-3b-pt-224 (SigLIP + embedding + Gemma2-3B) with the task prompt 'cap en'. NOTE: this export has no KV-cache, so every token re-runs the whole 3B fp32 prefix - a caption takes minutes on CPU.\n\nThe node takes a model FOLDER, not a file: models/llm/opencv/paligemma2-3b-pt-224/, whose siglip / embedding / gemma parts are found inside it - one dropdown instead of four, and the advanced '*_file' overrides are all left on 'auto'. Every path is relative to the model root, so this workflow is portable.\n\nAs of time of writing (01/08/2026) NOT EVERY MODEL RUNS (e.g. failed to run Florence-2)"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "walking_the_dog.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_VLMGenerate",
+      "pos": [
+        396,
+        243.08862985795133
+      ],
+      "size": [
+        506.875,
+        556
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "response",
+          "type": "STRING",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "new_tokens",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV VLM Generate] PaliGemma2-3B caption (slow: no KV-cache)",
+      "properties": {
+        "Node name for S&R": "CV_VLMGenerate"
+      },
+      "widgets_values": [
+        "opencv/paligemma2-3b-pt-224",
+        "cap en\n",
+        12,
+        "auto (from model folder)",
+        "auto (from model folder)",
+        "auto (from model folder)",
+        "auto (from model folder)",
+        "1",
+        224,
+        "0.5",
+        "0.5",
+        "auto (default engine)"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 5,
+      "type": "PreviewAny",
+      "pos": [
+        906,
+        245.8426350347633
+      ],
+      "size": [
+        584.9375,
+        162
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "PaliGemma2 caption",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "MarkdownNote",
+      "pos": [
+        908,
+        445.9011709445341
+      ],
+      "size": [
+        582.34375,
+        151.90625
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Model: opencv/paligemma2-3b-pt-224",
+      "properties": {},
+      "widgets_values": [
+        "paligemma2-3b-pt-224 at\nhttps://huggingface.co/nklskyoy/paligemma2-3b-pt-224-onnx\n(3-part export: siglip/, embedding/, gemma/ - fp32, no past inputs; gated, accept the terms at https://huggingface.co/google/paligemma2-3b-pt-224 first)\n\nOpenCV-format config.json + the gemma2 SentencePiece tokenizer at\nhttps://github.com/opencv/opencv_extra (testdata/dnn/llm/)\n\nBoth parts of a folder matter. Download into models/llm/opencv/<folder> (the 'LLM' model category)."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 7,
+      "type": "Note",
+      "pos": [
+        -142,
+        631.0645968575814
+      ],
+      "size": [
+        500.328125,
+        181.03125
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "walking_the_dog.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Walking the dog\nCreator: Helgi Halldorsson from Reykjavik, Iceland\nLicense: CC BY-SA 2.0 (attribution + share-alike)\n         https://creativecommons.org/licenses/by-sa/2.0/\nSource:  https://commons.wikimedia.org/wiki/File:Walking_the_dog_(1945527533).jpg\nSize:    960x1440 (960px thumbnail render, downscaled from original 2592x3888)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      2,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.45092240805295625,
+      "offset": [
+        333.29890963391523,
+        715.2542577818826
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

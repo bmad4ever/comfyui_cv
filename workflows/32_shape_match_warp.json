@@ -1,0 +1,1795 @@
+{
+  "id": "383637a4-3ea9-45f8-8248-6c55276b5c2a",
+  "revision": 0,
+  "last_node_id": 36,
+  "last_link_id": 36,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        44,
+        -173.5235494041989
+      ],
+      "size": [
+        1001.515625,
+        353.46875
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Shape distance, TPS warp, generalized Hough",
+      "properties": {},
+      "widgets_values": [
+        "OpenCV's 'shape' module and the generalized Hough transform - all of them cv2 classes, so each comes as a curated node rather than a raw cv2.* wrapper.\n\nIMPORTANT if you ever call these classes yourself: they MUST come from their create* factory. Constructing cv2.ShapeContextDistanceExtractor() directly yields the abstract base and every call on it dies with 'Unknown C++ exception'.\n\nRow 1 - 'CV Shape Distance' scores how different two contours are. Shape Context builds a log-polar histogram around each sample point and solves the correspondence, so it tolerates bending and scale; Hausdorff is the (rank-filtered) worst-case nearest-point distance in PIXELS, cheap but only meaningful on aligned shapes. Both resample the contours to a common length first, which is what lets contours of different lengths be compared at all.\n\nRow 2 - 'CV Thin Plate Spline Warp' bends an image so that every 'from' point lands exactly on its 'to' point while minimising bending energy. Where a homography has 8 parameters and keeps lines straight, a TPS has as many as you give it control points. regularization 0 interpolates exactly (see the ~0 residual); raising it trades exactness for a gentler warp.\n\nRow 3 - 'CV Generalized Hough' finds an arbitrary SHAPE from a template image by letting every scene EDGE vote for the shape's reference point. Unlike cv2_matchTemplate, which correlates raw pixels, it only needs the outline - so partial occlusion and colour or lighting changes do not matter. Ballard searches TRANSLATION only, so the template must appear at the same scale and rotation (here it is a crop of the scene); switch to Guil - keeping the scale and angle ranges TIGHT - when it does not.\n\nTry: swap the two contour indices; raise the TPS regularization and watch the residual grow; lower votes_threshold if the Hough finds nothing."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Reference object",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "box.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        39,
+        626.9431057189977
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "The same object in a scene",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "box_in_scene.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "cv2_Canny_0",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        290,
+        186
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "Reference edges",
+      "properties": {
+        "Node name for S&R": "cv2_Canny_0"
+      },
+      "widgets_values": [
+        60,
+        160,
+        3,
+        false
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_FindContours",
+      "pos": [
+        953,
+        240
+      ],
+      "size": [
+        290,
+        192
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            5,
+            8,
+            11,
+            12
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Reference contours (largest first)",
+      "properties": {
+        "Node name for S&R": "CV_FindContours"
+      },
+      "widgets_values": [
+        "RETR_EXTERNAL",
+        "CHAIN_APPROX_NONE",
+        200
+      ]
+    },
+    {
+      "id": 6,
+      "type": "cv2_Canny_0",
+      "pos": [
+        389,
+        628.6798334130826
+      ],
+      "size": [
+        290,
+        186
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "Scene edges",
+      "properties": {
+        "Node name for S&R": "cv2_Canny_0"
+      },
+      "widgets_values": [
+        60,
+        160,
+        3,
+        false
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_FindContours",
+      "pos": [
+        953,
+        628.6798334130826
+      ],
+      "size": [
+        290,
+        192
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            6,
+            9
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Scene contours (largest first)",
+      "properties": {
+        "Node name for S&R": "CV_FindContours"
+      },
+      "widgets_values": [
+        "RETR_EXTERNAL",
+        "CHAIN_APPROX_NONE",
+        200
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_ShapeDistance",
+      "pos": [
+        1466,
+        234.78981691774516
+      ],
+      "size": [
+        374.7515625,
+        270
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "contours_a",
+          "type": "CV_CONTOURS",
+          "link": 5
+        },
+        {
+          "name": "contours_b",
+          "type": "CV_CONTOURS",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "[CV Shape Distance] Shape Context distance",
+      "properties": {
+        "Node name for S&R": "CV_ShapeDistance"
+      },
+      "widgets_values": [
+        "Shape Context (deformation-aware)",
+        100,
+        0,
+        0,
+        12,
+        4,
+        "L2 (euclidean)",
+        0.6,
+        false
+      ]
+    },
+    {
+      "id": 9,
+      "type": "PreviewAny",
+      "pos": [
+        1858,
+        234.78981691774516
+      ],
+      "size": [
+        310,
+        158
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Shape Context distance",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "CV_ShapeDistance",
+      "pos": [
+        1455,
+        627.6544346479411
+      ],
+      "size": [
+        395.8677734375,
+        270
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "contours_a",
+          "type": "CV_CONTOURS",
+          "link": 8
+        },
+        {
+          "name": "contours_b",
+          "type": "CV_CONTOURS",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "[CV Shape Distance] Hausdorff distance (pixels)",
+      "properties": {
+        "Node name for S&R": "CV_ShapeDistance"
+      },
+      "widgets_values": [
+        "Hausdorff (worst-case point distance)",
+        100,
+        0,
+        0,
+        12,
+        4,
+        "L2 (euclidean)",
+        0.6,
+        false
+      ]
+    },
+    {
+      "id": 11,
+      "type": "PreviewAny",
+      "pos": [
+        1856,
+        626.1047475521959
+      ],
+      "size": [
+        310.578125,
+        158
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Hausdorff distance",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "CV_ShapeDistance",
+      "pos": [
+        1466,
+        -132.25345142318676
+      ],
+      "size": [
+        512.796484375,
+        270
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "contours_a",
+          "type": "CV_CONTOURS",
+          "link": 11
+        },
+        {
+          "name": "contours_b",
+          "type": "CV_CONTOURS",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "distance",
+          "type": "FLOAT",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "[CV Shape Distance] Control: the SAME contour twice (must be 0)",
+      "properties": {
+        "Node name for S&R": "CV_ShapeDistance"
+      },
+      "widgets_values": [
+        "Shape Context (deformation-aware)",
+        100,
+        0,
+        0,
+        12,
+        4,
+        "L2 (euclidean)",
+        0.6,
+        false
+      ]
+    },
+    {
+      "id": 13,
+      "type": "PreviewAny",
+      "pos": [
+        1986,
+        -133.2917185072855
+      ],
+      "size": [
+        290,
+        158
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: self-distance (0)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "LoadImage",
+      "pos": [
+        31,
+        1097.9465584828572
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            14,
+            15,
+            22
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Image to bend",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "art_ref_wave.png",
+        "image"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_AnnotateCorrespondences",
+      "pos": [
+        381,
+        1097.9465584828572
+      ],
+      "size": [
+        300,
+        565
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 14
+        },
+        {
+          "name": "background",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points_from",
+          "type": "NPARRAY",
+          "links": [
+            16,
+            23
+          ]
+        },
+        {
+          "name": "points_to",
+          "type": "NPARRAY",
+          "links": [
+            17,
+            19,
+            24
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Control points: drag them on the image",
+      "properties": {
+        "Node name for S&R": "CV_AnnotateCorrespondences",
+        "cv_warp_view": {
+          "drag": "both (nearest)",
+          "preview": true,
+          "opacity": 0.99,
+          "model": "thin plate spline",
+          "mesh": false,
+          "shape": "grid 3x3",
+          "curveN": 8
+        }
+      },
+      "widgets_values": [
+        "[[[0.0385, 0.0575], [0.0385, 0.0575]], [[0.578, 0.0575], [0.578, 0.0575]], [[0.0385, 0.8621], [0.0385, 0.8621]], [[0.578, 0.8621], [0.578, 0.8621]], [[0.3083, 0.4598], [0.3083, 0.7471]]]"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_ThinPlateSplineWarp",
+      "pos": [
+        944,
+        1097.9465584828572
+      ],
+      "size": [
+        290,
+        176
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 15
+        },
+        {
+          "name": "points_from",
+          "type": "NPARRAY",
+          "link": 16
+        },
+        {
+          "name": "points_to",
+          "type": "NPARRAY",
+          "link": 17
+        },
+        {
+          "name": "extra_points",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            18
+          ]
+        },
+        {
+          "name": "warped_points",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "residual",
+          "type": "NPARRAY",
+          "links": [
+            21
+          ]
+        }
+      ],
+      "title": "[CV Thin Plate Spline Warp]",
+      "properties": {
+        "Node name for S&R": "CV_ThinPlateSplineWarp"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 17,
+      "type": "CV_DrawPoints",
+      "pos": [
+        1522.6792908456528,
+        1096.2098307887723
+      ],
+      "size": [
+        290,
+        188
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 18
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 19
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "Mark where the points went",
+      "properties": {
+        "Node name for S&R": "CV_DrawPoints"
+      },
+      "widgets_values": [
+        6,
+        "(0, 0, 255)",
+        "filled circle"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "PreviewImage",
+      "pos": [
+        1872.6792908456528,
+        1097.5146600104745
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "TPS-warped image",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 19,
+      "type": "CV_CVInspect",
+      "pos": [
+        2349.6792908456528,
+        1096.2098307887723
+      ],
+      "size": [
+        304.3619140625,
+        82
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "title": "Inspect: residual (~0 at regularization 0)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 20,
+      "type": "CV_ThinPlateSplineWarp",
+      "pos": [
+        944,
+        1320.0503654984834
+      ],
+      "size": [
+        521.6152000560286,
+        156.8959953650658
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 22
+        },
+        {
+          "name": "points_from",
+          "type": "NPARRAY",
+          "link": 23
+        },
+        {
+          "name": "points_to",
+          "type": "NPARRAY",
+          "link": 24
+        },
+        {
+          "name": "extra_points",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            25
+          ]
+        },
+        {
+          "name": "warped_points",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "residual",
+          "type": "NPARRAY",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "title": "[CV Thin Plate Spline Warp] The same warp, regularization 1e4",
+      "properties": {
+        "Node name for S&R": "CV_ThinPlateSplineWarp"
+      },
+      "widgets_values": [
+        10000
+      ]
+    },
+    {
+      "id": 21,
+      "type": "PreviewImage",
+      "pos": [
+        1518.6792908456528,
+        1342.4415220053127
+      ],
+      "size": [
+        311.983984375,
+        290
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Smoothed (points no longer land exactly)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "CV_CVInspect",
+      "pos": [
+        1876.6792908456528,
+        1427.9975821806454
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "title": "Inspect: residual grew",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "LoadImage",
+      "pos": [
+        18,
+        1787.185916615607
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            27,
+            30
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Scene to search",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "market_scene.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 24,
+      "type": "LoadImage",
+      "pos": [
+        18,
+        2178.22596296495
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            28
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Shape to find (same scale)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "market_template.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "CV_GeneralizedHough",
+      "pos": [
+        368,
+        1787.185916615607
+      ],
+      "size": [
+        550,
+        650
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 27
+        },
+        {
+          "name": "template",
+          "type": "NPARRAY,IMAGE",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": [
+            32
+          ]
+        },
+        {
+          "name": "positions",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "scales",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "angles",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "votes",
+          "type": "NPARRAY",
+          "links": [
+            33
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": [
+            29
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV Generalized Hough (Shape Template)] Generalized Hough (Ballard)",
+      "properties": {
+        "Node name for S&R": "CV_GeneralizedHough"
+      },
+      "widgets_values": [
+        "Ballard (position only, fast)",
+        50,
+        100,
+        30,
+        60,
+        1,
+        360,
+        0.8,
+        1.2,
+        0.1,
+        0,
+        360,
+        10,
+        100,
+        100,
+        10000
+      ]
+    },
+    {
+      "id": 26,
+      "type": "DrawBBoxes",
+      "pos": [
+        1000.6540614565633,
+        1797.356888683246
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "link": 29
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "out_image",
+          "type": "IMAGE",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Draw the detections",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "DrawBBoxes"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 27,
+      "type": "PreviewImage",
+      "pos": [
+        1350.6540614565633,
+        1797.356888683246
+      ],
+      "size": [
+        290,
+        290
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Where the template shape was found",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 28,
+      "type": "PreviewAny",
+      "pos": [
+        997.6540614565633,
+        1949.1915617539871
+      ],
+      "size": [
+        290,
+        158
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: found?",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 29,
+      "type": "CV_CVInspect",
+      "pos": [
+        996.6540614565633,
+        2153.219403692795
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            36
+          ]
+        }
+      ],
+      "title": "Inspect: accumulator votes",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 30,
+      "type": "PreviewAny",
+      "pos": [
+        2354.6792908456528,
+        1219.7323566598548
+      ],
+      "size": [
+        416.2388671875,
+        158
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect: residual (~0 at regularization 0)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 31,
+      "type": "PreviewAny",
+      "pos": [
+        2336.6792908456528,
+        1427.9975821806443
+      ],
+      "size": [
+        322.859375,
+        158
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 35
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect: residual grew",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 32,
+      "type": "PreviewAny",
+      "pos": [
+        996.6540614565633,
+        2281.3299090962328
+      ],
+      "size": [
+        330.441015625,
+        161.984375
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect: accumulator votes",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 33,
+      "type": "Note",
+      "pos": [
+        -474,
+        520.8288681335342
+      ],
+      "size": [
+        493.25,
+        172.078125
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "box.png / box_in_scene.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   box.png / box_in_scene.png\nCreator: OpenCV project (sample data)\nLicense: Apache-2.0 (OpenCV) - sample data redistributed with the library\n         https://www.apache.org/licenses/LICENSE-2.0\nSource:  https://github.com/opencv/opencv (samples/data/)\nSize:    box.png 324x223, box_in_scene.png 512x384 (the canonical OpenCV feature-matching / homography pair)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 34,
+      "type": "Note",
+      "pos": [
+        -541,
+        2065.06643105359
+      ],
+      "size": [
+        542.5625,
+        177.296875
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "market_scene.jpg / market_template.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Fruits and vegetables at market\nCreator: Santeri Viinamaki\nLicense: CC BY-SA 4.0 (attribution + share-alike)\n         https://creativecommons.org/licenses/by-sa/4.0/\nSource:  https://commons.wikimedia.org/wiki/File:Fruits_and_vegetables_at_market.jpg\nSize:    market_scene.jpg 1000x750 (downscaled from 4592x3448). The template is the unique round red sale tag cropped from the scene\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 35,
+      "type": "Note",
+      "pos": [
+        -150,
+        1487.5545295203822
+      ],
+      "size": [
+        497.0625,
+        152.75
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "art_ref_wave.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   The Great Wave off Kanagawa\nCreator: Katsushika Hokusai\nLicense: Public domain via Wikimedia Commons\nSource:  https://commons.wikimedia.org/wiki/File:Great_Wave_off_Kanagawa2.jpg\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      4,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      6,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      5,
+      0,
+      8,
+      0,
+      "CV_CONTOURS"
+    ],
+    [
+      6,
+      7,
+      0,
+      8,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      7,
+      8,
+      0,
+      9,
+      0,
+      "FLOAT"
+    ],
+    [
+      8,
+      5,
+      0,
+      10,
+      0,
+      "CV_CONTOURS"
+    ],
+    [
+      9,
+      7,
+      0,
+      10,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      10,
+      10,
+      0,
+      11,
+      0,
+      "FLOAT"
+    ],
+    [
+      11,
+      5,
+      0,
+      12,
+      0,
+      "CV_CONTOURS"
+    ],
+    [
+      12,
+      5,
+      0,
+      12,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      13,
+      12,
+      0,
+      13,
+      0,
+      "FLOAT"
+    ],
+    [
+      14,
+      14,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      14,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      15,
+      0,
+      16,
+      1,
+      "NPARRAY"
+    ],
+    [
+      17,
+      15,
+      1,
+      16,
+      2,
+      "NPARRAY"
+    ],
+    [
+      18,
+      16,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      19,
+      15,
+      1,
+      17,
+      1,
+      "NPARRAY"
+    ],
+    [
+      20,
+      17,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      21,
+      16,
+      2,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      22,
+      14,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      23,
+      15,
+      0,
+      20,
+      1,
+      "NPARRAY"
+    ],
+    [
+      24,
+      15,
+      1,
+      20,
+      2,
+      "NPARRAY"
+    ],
+    [
+      25,
+      20,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      26,
+      20,
+      2,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      27,
+      23,
+      0,
+      25,
+      0,
+      "IMAGE"
+    ],
+    [
+      28,
+      24,
+      0,
+      25,
+      1,
+      "IMAGE"
+    ],
+    [
+      29,
+      25,
+      5,
+      26,
+      0,
+      "BOUNDING_BOX"
+    ],
+    [
+      30,
+      23,
+      0,
+      26,
+      1,
+      "IMAGE"
+    ],
+    [
+      31,
+      26,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ],
+    [
+      32,
+      25,
+      0,
+      28,
+      0,
+      "BOOLEAN"
+    ],
+    [
+      33,
+      25,
+      4,
+      29,
+      0,
+      "NPARRAY"
+    ],
+    [
+      34,
+      19,
+      0,
+      30,
+      0,
+      "STRING"
+    ],
+    [
+      35,
+      22,
+      0,
+      31,
+      0,
+      "STRING"
+    ],
+    [
+      36,
+      29,
+      0,
+      32,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5757955051939777,
+      "offset": [
+        362.2969749142907,
+        -571.3093541775161
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

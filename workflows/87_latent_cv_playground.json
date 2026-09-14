@@ -1,0 +1,1864 @@
+{
+  "id": "2e6796ce-870f-42ee-97b4-7f1d92625205",
+  "revision": 0,
+  "last_node_id": 57,
+  "last_link_id": 92,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        -71.81818181818181
+      ],
+      "size": [
+        760,
+        260.90625
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Latent-space CV playground\n\nChannel-agnostic cv2 wrappers accept a LATENT directly and echo a LATENT back - every op below runs on the raw float32 latent (no uint8 quantization, no VAE round trip between steps). Coordinates and sizes count latent CELLS (pixels / 8); 'CV Array Size' reads them off any latent.\n\nTOP ROW (needs a VAE checkpoint): a photo is VAE-encoded, then rotated about its center (cv2.getRotationMatrix2D + cv2.warpAffine, dsize wired from CV Array Size) and Gaussian-blurred IN LATENT SPACE, and only then decoded - compare against the plain encode/decode round trip next to it. Rotate with warpAffine: cv2 caps rotate/transpose at 4 channels, warpAffine is channel-agnostic.\n\nBOTTOM ROWS (run without any model): an EmptyLatentImage made non-constant with CV Scalar arithmetic and a constant-9 border, then rotated and mixed back onto itself with cv2.addWeighted and blurred - all as a LATENT."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        -8.335722600000338,
+        237.8
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            92
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "VAELoader",
+      "pos": [
+        40,
+        640
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            2,
+            14,
+            54
+          ]
+        }
+      ],
+      "title": "Any VAE checkpoint",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "taesd"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "VAEEncode",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "pixels",
+          "type": "IMAGE",
+          "link": 92
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            3,
+            8,
+            66
+          ]
+        }
+      ],
+      "title": "Photo -> latent",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "VAEEncode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "CV_CVSize",
+      "pos": [
+        391.27272727272725,
+        391.90909090909093
+      ],
+      "size": [
+        290,
+        126
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            82
+          ]
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            83
+          ]
+        },
+        {
+          "name": "dsize",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "size",
+          "type": "CV_TUPLE",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "[CV Array Size] Latent size (cells)",
+      "properties": {
+        "Node name for S&R": "CV_CVSize"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "cv2_getRotationMatrix2D",
+      "pos": [
+        780.438732120909,
+        529.4122318845458
+      ],
+      "size": [
+        309.5625,
+        206
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "center",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "center"
+          },
+          "link": 79
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "title": "Rotation matrix (15 deg about the center)",
+      "properties": {
+        "Node name for S&R": "cv2_getRotationMatrix2D"
+      },
+      "widgets_values": [
+        "(0.0, 0.0)",
+        15,
+        1
+      ]
+    },
+    {
+      "id": 9,
+      "type": "cv2_warpAffine",
+      "pos": [
+        1169.00809303,
+        248.04127642999993
+      ],
+      "size": [
+        283.546875,
+        294
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 8
+        },
+        {
+          "name": "M",
+          "type": "NPARRAY",
+          "link": 9
+        },
+        {
+          "name": "dsize",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "dsize"
+          },
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "LATENT",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "title": "Rotate the latent (warpAffine)",
+      "properties": {
+        "Node name for S&R": "cv2_warpAffine"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "INTER_LINEAR",
+        "BORDER_REPLICATE",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "cv2_GaussianBlur",
+      "pos": [
+        1519.00809303,
+        248.04127642999993
+      ],
+      "size": [
+        286.765625,
+        202
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "LATENT",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "Blur in latent space",
+      "properties": {
+        "Node name for S&R": "cv2_GaussianBlur"
+      },
+      "widgets_values": [
+        "(3, 3)",
+        0,
+        0,
+        "BORDER_DEFAULT",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "VAEDecode",
+      "pos": [
+        1869.00809303,
+        250.4612764299999
+      ],
+      "size": [
+        288.375,
+        78
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 13
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "title": "Decode the edited latent",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "PreviewImage",
+      "pos": [
+        1873.89029462,
+        374.51301621999994
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Rotated + blurred in latent space",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CV_ScalarArray",
+      "pos": [
+        45.846151299999974,
+        1060.7180268
+      ],
+      "size": [
+        290,
+        134
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            21
+          ]
+        }
+      ],
+      "title": "Constant 3.5 (CV Scalar)",
+      "properties": {
+        "Node name for S&R": "CV_ScalarArray"
+      },
+      "widgets_values": [
+        "(3.5, 3.5, 3.5, 3.5)",
+        "float64 (cv2 Scalar default)"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "cv2_add",
+      "pos": [
+        390,
+        1040
+      ],
+      "size": [
+        290,
+        152
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 66
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 21
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "LATENT",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "title": "Latent + scalar (cv2.add)",
+      "properties": {
+        "Node name for S&R": "cv2_add"
+      },
+      "widgets_values": [
+        "same as input"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "cv2_copyMakeBorder",
+      "pos": [
+        740,
+        1040
+      ],
+      "size": [
+        285.59375,
+        250
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "LATENT",
+          "links": [
+            23,
+            25,
+            68
+          ]
+        }
+      ],
+      "title": "Extend latent canvas (border = 9)",
+      "properties": {
+        "Node name for S&R": "cv2_copyMakeBorder"
+      },
+      "widgets_values": [
+        4,
+        4,
+        4,
+        4,
+        "BORDER_CONSTANT",
+        "(9, 9, 9, 9)"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "cv2_getRotationMatrix2D",
+      "pos": [
+        1315.8459527000002,
+        1243.3512829000006
+      ],
+      "size": [
+        300.359375,
+        206
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "center",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "center"
+          },
+          "link": 88
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "title": "Rotation matrix (30 deg, center in cells)",
+      "properties": {
+        "Node name for S&R": "cv2_getRotationMatrix2D"
+      },
+      "widgets_values": [
+        "(52, 52)",
+        30,
+        1
+      ]
+    },
+    {
+      "id": 21,
+      "type": "cv2_warpAffine",
+      "pos": [
+        1690.0277107000015,
+        1041.5944049
+      ],
+      "size": [
+        290,
+        312
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 23
+        },
+        {
+          "name": "M",
+          "type": "NPARRAY",
+          "link": 24
+        },
+        {
+          "name": "dsize",
+          "type": "CV_TUPLE",
+          "widget": {
+            "name": "dsize"
+          },
+          "link": 69
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "LATENT",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "title": "Rotate the latent (72x56 cells)",
+      "properties": {
+        "Node name for S&R": "cv2_warpAffine"
+      },
+      "widgets_values": [
+        "(104, 104)",
+        "INTER_LINEAR",
+        "BORDER_CONSTANT",
+        "(0, 0, 0, 0)",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "cv2_addWeighted",
+      "pos": [
+        2017.0377107000008,
+        960.5244048999987
+      ],
+      "size": [
+        320.25,
+        186
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 25
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "LATENT",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "title": "Mix original + rotated (addWeighted)",
+      "properties": {
+        "Node name for S&R": "cv2_addWeighted"
+      },
+      "widgets_values": [
+        0.7,
+        0.3,
+        0,
+        "same as input"
+      ]
+    },
+    {
+      "id": 23,
+      "type": "cv2_GaussianBlur",
+      "pos": [
+        2390.0277107000015,
+        1041.5944049
+      ],
+      "size": [
+        283.9375,
+        202
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "LATENT",
+          "links": [
+            52
+          ]
+        }
+      ],
+      "title": "Blur in latent space",
+      "properties": {
+        "Node name for S&R": "cv2_GaussianBlur"
+      },
+      "widgets_values": [
+        "(3, 3)",
+        0,
+        0,
+        "BORDER_DEFAULT",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 39,
+      "type": "PreviewImage",
+      "pos": [
+        2774.893799733175,
+        1180.264887766524
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 53
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Rotated + blurred in latent space",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 40,
+      "type": "VAEDecode",
+      "pos": [
+        2768.9572997331748,
+        1046.523587766524
+      ],
+      "size": [
+        288.375,
+        78
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 52
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 54
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            53
+          ]
+        }
+      ],
+      "title": "Decode the edited latent",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "VAEDecode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 41,
+      "type": "CV_CVSize",
+      "pos": [
+        1044.3051591934898,
+        1104.757767734214
+      ],
+      "size": [
+        225,
+        118
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 68
+        }
+      ],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            86
+          ]
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            87
+          ]
+        },
+        {
+          "name": "dsize",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "size",
+          "type": "CV_TUPLE",
+          "links": [
+            69
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_CVSize"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 48,
+      "type": "5b092d7e-dd11-475a-bbad-6fc18d44a73f",
+      "pos": [
+        455.6207294916819,
+        562.5145656406645
+      ],
+      "size": [
+        225,
+        102
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "width",
+          "name": "values.a",
+          "type": "FLOAT,INT,BOOLEAN",
+          "link": 82
+        },
+        {
+          "label": "height",
+          "name": "values.a_1",
+          "type": "FLOAT,INT,BOOLEAN",
+          "link": 83
+        }
+      ],
+      "outputs": [
+        {
+          "name": "tuple",
+          "type": "CV_TUPLE",
+          "links": [
+            79
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 56,
+      "type": "93331079-3245-4e76-a6d3-33bb8e3e0f32",
+      "pos": [
+        1043.8626451133005,
+        1272.8519696125754
+      ],
+      "size": [
+        225,
+        102
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "width",
+          "name": "values.a",
+          "type": "FLOAT,INT,BOOLEAN",
+          "link": 86
+        },
+        {
+          "label": "height",
+          "name": "values.a_1",
+          "type": "FLOAT,INT,BOOLEAN",
+          "link": 87
+        }
+      ],
+      "outputs": [
+        {
+          "name": "tuple",
+          "type": "CV_TUPLE",
+          "links": [
+            88
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [
+    [
+      2,
+      3,
+      0,
+      4,
+      1,
+      "VAE"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "LATENT"
+    ],
+    [
+      8,
+      4,
+      0,
+      9,
+      0,
+      "LATENT"
+    ],
+    [
+      9,
+      8,
+      0,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      10,
+      5,
+      3,
+      9,
+      2,
+      "CV_TUPLE"
+    ],
+    [
+      12,
+      9,
+      0,
+      10,
+      0,
+      "LATENT"
+    ],
+    [
+      13,
+      10,
+      0,
+      11,
+      0,
+      "LATENT"
+    ],
+    [
+      14,
+      3,
+      0,
+      11,
+      1,
+      "VAE"
+    ],
+    [
+      15,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      21,
+      17,
+      0,
+      18,
+      1,
+      "NPARRAY"
+    ],
+    [
+      22,
+      18,
+      0,
+      19,
+      0,
+      "LATENT"
+    ],
+    [
+      23,
+      19,
+      0,
+      21,
+      0,
+      "LATENT"
+    ],
+    [
+      24,
+      20,
+      0,
+      21,
+      1,
+      "NPARRAY"
+    ],
+    [
+      25,
+      19,
+      0,
+      22,
+      0,
+      "LATENT"
+    ],
+    [
+      26,
+      21,
+      0,
+      22,
+      1,
+      "LATENT"
+    ],
+    [
+      27,
+      22,
+      0,
+      23,
+      0,
+      "LATENT"
+    ],
+    [
+      52,
+      23,
+      0,
+      40,
+      0,
+      "LATENT"
+    ],
+    [
+      53,
+      40,
+      0,
+      39,
+      0,
+      "IMAGE"
+    ],
+    [
+      54,
+      3,
+      0,
+      40,
+      1,
+      "VAE"
+    ],
+    [
+      66,
+      4,
+      0,
+      18,
+      0,
+      "LATENT"
+    ],
+    [
+      68,
+      19,
+      0,
+      41,
+      0,
+      "LATENT"
+    ],
+    [
+      69,
+      41,
+      3,
+      21,
+      2,
+      "CV_TUPLE"
+    ],
+    [
+      79,
+      48,
+      0,
+      8,
+      0,
+      "CV_TUPLE"
+    ],
+    [
+      82,
+      5,
+      0,
+      48,
+      0,
+      "INT"
+    ],
+    [
+      83,
+      5,
+      1,
+      48,
+      1,
+      "INT"
+    ],
+    [
+      86,
+      41,
+      0,
+      56,
+      0,
+      "INT"
+    ],
+    [
+      87,
+      41,
+      1,
+      56,
+      1,
+      "INT"
+    ],
+    [
+      88,
+      56,
+      0,
+      20,
+      0,
+      "CV_TUPLE"
+    ],
+    [
+      92,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "5b092d7e-dd11-475a-bbad-6fc18d44a73f",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 57,
+          "lastLinkId": 92,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "get center (x, y)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            246.21577081399641,
+            548.5145656406645,
+            128,
+            88
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            721.0256881693674,
+            558.5145656406645,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "34e60f0d-6109-4f0b-bd94-f99ff4db4636",
+            "name": "values.a",
+            "type": "FLOAT,INT,BOOLEAN",
+            "linkIds": [
+              84
+            ],
+            "localized_name": "values.a",
+            "label": "width",
+            "pos": [
+              350.2157708139964,
+              572.5145656406645
+            ]
+          },
+          {
+            "id": "92e595d4-05d2-483c-bfc1-cb092d315ff9",
+            "name": "values.a_1",
+            "type": "FLOAT,INT,BOOLEAN",
+            "linkIds": [
+              85
+            ],
+            "localized_name": "values.a_1",
+            "label": "height",
+            "pos": [
+              350.2157708139964,
+              592.5145656406645
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "7fc33b04-842b-41e4-97ef-87b416c0bdd2",
+            "name": "tuple",
+            "type": "CV_TUPLE",
+            "linkIds": [
+              48
+            ],
+            "localized_name": "tuple",
+            "pos": [
+              745.0256881693674,
+              582.5145656406645
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 38,
+            "type": "CV_Tuple",
+            "pos": [
+              434.38949,
+              647.9366300000004
+            ],
+            "size": [
+              225,
+              74
+            ],
+            "flags": {
+              "collapsed": true
+            },
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "a",
+                "name": "a",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "a"
+                },
+                "link": 45
+              },
+              {
+                "localized_name": "b",
+                "name": "b",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "b"
+                },
+                "link": 47
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "tuple",
+                "name": "tuple",
+                "type": "CV_TUPLE",
+                "links": [
+                  48
+                ]
+              },
+              {
+                "localized_name": "array",
+                "name": "array",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "localized_name": "literal",
+                "name": "literal",
+                "type": "STRING",
+                "links": []
+              }
+            ],
+            "title": "center (joined)",
+            "properties": {
+              "Node name for S&R": "CV_Tuple"
+            },
+            "widgets_values": [
+              2,
+              "float",
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "id": 37,
+            "type": "ComfyMathExpression",
+            "pos": [
+              436.0256881693674,
+              606.3569640912456
+            ],
+            "size": [
+              225,
+              74
+            ],
+            "flags": {
+              "collapsed": true
+            },
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 85
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  47
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "Center y (cells)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / 2"
+            ]
+          },
+          {
+            "id": 36,
+            "type": "ComfyMathExpression",
+            "pos": [
+              434.2157708139964,
+              567.0925012813286
+            ],
+            "size": [
+              225,
+              74
+            ],
+            "flags": {
+              "collapsed": true
+            },
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 84
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  45
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "Center x (cells)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / 2"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 45,
+            "origin_id": 36,
+            "origin_slot": 0,
+            "target_id": 38,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 47,
+            "origin_id": 37,
+            "origin_slot": 0,
+            "target_id": 38,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 48,
+            "origin_id": 38,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 84,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 36,
+            "target_slot": 0,
+            "type": "FLOAT,INT,BOOLEAN"
+          },
+          {
+            "id": 85,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 37,
+            "target_slot": 0,
+            "type": "FLOAT,INT,BOOLEAN"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "93331079-3245-4e76-a6d3-33bb8e3e0f32",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 57,
+          "lastLinkId": 92,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "get center (x, y)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            246.21577081399641,
+            548.5145656406645,
+            128,
+            88
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            721.0256881693674,
+            558.5145656406645,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "34e60f0d-6109-4f0b-bd94-f99ff4db4636",
+            "name": "values.a",
+            "type": "FLOAT,INT,BOOLEAN",
+            "linkIds": [
+              84
+            ],
+            "localized_name": "values.a",
+            "label": "width",
+            "pos": [
+              350.2157708139964,
+              572.5145656406645
+            ]
+          },
+          {
+            "id": "92e595d4-05d2-483c-bfc1-cb092d315ff9",
+            "name": "values.a_1",
+            "type": "FLOAT,INT,BOOLEAN",
+            "linkIds": [
+              85
+            ],
+            "localized_name": "values.a_1",
+            "label": "height",
+            "pos": [
+              350.2157708139964,
+              592.5145656406645
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "7fc33b04-842b-41e4-97ef-87b416c0bdd2",
+            "name": "tuple",
+            "type": "CV_TUPLE",
+            "linkIds": [
+              48
+            ],
+            "localized_name": "tuple",
+            "pos": [
+              745.0256881693674,
+              582.5145656406645
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 53,
+            "type": "CV_Tuple",
+            "pos": [
+              434.38949,
+              647.9366300000004
+            ],
+            "size": [
+              225,
+              74
+            ],
+            "flags": {
+              "collapsed": true
+            },
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "a",
+                "name": "a",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "a"
+                },
+                "link": 45
+              },
+              {
+                "localized_name": "b",
+                "name": "b",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "b"
+                },
+                "link": 47
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "tuple",
+                "name": "tuple",
+                "type": "CV_TUPLE",
+                "links": [
+                  48
+                ]
+              },
+              {
+                "localized_name": "array",
+                "name": "array",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "localized_name": "literal",
+                "name": "literal",
+                "type": "STRING",
+                "links": []
+              }
+            ],
+            "title": "center (joined)",
+            "properties": {
+              "Node name for S&R": "CV_Tuple"
+            },
+            "widgets_values": [
+              2,
+              "float",
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "id": 54,
+            "type": "ComfyMathExpression",
+            "pos": [
+              436.0256881693674,
+              606.3569640912456
+            ],
+            "size": [
+              225,
+              74
+            ],
+            "flags": {
+              "collapsed": true
+            },
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 85
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  47
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "Center y (cells)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / 2"
+            ]
+          },
+          {
+            "id": 55,
+            "type": "ComfyMathExpression",
+            "pos": [
+              434.2157708139964,
+              567.0925012813286
+            ],
+            "size": [
+              225,
+              74
+            ],
+            "flags": {
+              "collapsed": true
+            },
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 84
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  45
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "Center x (cells)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / 2"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 45,
+            "origin_id": 55,
+            "origin_slot": 0,
+            "target_id": 53,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 47,
+            "origin_id": 54,
+            "origin_slot": 0,
+            "target_id": 53,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 48,
+            "origin_id": 53,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 84,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 55,
+            "target_slot": 0,
+            "type": "FLOAT,INT,BOOLEAN"
+          },
+          {
+            "id": 85,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 54,
+            "target_slot": 0,
+            "type": "FLOAT,INT,BOOLEAN"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.21762913579014875,
+      "offset": [
+        741.4001867048243,
+        1140.8723694435935
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

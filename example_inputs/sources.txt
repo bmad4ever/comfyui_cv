@@ -1,0 +1,803 @@
+Provenance and licensing for everything in example_inputs/.
+
+Two invariants this file records, both checkable:
+  1. every file in example_inputs/ is LOADED by at least one workflow (as a
+     widget value in workflows/ or subgraphs/) - unused assets are deleted or
+     moved out, they are not parked here;
+  2. every file in example_inputs/ has an entry below (a "a.png .. d.png"
+     range header covers the whole series).
+
+ONE FILE IS NON-COMMERCIAL: kitti_2011_09_26_drive_0009_poses.txt is
+CC BY-NC-SA 3.0, inherited from KITTI. Everything else here is CC0 / CC BY /
+CC BY-SA / public domain / synthetic. The repo's GPL-3.0 grant does not extend
+to that file - see the License and provenance section of README.md.
+
+Entries marked NOT SHIPPED are kept for provenance only: the asset lives in
+tests/data/ (git-ignores it - see .gitignore) or was dropped entirely, and the
+tests that want it skip when it is absent.
+
+Model files (.onnx, cascades, LLM/VLM folders, checkpoints) are NOT in this
+repo and are NOT part of example_inputs - their provenance and licenses live
+in model_sources.txt at the repo root.
+
+clock_wall_red.jpg   (used by: 08_line_segments_lsd, exercise_clock_reading)
+  Title:   Modern functual kept battery driven wall clock
+  Creator: Islander61
+  License: CC BY-SA 4.0 (attribution + share-alike)
+           https://creativecommons.org/licenses/by-sa/4.0/
+  Source:  https://commons.wikimedia.org/wiki/File:Modern_functual_kept_battery_driven_wall_clock.jpg
+  File:    https://upload.wikimedia.org/wikipedia/commons/c/c1/Modern_functual_kept_battery_driven_wall_clock.jpg
+  Size:    1920x1279 (downscaled from original 5089x3391)
+
+seamless_birds_sky.jpg   (used by: 17_seamless_clone - source patch)
+  Title:   Birds flying at Sky 2.JPG
+  Creator: Augustus Binu
+  License: CC BY-SA 3.0 (attribution + share-alike)
+           https://creativecommons.org/licenses/by-sa/3.0/
+  Source:  https://commons.wikimedia.org/wiki/File:Birds_flying_at_Sky_2.JPG
+  File:    https://upload.wikimedia.org/wikipedia/commons/2/28/Birds_flying_at_Sky_2.JPG
+  Size:    540x294 (sky-only crop, downscaled from original 3604x2158;
+           tree branch cropped out so the source border is uniform sky
+           and seamless clone needs no mask)
+
+seamless_sky_landscape.jpg   (used by: 17_seamless_clone - destination;
+                         also 20_color_range_playground, exercise_clean_plate_matting)
+  Title:   Clouds in the sky landscape.jpg
+  Creator: Aammell
+  License: CC0 1.0 (public domain dedication)
+           https://creativecommons.org/publicdomain/zero/1.0/
+  Source:  https://commons.wikimedia.org/wiki/File:Clouds_in_the_sky_landscape.jpg
+  File:    https://upload.wikimedia.org/wikipedia/commons/f/f9/Clouds_in_the_sky_landscape.jpg
+  Size:    1200x900 (downscaled from original 4000x3000)
+
+water_coins.jpg   (used by: 22_watershed_playground, 26_hfs_segmentation)
+  Title:   water_coins.jpg
+  Creator: OpenCV project (sample data)
+  License: Apache-2.0 (OpenCV) - sample data redistributed with the library
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/opencv/opencv (samples/data/water_coins.jpg)
+  Size:    252x312 (the canonical OpenCV watershed tutorial image)
+
+inpaint_mask_holes.png   (used by: 18_inpainting_playground,
+                         23_connected_components_list_vs_batch, 24_kmeans_clusters,
+                         71_detection_postprocessing, 84_measure_and_export)
+  Title:   inpaint_mask_holes.png
+  Creator: generated (this repo) - synthetic mask image
+  License: no third-party rights (synthetic binary mask; white spots on black)
+  Source:  synthetic; bundled as example_inputs/inpaint_mask_holes.png
+  Size:    768x768
+
+text_page_shadow.jpg   (used by: 04_threshold_playground)
+  Title:   Sunlight Illuminating Passage in Textbook (photo id 16196048)
+  Creator: Aysenaz Bilgin
+  License: Pexels License (free to use, no attribution required, modification
+           allowed)
+           https://www.pexels.com/license/
+  Source:  https://www.pexels.com/photo/sunlight-illuminating-passage-in-textbook-16196048/
+  File:    https://images.pexels.com/photos/16196048/pexels-photo-16196048.jpeg
+  Size:    900x986 (cropped to the page - rows 22%..95% of the 4160x6240
+           original - then downscaled)
+  Why:     A page of dense printed text under a hard light shaft: the paper runs
+           from ~14 to ~251 grey across one frame, so NO single global threshold
+           separates ink from paper everywhere (Otsu blacks out ~82% of it).
+           Adaptive mean/gaussian survive the ramp but lose the deepest shade,
+           where the ink/paper gap falls below their fixed C - which is exactly
+           what cv2.ximgproc.niBlackThreshold's contrast-scaled offset
+           (mean + k*stddev) recovers. Niblack gets the text back everywhere and
+           speckles the flat paper; Sauvola's r-normalisation does not. That
+           four-way split is the workflow.
+  Used in: workflows/04_threshold_playground.json (copy into ComfyUI/input/);
+           tests/run_workflows.py::test_threshold_playground injects a synthetic
+           ramp-plus-bars stand-in rather than reading this file
+
+pexels-artful-homes-921250275-31663643.jpg   (used by: exercise_document_perspective)
+  Title:   Lease agreement document with pen (photo id 31663643)
+  Creator: Artful Homes
+  License: Pexels License (free to use, attribution not required)
+           https://www.pexels.com/license/
+  Source:  https://www.pexels.com/@artful-homes-921250275/
+  Size:    original download (used full-size)
+
+calib_board_00.png .. calib_board_06.png   (used by: 49_chessboard_playground,
+                         50_camera_calibration_roundtrip, 57_camera_pose_3d_preview,
+                         exercise_ar_planar_cube)
+  Title:   synthetic chessboard views with baked-in lens distortion
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic renders)
+  Source:  synthetic
+  Size:    800x600 each
+  Note:    the generator renders EIGHT views (N_VIEWS = 8); no workflow loads the
+           eighth (calib_board_07.png), so it is not shipped here. Delete it again
+           after re-running gen_calib_boards.py.
+
+calib_board_07_extra_distorted.png   (used by: 49_chessboard_playground - the
+                         deliberately over-distorted board)
+  Title:   calib_board_07_extra_distorted.png
+  Creator: generated (this repo) - the heavily distorted variant
+  License: no third-party rights (synthetic render)
+  Source:  synthetic
+  Size:    800x600 (a calib_board_07 variant with extra distortion for chessboard playground)
+
+demo_camera_params.json   (used by: 50_camera_calibration_roundtrip - the seed
+                         the workflow's 'CV Load Camera Params (JSON)' reads on
+                         the very first run, before its Save step has written
+                         anything; not an image)
+  Title:   demo_camera_params.json
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic)
+  Source:  synthetic; what cv2.calibrateCamera recovers from the eight
+           calib_board_*.png views above (fx,fy = 802.1, 802.3 against a
+           ground truth of 800, 800; cx,cy = 398.3, 299.9 against 400, 300;
+           RMS 0.092 px).
+  Size:    image_width 800, image_height 600 - it also makes the workflow's
+           LoadCameraParams combo option exist, so validate_workflows passes on
+           a fresh checkout.
+
+circle_grid_asymmetric_4x11.png   (used by: 52_circle_grid_calibration - the
+                         flat, orthogonal detection demo)
+  Title:   synthetic ASYMMETRIC circle grid, 4x11
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic render)
+  Source:  synthetic; the 4x11 asymmetric pattern cv2.findCirclesGrid expects,
+           drawn head-on with no perspective and no distortion, so the detector
+           demo has a target whose centre order is unambiguous.
+  Size:    640x560
+
+circle_calib_00.png .. circle_calib_05.png   (used by: 52_circle_grid_calibration
+                         - the MONO calibration branch)
+  Title:   synthetic posed + distorted 4x11 circle-grid views
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic renders)
+  Source:  synthetic; the same 4x11 asymmetric board (32 mm spacing) projected
+           through a KNOWN camera (fx = fy = 800, cx,cy = 320,240, barrel
+           k1,k2 = -0.18, 0.08) from six different poses with cv2.projectPoints,
+           so cv2.calibrateCamera has a ground truth to be scored against.
+  Size:    640x480 each
+
+circle_calib_L_00.png .. circle_calib_L_05.png +
+circle_calib_R_00.png .. circle_calib_R_05.png
+                     (used by: 52_circle_grid_calibration - the STEREO branch)
+  Title:   synthetic stereo pairs of the same six circle-grid poses
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic renders)
+  Source:  synthetic; the six poses above shot twice through the same known
+           camera, 100 mm apart on x, so cv2.stereoCalibrate recovers a
+           baseline it can be checked against.
+  Size:    640x480 each
+
+omnidir_board_00.png .. omnidir_board_07.png   (used by: 54_omnidir_calibration)
+  Title:   synthetic CATADIOPTRIC chessboard views (CMei omnidirectional model)
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic renders)
+  Source:  synthetic. Rendered through a known omnidirectional camera
+           (fx = fy = 300, cx,cy = 400,300, xi = 0.8,
+           k1,k2,p1,p2 = -0.12, 0.04, 0.001, -0.0008) by inverting CMei's model
+           IN CLOSED FORM - deliberately not with cv2.omnidir.undistortPoints,
+           which normalises to z = 1 and is up to 737 px wrong at the frame edge
+           where rays pass the horizon. The generator asserts its inverse
+           round-trips through cv2.omnidir.projectPoints to 0.0000 px and that
+           the detected corners land within 1 px of it. Not taken from
+           opencv_extra's testdata/cv/cameracalibration/omnidir: that repository
+           ships no LICENSE file.
+  Size:    800x600 each
+
+omnidir_scene_L.png + omnidir_scene_R.png   (used by: 54_omnidir_calibration -
+                         the omnidir stereo pair)
+  Title:   synthetic omnidirectional stereo pair of a textured room
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic renders)
+  Source:  synthetic; the same known camera, twice, 60 units apart and slightly
+           toed in, looking at a procedurally textured six-wall room with a
+           nearer poster plane. Ray-traced per pixel (nearest positive plane
+           intersection), so the pair has true parallax at a known baseline.
+  Size:    800x600 each
+
+omnidir_camera_params.json   (NOT SHIPPED - ground truth for
+                          54_omnidir_calibration, read by the tests and never
+                          loaded by the workflow; not an image)
+  Title:   omnidir_camera_params.json
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic)
+  Source:  synthetic; K / xi / D / stereo R / stereo T the assets were rendered
+           with, what cv2.omnidir.calibrate recovers from them, and where
+           cv2.omnidir.projectPoints puts every board's inner corners (the
+           tests compare their own detections against that instead of
+           duplicating the scene geometry).
+  Location: tests/data/omnidir_camera_params.json - it is regenerated with the
+           boards, so it is kept OUT of git; example_inputs no longer ships it
+           and the tests that read it (run_workflows.py::test_omnidir_calibration,
+           smoke_test.py::test_cg_omnidir_calibrate) skip when it is absent.
+
+fisheye_board_00.png .. fisheye_board_07.png   (used by: 53_fisheye_calibration)
+  Title:   synthetic WIDE-ANGLE chessboard views (equidistant fisheye model)
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic renders)
+  Source:  synthetic. Each destination pixel is un-projected with
+           cv2.fisheye.undistortPoints through a KNOWN camera (fx = fy = 320,
+           cx,cy = 400,300, k1..k4 = -0.25, 0.05, -0.0125, 0.0025) and the flat
+           board is sampled there, so the views obey the fisheye model exactly
+           and cv2.fisheye.calibrate has a ground truth to be checked against
+           (the generator asserts the rendered corners land within 1 px of
+           cv2.fisheye.projectPoints). Deliberately NOT taken from
+           opencv_extra's testdata/cv/cameracalibration/fisheye: that repository
+           ships no LICENSE file and the folder is named after a third-party
+           toolbox, so its images are not safe to redistribute here.
+  Size:    800x600 each
+
+fisheye_camera_params.json   (NOT SHIPPED - ground truth for
+                         53_fisheye_calibration, read by the tests and never
+                         loaded by the workflow; not an image)
+  Title:   fisheye_camera_params.json
+  Creator: generated (this repo)
+  License: no third-party rights (synthetic)
+  Source:  synthetic; the K/D the boards were rendered with, plus what the
+           fisheye and pinhole calibrators recover from them. tests/run_workflows
+           .py reads it so the assertions cite the generator, not a copy.
+  Location: tests/data/fisheye_camera_params.json - it is regenerated with the
+           boards, so it is kept OUT of git; example_inputs no longer ships it
+           and the tests that read it (run_workflows.py::test_fisheye_calibration,
+           smoke_test.py::test_cg_fisheye_calibrate) skip when it is absent.
+
+box.png + box_in_scene.png   (used by: 32_shape_match_warp,
+                         34_corner_detection_playground, 36_feature_matching_playground,
+                         68_east_text_detection, 75_colorization, exercise_homography_ar,
+                         exercise_homography_ransac - replaces copyrighted mobydick pair)
+  Title:   box.png / box_in_scene.png
+  Creator: OpenCV project (sample data)
+  License: Apache-2.0 (OpenCV) - sample data redistributed with the library
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/opencv/opencv (samples/data/)
+  Size:    box.png 324x223, box_in_scene.png 512x384
+           (the canonical OpenCV feature-matching / homography pair)
+
+stereo_bethlehem_L.jpg + stereo_bethlehem_R.jpg   (used by: exercise_epipolar_geometry,
+                         exercise_two_view_sfm)
+  Title:   Street scene - Bethlehem (stereograph)
+  Creator: unknown photographer; held by the Library of Congress
+  License: Public domain (LoC "no known restrictions on publication")
+  Source:  https://commons.wikimedia.org/wiki/File:Street_scene_-_Bethlehem_LCCN2004672895.tif
+           (LCCN 2004672895)
+  Size:    740x949 each - the left/right halves of the stereo card, cropped from
+           the ~3840x2421 render (card border + centre seam removed). The two lenses
+           give a genuine horizontal baseline (real parallax), replacing the earlier
+           unverified "real-world-scene..." pair and the example.png placeholders.
+           NOTE: the card halves were published pre-aligned, so the residual
+           disparity is tiny (~+-3 px) - fine for F / epipolar geometry, but too
+           flat for a disparity map; the stereo-rectification exercise now uses
+           the synthetic stereo_gallery pair below instead.
+
+stereo_gallery_L.png + stereo_gallery_R.png   (used by: 60_quasi_dense_stereo,
+                         exercise_stereo_rectification)
+  Title:   synthetic "gallery" stereo pair (this repo)
+  Creator: generated (this repo)
+  License: source paintings public domain (the art_ref_* set below); everything
+           else (brick/plank/stripe textures, layout) is synthetic - no
+           third-party rights
+  Size:    960x540 each - textured planes at 4-12 m depth rendered through two
+           pinhole cameras with a 0.35 m horizontal baseline (fx = 700 px ->
+           ground-truth disparity ~20-61 px); the right camera has a small
+           roll + pitch so uncalibrated rectification has visible work to do.
+
+panorama_A.png + panorama_B.png   (used by: 48_panorama_playground -
+                         replaces unverified UT-tower pair)
+  Title:   Neuschwanstein Castle (photochrom print)
+  Creator: Photoglob Zurich / Detroit Publishing Co.; held by the Library of Congress
+  License: Public domain (LoC Photochrom Print Collection, no known restrictions)
+  Source:  https://commons.wikimedia.org/wiki/File:Neuschwanstein_Castle_LOC_print.jpg
+  Size:    820-wide each - two overlapping crops of the one photochrom; the right
+           view (panorama_B) is perspective-warped to emulate a camera rotated about
+           its optical centre, so a single homography aligns the pair.
+
+art_ref_starry.png / art_ref_wave.png / art_ref_pearl.png + art_posters_wall.png
+        (used by: 08_line_segments_lsd, 14_chromatic_aberration,
+         20_color_range_playground, 32_shape_match_warp, 33_delaunay_voronoi,
+         45_annotate_quad_warp, 46_affine_shape_warp, 47_paste_into_scene,
+         85_data_charts, 86_quality_metrics, exercise_color_transfer,
+         exercise_multi_poster_detection, exercise_object_detection_homography,
+         exercise_pyramid_blend, exercise_seam_pipeline
+         - replace copyrighted movie posters)
+  References - three public-domain paintings (all public domain via commons.wikimedia.org):
+    art_ref_starry.png : Vincent van Gogh, "The Starry Night" (1889)
+    art_ref_wave.png   : Katsushika Hokusai, "The Great Wave off Kanagawa" (c.1831)
+    art_ref_pearl.png  : Johannes Vermeer, "Girl with a Pearl Earring" (c.1665)
+  Scene - art_posters_wall.png : synthetic composite (this repo) of the three paintings
+    warped onto a generated plaster wall. Source paintings public domain; the wall
+    texture is synthetic (no third-party rights). 1500x1050.
+
+pedestrian_area.mp4
+        (40 kalman tracking, 76 RAFT optical flow, 77 RIFE frame interpolation,
+         exercise background subtraction, exercise background subtraction latent,
+         exercise efficient video remap, exercise optical flow interpolation
+         (+ comparison); replaces the unverified crosswalk clip)
+  Title:   "pedestrian area" (video codec test sequence)
+  Creator: Taurus Media Technik, via Xiph.org derf test media
+  License: CC0 1.0 (public domain dedication)
+           https://creativecommons.org/publicdomain/zero/1.0/
+  Source:  https://commons.wikimedia.org/wiki/File:Video_Codec_Test_pedestrian_area_1080p25.y4m.webm
+           (original http://media.xiph.org/video/derf/)
+  Size:    a 2s, 640x360 slice (50 frames @ 25fps). (The pedestrian_frameA/B.png stills -
+           frames 0 and 2 of the slice - were dropped; nothing referenced them.)
+           Workflow 40 tracks the RED BICYCLE crossing left to right: it is the one
+           strongly-coloured object on a near-constant heading (~16 px/frame, frames
+           21..28), and it is genuinely occluded by pedestrians from frame 26, which
+           is what gives that workflow a real detector failure to coast through.
+           25 fps and smooth motion are why the flow/interpolation workflows keep this
+           clip rather than the 10 fps people_walking.mp4 below.
+
+people_walking.mp4
+        (28 bgsegm background subtraction)
+  Title:   vtest.avi (OpenCV sample clip)
+  Creator: OpenCV contributors, samples/data
+  License: Apache License 2.0 (attribution)
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/opencv/opencv/blob/4.x/samples/data/vtest.avi
+           (raw: https://raw.githubusercontent.com/opencv/opencv/4.x/samples/data/vtest.avi)
+  Size:    200 frames, 512x288 @ 10fps - the first 20s of the original, cropped to the
+           walkway band (x=224, y=128, 512x288 out of 768x576). The full-length 795-frame
+           original stays in the local-only tests/data/ corpus.
+           WHY A CROP: over the whole 768x576 view only 2.1% of pixels move, below the
+           0.05-0.2 band 'CV Background Subtract (Batch)' calls a healthy
+           foreground_fraction, so the workflow would have contradicted its own tooltip.
+           The crop reads 0.050 and cuts the IMAGE batch from 1.6 GB to 354 MB.
+           WHY 200 FRAMES: CNT/GSOC/LSBP need hundreds of frames to converge. On this
+           clip they read 16.0/12.5/16.0% over the first 50 frames and 7.9/9.3/13.3%
+           over all 200, against a 5.0% temporal-median reference - so the workflow can
+           show a FAIR comparison and still demonstrate the failure by trimming.
+
+kitti_2011_09_26_drive_0009_poses.txt   (used by: exercise_visual_odometry_video)
+  Title:   KITTI raw drive 2011_09_26_drive_0009 - camera-frame ground-truth poses
+  Creator: Geiger, Lenz, Stiller & Urtasun (KITTI); derived here from the drive's
+           own oxts log
+  License: CC BY-NC-SA 3.0 - **NON-COMMERCIAL**, inherited from KITTI. This is the
+           ONLY non-commercial file in example_inputs; everything else is CC0 /
+           CC BY / public domain / synthetic. Attribution and share-alike apply.
+           https://creativecommons.org/licenses/by-nc-sa/3.0/
+  Source:  https://www.cvlibs.net/datasets/kitti/raw_data.php
+           Cite: Geiger et al., "Vision meets Robotics: The KITTI Dataset"
+           https://www.cvlibs.net/publications/Geiger2013IJRR.pdf
+  Size:    447 lines, 86 KB. One pose per frame: the 12 numbers of a 3x4 row-major
+           camera-to-world matrix, first frame at the origin.
+  Note:    DERIVED, not downloaded. KITTI raw ships oxts/data/*.txt (GPS/IMU
+           packets); poses.txt is the format of the separate KITTI *odometry*
+           benchmark, which uses different sequences. This file was built from this
+           drive's oxts log - lat/lon through a Mercator projection to local metres,
+           R from roll/pitch/yaw, frame 0 as the origin - then composed through
+           calib_imu_to_velo and calib_velo_to_cam from 2011_09_26_calib.zip so the
+           track follows the CAMERA centre rather than the IMU. The ~0.8 m lever arm
+           rotates during turns, so an uncorrected IMU track is not a rigid offset of
+           the camera track and no trajectory alignment can absorb the difference.
+           The matching 48 MB video is NOT shipped; the workflow's Note says how to
+           encode it from the drive archive.
+
+traffic_frame_a.png + traffic_frame_b.png   (used by: 39_optical_flow_playground,
+                         exercise_optical_flow_motion_segmentation)
+  Title:   frames from car-detection.mp4 (sample-videos)
+  Creator: Intel IoT Devkit
+  License: CC BY 4.0
+           https://creativecommons.org/licenses/by/4.0/
+  Source:  https://github.com/intel-iot-devkit/sample-videos
+  Size:    768x432 - two consecutive frames of a static traffic camera (a crossing car).
+
+vo_frame0.png .. vo_frame3.png   (used by: exercise_visual_odometry -
+                         replaces the forward-dashcam pair)
+  Title:   View from Train (side window, station approach)
+  Creator: uploaded to Wikimedia Commons
+  License: CC BY-SA 4.0 (attribution + share-alike)
+           https://creativecommons.org/licenses/by-sa/4.0/
+  Source:  https://commons.wikimedia.org/wiki/File:View_from_Train_111450.ogv
+  Size:    720x404 - four consecutive frames ~0.13s apart (stride 4 @ 30fps, ~t=221s)
+           from the 480p transcode. The camera looks SIDEWAYS out the window during a
+           slow station approach, so a static, richly-textured scene (boundary wall,
+           parked car, signal gantry, litter-strewn ground) translates laterally with
+           strong, consistent parallax. This is the geometry the essential matrix wants
+           (lateral translation, static scene) - it replaces the earlier forward-driving
+           dashcam frames, whose focus-of-expansion / moving sky were near-degenerate and
+           gave as few as 9 tracked corners and inconsistent per-step directions. The new
+           set tracks 430+ corners with 360+ RANSAC inliers on every step.
+
+ar_grid_clip.mp4   (used by: exercise_ar_planar_video)
+                     + ar_video_grid_0.png .. ar_video_grid_3.png (NOT SHIPPED)
+  Title:   chessboard.avi (handheld 9x6 calibration board clip)
+  Creator: Matej Smid (smidm)
+  License: MIT License, (c) 2015 Matej Smid (attribution)
+           https://opensource.org/license/mit
+  Source:  https://github.com/smidm/video2calibration (example_input/chessboard.avi)
+  Size:    ar_grid_clip.mp4 is a 4-frame 640x360 clip (source 1280x720@25fps,
+           frames 127/130/133/136, downscaled 0.5x) for the workflow's
+           LoadVideo. The board is detected once on frame 0 and KLT-tracked
+           into the rest.
+  Location: the four stills of the same frames are the TEST seed - they let
+           tests/run_workflows.py::test_ar_planar_video feed the graph without
+           a video decoder - so they live in tests/data/ar_video_grid_{0..3}.png
+           and are not shipped. The stills and the clip come from the same
+           fetch of the upstream .avi; the test skips when the stills are
+           absent.
+
+NH_64355_Brigadier_General_Smedley_D._Butler,_USMC.jpg
+                     (used by: 24_kmeans_clusters, 65_yunet_face_detection,
+                      66_face_recognition)
+  Title:   NH 64355 Brigadier General Smedley D. Butler, USMC
+  Creator: U.S. Marine Corps / Naval History and Heritage Command
+  License: Public domain (work of the U.S. federal government)
+  Source:  https://commons.wikimedia.org/wiki/File:NH_64355_Brigadier_General_Smedley_D._Butler,_USMC.jpg
+  Size:    500x751 (single frontal portrait - one clear face for the detector)
+
+OK_Sign.jpg   (used by: 67_handpose_estimation, 74_batch_dnn_style_transfer)
+  Title:   OK Sign
+  Creator: Steven H. Keys (User:Steevven1)
+  License: CC BY 2.5 (attribution)
+           https://creativecommons.org/licenses/by/2.5/
+  Source:  https://commons.wikimedia.org/wiki/File:OK_Sign.jpg
+  Size:    416x411 (a single upright hand making the OK gesture - one clear palm
+           for the MediaPipe palm detector, then 21-keypoint hand-pose regression)
+
+market_scene.jpg + market_template.jpg + market_template_1p5x.jpg
+        (used by: 32_shape_match_warp, 35_keypoint_detectors, 37_match_template,
+         38_match_template_multiscale, 42_rapid_model_tracking,
+         61_ppf_pose_estimation, exercise_histogram_tracking,
+         exercise_image_registration_ecc - replace example.png)
+  Title:   Fruits and vegetables at market
+  Creator: Santeri Viinamaki
+  License: CC BY-SA 4.0 (attribution + share-alike)
+           https://creativecommons.org/licenses/by-sa/4.0/
+  Source:  https://commons.wikimedia.org/wiki/File:Fruits_and_vegetables_at_market.jpg
+  Size:    market_scene.jpg 1000x750 (downscaled from 4592x3448). The templates are the
+           unique round red sale tag cropped from the scene: market_template.jpg at native
+           size (37_match_template, best match score ~1.0),
+           market_template_1p5x.jpg upscaled 1.5x
+           (38_match_template_multiscale, found at best_scale ~0.67).
+
+qr_code_wikipedia.png   (used by: 81_qr_code_detection)
+  Title:   QR code for mobile English Wikipedia
+  Creator: Brdall (Wikimedia Commons)
+  License: Public domain (creator released it for any use, no conditions)
+  Source:  https://commons.wikimedia.org/wiki/File:QR_code_for_mobile_English_Wikipedia.svg
+  File:    https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/250px-QR_code_for_mobile_English_Wikipedia.svg.png
+  Size:    250x250 (smallest PNG render of the SVG; the render is black-on-
+           transparent, so the alpha was flattened onto white to give an opaque
+           QR the detector can read). Decodes to http://en.m.wikipedia.org.
+  Models:  detect_2026april.onnx + sr_2026april.onnx - not in this repo,
+           see model_sources.txt
+
+walking_the_dog.jpg   (used by: 16_npr_filters_playground, 69_yolov4_detection,
+                         70_yolo_seg, 79_vlm_caption)
+  Title:   Walking the dog
+  Creator: Helgi Halldorsson from Reykjavik, Iceland
+  License: CC BY-SA 2.0 (attribution + share-alike)
+           https://creativecommons.org/licenses/by-sa/2.0/
+  Source:  https://commons.wikimedia.org/wiki/File:Walking_the_dog_(1945527533).jpg
+  File:    https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Walking_the_dog_%281945527533%29.jpg/960px-Walking_the_dog_%281945527533%29.jpg
+  Size:    960x1440 (960px thumbnail render, downscaled from original 2592x3888).
+           A person walking a dog - one clear person + dog for the detector.
+  Models:  yolov4.onnx / yolov4x-mish.onnx - not in this repo,
+           see model_sources.txt
+
+coco-labels-2014_2017.txt   (used by: 69_yolov4_detection, 70_yolo_seg and the
+                             'CV YOLO Detection' / 'CV YOLO-Seg Inference'
+                             blueprints - class-name list for CV Load Labels)
+  Title:   COCO object-category labels (2014 + 2017 releases)
+  Creator: Microsoft COCO dataset; label list maintained by amikelive
+  License: MIT (this repository: https://github.com/amikelive/coco-labels)
+           https://opensource.org/license/mit
+  Source:  https://github.com/amikelive/coco-labels/tree/master (coco-labels-2014_2017.txt)
+  Size:    80 lines - one class name per line (line N = class id N). The 2014 and
+           2017 releases share the same 80 categories, so the repo merges them into
+           one file; the COCO annotations themselves are Microsoft's (CC BY 4.0),
+           this is just the plain class-name list it ships alongside.
+
+dog_leaping.jpg   (used by: 72_dnn_deblur, 73_dnn_style_transfer)
+  Title:   Dog Leaping
+  Creator: Harry Walker (photographer, 1894-1971), 1920s
+  License: Public domain (not copyrighted)
+  Source:  https://commons.wikimedia.org/wiki/File:Dog_Leaping.jpg
+  File:    https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Dog_Leaping.jpg/960px-Dog_Leaping.jpg
+  Size:    960x1645 (960px thumbnail render, downscaled from original 3168x5430).
+           An old grainy film photo of a dog leaping for a ball - motion blur +
+           film grain give the NAFNet restorer something real to clean up.
+  Model:   deblurring_nafnet_2025may.onnx - not in this repo,
+           see model_sources.txt
+
+brick_wall_nor_gl_1k.jpg   (used by: 44_relative_remap)
+  Source: Poly Haven (CC0)
+  URL: https://polyhaven.com/a/brick_wall_001
+  Download: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brick_wall_001/brick_wall_001_nor_gl_1k.jpg
+  Author: Dimitrios Savva, Rob Tuytel
+  License: CC0 - https://creativecommons.org/publicdomain/zero/1.0/
+  Used in: 44_relative_remap.json
+
+aruco_board_5x7_DICT_6X6_250.jpg was generated in blender
+  Author: bmad4ever
+  License: CC0 - https://creativecommons.org/publicdomain/zero/1.0/
+  Used in: 62_aruco_3d_render, 63_ar_model_annotation, exercise_aruco_board_cube
+
+hdr_stlouis_ev-4.72.jpg / hdr_stlouis_ev-1.82.jpg /
+hdr_stlouis_ev+1.51.jpg / hdr_stlouis_ev+4.09.jpg
+                     (used by: 15_hdr_playground)
+  Title:   St. Louis Arch, multi-exposure bracket (EV -4.72 / -1.82 / +1.51 / +4.09)
+  Creator: Kevin McCoy (Wikimedia user Kmccoy)
+  License: CC BY-SA 3.0 (attribution + share-alike)
+           https://creativecommons.org/licenses/by-sa/3.0/
+  Source:  https://commons.wikimedia.org/wiki/File:StLouisArchMultExpEV-4.72.JPG
+           https://commons.wikimedia.org/wiki/File:StLouisArchMultExpEV-1.82.JPG
+           https://commons.wikimedia.org/wiki/File:StLouisArchMultExpEV%2B1.51.JPG
+           https://commons.wikimedia.org/wiki/File:StLouisArchMultExpEV%2B4.09.JPG
+  Size:    1200x900 each (downscaled from the 2816x2112 originals)
+           Four tripod exposures of the same scene - the canonical OpenCV HDR
+           tutorial bracket. Stacked darkest-to-brightest into one batch; the
+           EV offsets set the exposure_times (2^EV) fed to the Debevec merge.
+
+gingham_check_diff_1k.jpg   (used by: 13_demosaicing_playground)
+  Title:   Gingham Check (diffuse texture, 1k jpg)
+  Creator: Poly Haven (Dario Barresi et al.)
+  License: CC0 - https://creativecommons.org/publicdomain/zero/1.0/
+  Source:  https://polyhaven.com/a/gingham_check
+  Download: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/gingham_check/gingham_check_diff_1k.jpg
+  Size:    1024x1071. A regular green/white woven check pattern - deliberately a
+           demosaicing WORST CASE: fine periodic high-frequency detail is exactly
+           what aliases into zipper/moire colour fringing, so bilinear vs VNG vs
+           edge-aware demosaicing visibly separate. Mosaiced in-graph into a
+           synthetic RGGB Bayer CFA (no licence-safe real Bayer sample exists),
+           then reconstructed and scored (PSNR/absdiff) against itself.
+
+MilkTruck.glb        (used by: 42_rapid_model_tracking, 57_camera_pose_3d_preview,
+                      61_ppf_pose_estimation, 62_aruco_3d_render,
+                      63_ar_model_annotation, 64_ar_depth_occlusion,
+                      exercise_homography_ar; copy into ComfyUI/input/3d/)
+  Title:   Milk Truck - de-branded derivative of the glTF-Binary sample model
+           "Cesium Milk Truck"
+  Creator: Cesium (2017); logo removed 2026
+  License: CC BY 4.0 International - attribution required.
+           https://creativecommons.org/licenses/by/4.0/
+           The UPSTREAM file adds a trademark limitation on the Cesium logo
+           texture (LicenseRef-LegalMark-Cesium), which is NOT covered by
+           CC BY and would need Cesium's permission to redistribute. This copy
+           removes it instead: the four logo roundels are painted out of the
+           single baked 2048x2048 JPEG with the surrounding body colour, and
+           the branded identifiers are renamed (glTF node + mesh
+           Cesium_Milk_Truck -> Milk_Truck, image CesiumMilkTruck.jpg ->
+           MilkTruck.jpg), so only the CC BY 4.0 terms apply. Geometry, UVs
+           and materials are untouched - 4823 vertices / 3624 triangles, bbox
+           diagonal 6.1784, byte-identical accessors - so every measurement
+           taken against the original still holds.
+  Source:  https://github.com/KhronosGroup/glTF-Sample-Assets (Models/CesiumMilkTruck)
+  File:    https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CesiumMilkTruck/glTF-Binary/CesiumMilkTruck.glb
+  Size:    415 KB; mesh bounds ~4.9 x 2.8 x 3.0 scene units - the same order of
+           magnitude as the 9x6 calibration board with spacing 1.0 (8 x 5 units),
+           so the solvePnP camera distance (~10-17 units) frames it sensibly.
+           The 3D loaders only list files under ComfyUI/input/3d/ - keep the
+           copy there in sync with this one.
+
+stereo_scene_L_000000.png + stereo_scene_R_000000.png + stereo_scene_L_000001.png + stereo_scene_R_000001.png
+        + left_images.csv + right_images.csv
+        (used by: 58_stereo_bm_vs_sgbm, 59_disparity_refinement,
+         64_ar_depth_occlusion, exercise_stereo_multiview,
+         exercise_stereo_pointcloud)
+  Title:   StereoGeo-CARLA (stereo driving scenes from the CARLA simulator)
+  Creator: Meddourimane et al.
+  License: CC BY 4.0
+           https://creativecommons.org/licenses/by/4.0/
+  Source:  https://huggingface.co/datasets/meddourimane/StereoGeo-CARLA
+  ArXiv:   https://arxiv.org/abs/2606.14619
+  Size:    640x480 each - synthetic driving scenes rendered in the CARLA simulator.
+           The full dataset has 12,220 stereo pairs; two pairs (000000.png, 000001.png)
+           were extracted from batch_1.zip as examples. CSV files contain per-image
+           calibration: intrinsics from vertical FOV (pinhole model, no distortion)
+           and extrinsics (R, T) from the right camera's relative pose.
+
+nyu_depth_rgb.jpg + nyu_depth_map.png   (used by: exercise_monocular_depth_3d)
+  Title:   NYU Depth V2 (indoor RGB-D scene, sample 10 - hallway/room with
+            objects at varying distances: 1-9.5 m depth range)
+  Creator: Nathan Silberman et al. (NYU), redistributed via jagennath-hari/nyuv2
+  License: MIT (NYU Depth V2 preprocessed dataset)
+           https://opensource.org/license/mit
+  Source:  https://huggingface.co/datasets/jagennath-hari/nyuv2
+           (train split, sample 10)
+  Camera:  https://huggingface.co/datasets/jagennath-hari/nyuv2/blob/main/camera_params.json
+           fx=518.86, fy=519.47, cx=325.58, cy=253.74 (640x480 pinhole)
+  Size:    640x480 each. The depth map is uint16 in millimeters (range
+           ~1-9.5 m) from a Kinect sensor. The scene has objects at multiple
+           distances giving a clearly 3D point cloud via DepthTo3D.
+
+synthetic_color_checker.png   (NOT SHIPPED - no workflow loads it any more.
+                         Kept here because it is an ingredient of
+                         color_cast_posters.png below, which does ship)
+  Title:   Synthetic Macbeth Color Checker (6x4 grid)
+  Creator: generated (this repo) - Python/OpenCV script
+  License: no third-party rights (synthetic color patches)
+  Source:  synthetic; sRGB values from ColorChecker Wikipedia article;
+           black border added for cv2.mcc.CCheckerDetector compatibility
+  Size:    760x560 (6 patches x 100px + margins + border, 4 rows x 100px + margins + border)
+
+color_cast_posters.png   (used by: 11_color_correction_basic,
+                         12_white_balance_and_tone - the realistic demo)
+  Title:   Art posters wall with synthetic ColorChecker + tungsten color cast
+  Creator: generated (this repo) - composite of art_posters_wall.png
+           + synthetic ColorChecker chart, then tungsten BGR cast
+           (B=0.8, G=0.9, R=1.1)
+  License: no third-party rights (synthetic composite)
+  Source:  synthetic; posters from art_posters_wall.png (see above),
+           chart from synthetic_color_checker.png with white card border,
+           scaled to 40% image width and centered bottom; global tungsten
+           cast applied so the CCM correction is visibly warm -> neutral.
+           cv2.mcc detects the chart at this scale with the cast.
+  Size:    1500x1050 (same as art_posters_wall.png)
+
+boat1.jpg .. boat6.jpg   (used by: 48_panorama_playground -
+                         the 6-view boat panorama)
+  Title:   boat1.jpg .. boat6.jpg (stitching test set)
+  Creator: OpenCV project (opencv_extra test data)
+  License: Apache-2.0 (OpenCV) - sample data redistributed with the library
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/opencv/opencv_extra/tree/5.x/testdata/stitching
+  Size:    ~700 KB each (3888x2592); six overlapping views of a boat/harbour
+           scene, captured with horizontal camera rotation. Sequential overlap
+           is strong enough for pairwise feature matching + RANSAC homography.
+  Why:     boat1 + boat2 overlap by ~2/3 of the frame AND the camera re-metered
+           between the two shots: aligned, the shared scene is ~14% darker and
+           slightly cooler in boat2 (a per-channel lift of ~ +13/+17/+20 B/G/R).
+           A real auto-exposure/white-balance drift, not a simulated one - so
+           the pair is the honest input for any exposure-matching measurement
+           (see decisions.md 2026-09-08 for the numbers it produced).
+  Used in: exercise_multi_image_stitching.json (foreach-loop multi-stitch);
+           48_panorama_playground.json (six-view auto stitch);
+           exercise_stitch_two_views.json (boat1+boat2 alignment + union)
+
+synthetic_radial.png + radial.yaml   (used by: 14_chromatic_aberration,
+                         16_npr_filters_playground - real OpenCV test data)
+  Title:   Synthetic radial chromatic aberration + calibration
+  Creator: OpenCV project (opencv_extra test data)
+  License: Apache-2.0 (OpenCV)
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/opencv/opencv_extra/tree/5.x/testdata/cv/cameracalibration/chromatic_aberration
+  File:    radial.yaml  - degree-11 polynomial calibration (78 coefficients per
+           channel), from real camera calibration. image_width=600, image_height=423.
+           synthetic_radial.png - synthetic image with known radial CA matching
+           the calibration.
+  Size:    600x423 each
+  Used in: 14_chromatic_aberration.json (row 2: real-data round-trip test)
+
+barcode_book.jpg + barcode_bottle_1.jpg
+                     (used by: 83_barcode_decode - real OpenCV test data with
+                      GROUND TRUTH)
+                     + barcode_result.csv (NOT SHIPPED - the expected-output
+                      table, read by the tests, never loaded by the graph)
+  Title:   barcode single-symbol test set
+  Creator: OpenCV project (opencv_extra test data)
+  License: Apache-2.0 (OpenCV) - sample data redistributed with the library
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/opencv/opencv_extra/tree/5.x/testdata/cv/barcode/single
+  Files:   barcode_book.jpg   - EAN-13 on a book back cover, 640x480
+           barcode_bottle_1.jpg - EAN-13 on a curved bottle label, 800x600
+           barcode_result.csv - the upstream ground-truth digits, kept so the
+           tests can assert the EXACT decoded string instead of "something was
+           found" (book = 9787115279460, bottle_1 = 6922255451427). It is
+           test-only data, so it lives in tests/data/barcode_result.csv and is
+           not shipped in example_inputs.
+  Used in: 83_barcode_decode.json; tests/smoke_test.py::test_cg_barcode_detect
+           and tests/run_workflows.py::test_barcode_decode assert the digits.
+
+faces_butler_lejeune.jpg   (used by: 66_face_recognition - a MULTI-PERSON photo
+                         containing the man in NH_64355_...Butler...jpg and others)
+  Title:   Gen. Smedley Butler & Gen. Lejeune, 12-28-25
+  Creator: National Photo Company Collection (Library of Congress)
+  License: Public domain (LCCN 2016841610, no known restrictions)
+  Source:  https://commons.wikimedia.org/wiki/File:Gen._Smedley_Butler_%26_Gen._Lejeune,_(12-28-25)_LCCN2016841610.jpg
+  Size:    downscaled from 5259x4209 to 1200x960, JPEG quality 92
+  Why:     paired with the existing Butler portrait it makes a self-contained
+           recognition test: YuNet finds 5 faces, SFace identifies EXACTLY ONE
+           of them as the gallery person (cosine 0.65 against 0.02-0.17 for the
+           rest), so the assertion is decisive rather than "a match happened".
+  Used in: 66_face_recognition.json; tests/smoke_test.py::test_cg_sface_recognition
+
+matte_shot_clean.png / matte_plate_clean.png / matte_shot_a.png /
+matte_plate_a.png / matte_alpha_gt.png
+                     + matte_shot_b.png / matte_plate_b.png (NOT SHIPPED)
+                     (used by: exercise_clean_plate_matting - single-pair matting;
+                      matte_plate_a.png is ALSO 10_ximgproc_edge_aware_filters'
+                      input - its plate noise beside the picture frames' hard
+                      edges is what separates an edge-aware smoother from a blur)
+  Title:   Clean plate matting scene (takes, clean plates, ground-truth alpha)
+  Creator: generated (this repo)
+  License: no third-party rights beyond the two backdrops it composites
+  Source:  synthetic. Backdrop A is art_posters_wall.png, backdrop B is
+           market_scene.jpg (both above), each cropped to 512x384.
+           The subject is drawn at 4x and area-downsampled so its edges carry
+           REAL fractional coverage, plus a 0.42-alpha glass panel and 26 hair
+           wisps - the cases a threshold-and-feather mask cannot express, and
+           the panel is UNIFORMLY translucent, which only the backdrop's own
+           texture (showing through it) can resolve from a single pair.
+           *_clean.png is the ideal pair: a noise-free take and the literal
+           background pixels behind it, so the difference is exactly zero
+           outside the subject. matte_shot_a/b.png carry sensor noise and
+           matte_plate_a/b.png are the same backdrops shot with the camera
+           nudged (2-3 px, <0.5 deg, a touch of scale and perspective) and the
+           lamps drifted (a different per-channel gain AND bias each), which is
+           exactly what the workflow has to undo. The B pair exists only for
+           the two-background 'CV Triangulation Matte' blueprint, which no
+           shipped workflow instantiates, so matte_shot_b.png and
+           matte_plate_b.png live in tests/data/ - the generator writes the A
+           pair to example_inputs and the B pair there. The test that wants
+           them skips when they are absent.
+  Size:    512x384 each; matte_alpha_gt.png is the 8-bit alpha the scene was
+           built from, used only to score the result.
+  Why:     the ground truth makes the exercise measurable rather than
+           plausible-looking: mean |alpha - truth| 0.0035 on the ideal pair
+           (and exactly 0 at every byte-identical pixel), 0.148 raw / 0.0059
+           aligned + cleaned on the nudged one.
+  Used in: exercise_clean_plate_matting, 10_ximgproc_edge_aware_filters
+           (matte_plate_a.png only);
+           tests/run_workflows.py::test_clean_plate_matting_ideal_pair,
+           ::test_clean_plate_matting_real_pair,
+           ::test_triangulation_matte_blueprint
+
+gst_input.jpg + gst_result.jpg   (used by: 27_anisotropic_segmentation -
+                         gradient structure tensor. gst_result.jpg is the published
+                         reference figure and is NOT shipped; the test that scores
+                         against it skips when it is absent)
+  Title:   Anisotropic image segmentation tutorial input + published result figure
+  Creator: OpenCV project (Karpushin Vladislav) - tutorial illustrations
+  License: Apache-2.0 (OpenCV) - doc images redistributed with the library
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/opencv/opencv
+           (doc/tutorials/imgproc/anisotropic_image_segmentation/images/)
+  Size:    both 320x320
+  Note:    gst_result.jpg is the figure PUBLISHED with the tutorial, kept as
+           ground truth: only the C++ sample's inRange band reproduces it
+           (corr 0.997). The python sample passes HighThr as cv.threshold's
+           maxval, never bounds the angle, and does not match (corr 0.785).
+
+text_page_sharp.jpg + text_page_defocus.jpg + text_page_motion.jpg
+                     (used by: 19_fourier_playground,
+                      exercise_match_two_views_over_a_mask, and the in-flight
+                      wiener-filter / motion-deblur test workflows)
+  Title:   deconvolution test crop, sharp / disk-blurred / motion-blurred
+  Creator: generated (this repo), from text_page_shadow.jpg above
+  License: derived from text_page_shadow.jpg (Pexels License - modification
+           allowed)
+           https://www.pexels.com/license/
+  Source:  synthetic. The SAME crop (rows 60..776, cols 180..814) three ways:
+           _sharp is the untouched crop and the ground truth for both filters,
+           _defocus is it convolved with a DISK of radius 6, _motion with a
+           LINE of LEN=21 px at THETA=15 degrees (plus sigma 0.5 noise and a
+           JPEG q92 round trip).
+  Size:    634x716
+  Used in: wiener_filter_test.json / motion_deblur_test.json (deconvolution);
+           exercise_match_two_views_over_a_mask.json uses _sharp as the TILED-
+           processing subject - a printed page is the classic tile-enhanced
+           image, and its two halves hold genuinely different ink/paper
+           distributions, so a per-tile white balance really does diverge
+           (per-channel gains ~0.39/0.57/0.58 vs ~1.03/1.01/1.01)
+  Note:    the blur parameters are CONSTANTS in those two generators, so the
+           radius / LEN / THETA the workflows type are known-good rather than
+           guessed - which matters because a PSF size is a LENGTH and does not
+           survive a change of resolution (the OpenCV tutorials quote R=53 and
+           LEN=125/78 for photos they do not ship). A forward fit over the
+           shipped _motion asset bottoms out at LEN=21 THETA=15, RMSE 1.1/255.
+
+period_input.jpg + period_result.jpg
+                     (used by: 19_fourier_playground and the in-flight
+                      periodic-noise test workflow. period_result.jpg is the
+                      published reference figure and is NOT shipped)
+  Title:   Periodic noise removing filter tutorial input + published result
+  Creator: OpenCV project (Karpushin Vladislav) - tutorial illustrations
+  License: Apache-2.0 (OpenCV) - doc images redistributed with the library
+           https://www.apache.org/licenses/LICENSE-2.0
+  Source:  https://github.com/opencv/opencv
+           (doc/tutorials/imgproc/periodic_noise_removing_filter/images/,
+           period_input.jpg and period_output.jpg - renamed _result here to
+           match the gst_result.jpg convention above)
+  File:    https://github.com/opencv/opencv/blob/23212f1427ccb1aa027d91e0737f08b1af07d44c/doc/tutorials/imgproc/periodic_noise_removing_filter/images/period_input.jpg
+  Size:    both 640x471 (cropped to 640x470 by the tutorial's `rows & -2`)
+  Note:    a halftone-screened newspaper photo - the printing screen is the
+           periodic noise. period_result.jpg is the figure PUBLISHED with the
+           tutorial and is kept as ground truth: the shipped workflow reaches
+           0.971 correlation with it, against 0.737 for the input.
+  Trap:    the tutorial's own notch coordinates - (705, 458), (850, 391),
+           (993, 325) - do NOT belong to this file. All three are past the
+           right edge of its 640-wide spectrum; they were measured on a larger
+           photo the tutorial does not ship, exactly like the R=53 disk radius
+           in the out-of-focus deblur tutorial. The workflow therefore does
+           not type any coordinate: 'CV Detect Spectral Peaks' reads them off
+           the log PSD (outliers at mean + 3.5 std), and lands on the same
+           three families the hand measurement found - (403, 174), (321, 113)
+           and (155, 233), radius 21.

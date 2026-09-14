@@ -1,0 +1,475 @@
+{
+  "revision": 0,
+  "last_node_id": 87,
+  "last_link_id": 134,
+  "nodes": [
+    {
+      "id": 86,
+      "type": "cc247954-edf6-4162-92e2-1a04b94f765f",
+      "pos": [
+        2959.567736843029,
+        1402.5777889994292
+      ],
+      "size": [
+        283.03125,
+        172
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": null
+        },
+        {
+          "name": "op",
+          "type": "COMBO",
+          "widget": {
+            "name": "op"
+          },
+          "link": null
+        },
+        {
+          "name": "ksize_x",
+          "type": "INT",
+          "widget": {
+            "name": "ksize_x"
+          },
+          "link": null
+        },
+        {
+          "name": "ksize_y",
+          "type": "INT",
+          "widget": {
+            "name": "ksize_y"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "proxyWidgets": [
+          [
+            "81",
+            "op"
+          ],
+          [
+            "80",
+            "ksize_x"
+          ],
+          [
+            "80",
+            "ksize_y"
+          ]
+        ],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "title": "cv2.morphology (simple)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "cc247954-edf6-4162-92e2-1a04b94f765f",
+        "version": 1,
+        "state": {
+          "lastGroupId": 3,
+          "lastNodeId": 86,
+          "lastLinkId": 133,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "cv2.morphology (simple)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -219.45745513978468,
+            403.0574792258063,
+            128,
+            127.99999999999994
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            867.4007088089836,
+            411.65230795874135,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "a2be38e5-ad8b-43e0-b14d-8d25d92ca483",
+            "name": "src",
+            "type": "NPARRAY,IMAGE,MASK,LATENT",
+            "linkIds": [
+              129
+            ],
+            "pos": [
+              -115.45745513978468,
+              427.0574792258063
+            ]
+          },
+          {
+            "id": "86d736db-d608-42fd-9c19-13e3bd2f8534",
+            "name": "op",
+            "type": "COMBO",
+            "linkIds": [
+              130
+            ],
+            "pos": [
+              -115.45745513978468,
+              447.0574792258063
+            ]
+          },
+          {
+            "id": "b514fe77-38bc-40d6-a2f2-01b8c5eac386",
+            "name": "ksize_x",
+            "type": "INT",
+            "linkIds": [
+              131
+            ],
+            "pos": [
+              -115.45745513978468,
+              467.0574792258063
+            ]
+          },
+          {
+            "id": "1d012feb-d12c-4ad8-b008-48d862bd72ac",
+            "name": "ksize_y",
+            "type": "INT",
+            "linkIds": [
+              132
+            ],
+            "pos": [
+              -115.45745513978468,
+              487.0574792258063
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "a20816e3-2381-461c-ac2f-f2dc74b73098",
+            "name": "result",
+            "type": "NPARRAY,IMAGE,MASK,LATENT",
+            "linkIds": [
+              133
+            ],
+            "pos": [
+              891.4007088089836,
+              435.65230795874135
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 81,
+            "type": "cv2_morphologyEx",
+            "pos": [
+              423.34999397849487,
+              421.93541992831524
+            ],
+            "size": [
+              327.515625,
+              270
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "showAdvanced": false,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 129
+              },
+              {
+                "localized_name": "kernel",
+                "name": "kernel",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 103
+              },
+              {
+                "localized_name": "op",
+                "name": "op",
+                "type": "COMBO",
+                "widget": {
+                  "name": "op"
+                },
+                "link": 130
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "iterations",
+                "name": "iterations",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "iterations"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderType",
+                "name": "borderType",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "borderType"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "borderValue",
+                "name": "borderValue",
+                "shape": 7,
+                "type": "STRING",
+                "widget": {
+                  "name": "borderValue"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "*",
+                "links": [
+                  133
+                ]
+              }
+            ],
+            "title": "Morphology (grow/shrink/open/close)",
+            "properties": {
+              "Node name for S&R": "cv2_morphologyEx"
+            },
+            "widgets_values": [
+              "MORPH_ERODE",
+              "(-1, -1)",
+              1,
+              "BORDER_REPLICATE",
+              "(0, 0, 0, 0)"
+            ]
+          },
+          {
+            "id": 80,
+            "type": "cv2_getStructuringElement",
+            "pos": [
+              15.26583395837106,
+              544.72765672854
+            ],
+            "size": [
+              267.703125,
+              196
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "shape",
+                "name": "shape",
+                "type": "COMBO",
+                "widget": {
+                  "name": "shape"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "ksize",
+                "name": "ksize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "ksize"
+                },
+                "link": 134
+              },
+              {
+                "localized_name": "anchor",
+                "name": "anchor",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "anchor"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  103
+                ]
+              }
+            ],
+            "title": "Ellipse kernel",
+            "properties": {
+              "Node name for S&R": "cv2_getStructuringElement"
+            },
+            "widgets_values": [
+              "MORPH_ELLIPSE",
+              "(5, 5)",
+              "(-1, -1)"
+            ]
+          },
+          {
+            "id": 87,
+            "type": "CV_Tuple",
+            "pos": [
+              -224.73416604162895,
+              584.72765672854
+            ],
+            "size": [
+              210,
+              130
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "title": "ksize (joined)",
+            "inputs": [
+              {
+                "localized_name": "a",
+                "name": "a",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "a"
+                },
+                "link": 131
+              },
+              {
+                "localized_name": "b",
+                "name": "b",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "b"
+                },
+                "link": 132
+              }
+            ],
+            "outputs": [
+              {
+                "name": "tuple",
+                "type": "CV_TUPLE",
+                "links": [
+                  134
+                ]
+              },
+              {
+                "name": "array",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "name": "literal",
+                "type": "STRING",
+                "links": []
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_Tuple"
+            },
+            "widgets_values": [
+              2,
+              "int",
+              5.0,
+              5.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 103,
+            "origin_id": 80,
+            "origin_slot": 0,
+            "target_id": 81,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 129,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 81,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK,LATENT"
+          },
+          {
+            "id": 130,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 81,
+            "target_slot": 2,
+            "type": "COMBO"
+          },
+          {
+            "id": 131,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 87,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 132,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 87,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 133,
+            "origin_id": 81,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK,LATENT"
+          },
+          {
+            "id": 134,
+            "origin_id": 87,
+            "origin_slot": 0,
+            "target_id": 80,
+            "target_slot": 1,
+            "type": "CV_TUPLE"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "extra": {}
+}

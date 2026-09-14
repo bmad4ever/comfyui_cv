@@ -1,0 +1,2040 @@
+{
+  "id": "3c5a8e91-7d24-4f6b-a1c8-9e0b2d47f583",
+  "revision": 0,
+  "last_node_id": 44,
+  "last_link_id": 59,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        628,
+        540.5719872933586
+      ],
+      "size": [
+        1092.421875,
+        318.40625
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Contours playground\n\nOne extraction, many queries. The photo is binarized (Otsu: light shapes on a dark background) and 'CV Find Contours' traces every blob once; each branch below asks the contour set a different question:\n\n- OUTLINE EVERYTHING: 'CV Draw Contours' paints all outlines.\n- FILTER BY PROPERTY: 'CV Filter Contours' keeps the round shapes (circularity near 1). Widen the range and read the values output with 'Inspect CV Data' to calibrate; switch the property to aspect ratio / extent / solidity for other queries.\n- FILTER BY SIMILARITY: 'CV Select Contour' picks the largest blob as a reference and 'CV Filter Contours By Shape' (cv2.matchShapes, Hu moments - scale/rotation invariant) finds its lookalikes. Inspect the distances output to pick max_distance.\n- MERGE: 'CV Merge Contours' unites contours closer than 'gap' pixels - reunite a broken outline or treat a cluster as one object.\n- PAINT / USE AS MASK: the interiors are filled white onto a black 'CV Constant Like' canvas - that IS the mask: shown via 'CV Array -> Mask', and applied to the photo with cv2.bitwise_and.\n\nEverything stays NPARRAY between the converts; previews only render."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        630,
+        125.22456961333702
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2,
+            6,
+            10,
+            17,
+            21,
+            23,
+            26,
+            32,
+            33,
+            51,
+            54
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Photo with distinct shapes",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "cv2_cvtColor",
+      "pos": [
+        1226,
+        130
+      ],
+      "size": [
+        310,
+        132
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "title": "To grayscale",
+      "properties": {
+        "Node name for S&R": "cv2_cvtColor"
+      },
+      "widgets_values": [
+        "COLOR_BGR2GRAY",
+        0,
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "cv2_GaussianBlur",
+      "pos": [
+        1638,
+        130
+      ],
+      "size": [
+        310,
+        196
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "Denoise (Gaussian 5x5)",
+      "properties": {
+        "Node name for S&R": "cv2_GaussianBlur"
+      },
+      "widgets_values": [
+        "(5, 5)",
+        0,
+        0,
+        "BORDER_DEFAULT",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "cv2_threshold",
+      "pos": [
+        2048,
+        130
+      ],
+      "size": [
+        310,
+        264
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": [
+            37
+          ]
+        },
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            48
+          ]
+        }
+      ],
+      "title": "Binarize (Otsu, dark shapes on light)",
+      "properties": {
+        "Node name for S&R": "cv2_threshold"
+      },
+      "widgets_values": [
+        0,
+        255,
+        "THRESH_BINARY | THRESH_OTSU"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_FindContours",
+      "pos": [
+        2458,
+        350
+      ],
+      "size": [
+        320,
+        192
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            7,
+            9,
+            14,
+            15,
+            22,
+            52
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": [
+            36
+          ]
+        }
+      ],
+      "title": "Find contours (area-sorted)",
+      "properties": {
+        "Node name for S&R": "CV_FindContours"
+      },
+      "widgets_values": [
+        "RETR_LIST",
+        "CHAIN_APPROX_NONE",
+        0
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    },
+    {
+      "id": 8,
+      "type": "CV_DrawContours",
+      "pos": [
+        3209,
+        341.1825559047347
+      ],
+      "size": [
+        320,
+        224
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 6
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 7
+        },
+        {
+          "name": "color",
+          "type": "STRING",
+          "widget": {
+            "name": "color"
+          },
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "Outline everything",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "(0, 0, 180)",
+        2,
+        false,
+        0
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 9,
+      "type": "CV_CVPreview",
+      "pos": [
+        3961,
+        121.63434140333007
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (all contours)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 10,
+      "type": "CV_FilterContours",
+      "pos": [
+        3207,
+        662.2668165840371
+      ],
+      "size": [
+        420,
+        216
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "values",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "[CV Filter Contours] Keep round shapes (circularity)",
+      "properties": {
+        "Node name for S&R": "CV_FilterContours"
+      },
+      "widgets_values": [
+        "circularity (4*pi*A/P^2, 1 = perfect circle)",
+        0.85,
+        2
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 11,
+      "type": "CV_DrawContours",
+      "pos": [
+        4031,
+        560
+      ],
+      "size": [
+        320,
+        224
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 10
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 11
+        },
+        {
+          "name": "color",
+          "type": "STRING",
+          "widget": {
+            "name": "color"
+          },
+          "link": 43
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "IMAGE",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "title": "Outline round shapes",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "(0, 0, 180)",
+        3,
+        false,
+        0
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 12,
+      "type": "CV_CVPreview",
+      "pos": [
+        5149,
+        293.9354304551922
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (round shapes)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 13,
+      "type": "CV_CVInspect",
+      "pos": [
+        4361,
+        775.3783199285531
+      ],
+      "size": [
+        320,
+        90
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "title": "Inspect (circularity values kept)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 14,
+      "type": "CV_SelectContour",
+      "pos": [
+        3255,
+        1159.511020996866
+      ],
+      "size": [
+        320,
+        128
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contour",
+          "type": "CV_CONTOURS",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "Reference = largest contour",
+      "properties": {
+        "Node name for S&R": "CV_SelectContour"
+      },
+      "widgets_values": [
+        0
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 15,
+      "type": "CV_FilterContoursByShape",
+      "pos": [
+        4413,
+        1150.9857955703937
+      ],
+      "size": [
+        440,
+        184
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 15
+        },
+        {
+          "name": "reference",
+          "type": "CV_CONTOURS",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            18
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "distances",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "[CV Filter Contours By Shape] Lookalikes of the largest",
+      "properties": {
+        "Node name for S&R": "CV_FilterContoursByShape"
+      },
+      "widgets_values": [
+        "CONTOURS_MATCH_I1",
+        0.03
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 16,
+      "type": "CV_DrawContours",
+      "pos": [
+        5530,
+        942.3017835447951
+      ],
+      "size": [
+        291.296875,
+        224
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 17
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 18
+        },
+        {
+          "name": "color",
+          "type": "STRING",
+          "widget": {
+            "name": "color"
+          },
+          "link": 45
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "IMAGE",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "title": "Outline lookalikes",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "(0, 255, 255)",
+        3,
+        false,
+        0
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 17,
+      "type": "CV_CVPreview",
+      "pos": [
+        6217,
+        901.6268528504694
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (similar to the largest)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 18,
+      "type": "CV_CVInspect",
+      "pos": [
+        5200,
+        1179.927797913806
+      ],
+      "size": [
+        320,
+        90
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "title": "Inspect (shape distances)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": [],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 19,
+      "type": "CV_MergeContours",
+      "pos": [
+        3251,
+        1561.1096694708974
+      ],
+      "size": [
+        540,
+        184
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 21
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            24,
+            50
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Merge Contours] Merge contours closer than 0 px (clears insiders)",
+      "properties": {
+        "Node name for S&R": "CV_MergeContours"
+      },
+      "widgets_values": [
+        0,
+        "trace merged outline (close gaps)"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 20,
+      "type": "CV_DrawContours",
+      "pos": [
+        4458,
+        1540.3298225792257
+      ],
+      "size": [
+        320,
+        224
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 23
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 24
+        },
+        {
+          "name": "color",
+          "type": "STRING",
+          "widget": {
+            "name": "color"
+          },
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "IMAGE",
+          "links": [
+            25
+          ]
+        }
+      ],
+      "title": "Outline merged groups",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "(255, 255, 0)",
+        3,
+        false,
+        0
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 21,
+      "type": "CV_CVPreview",
+      "pos": [
+        5578,
+        1486.0466705027495
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (merged groups)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 22,
+      "type": "CV_ConstantLike",
+      "pos": [
+        1226,
+        361.2527083061555
+      ],
+      "size": [
+        311.921875,
+        136
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "title": "Black canvas (mask base)",
+      "properties": {
+        "Node name for S&R": "CV_ConstantLike"
+      },
+      "widgets_values": [
+        0,
+        "grayscale (single channel)"
+      ]
+    },
+    {
+      "id": 23,
+      "type": "CV_DrawContours",
+      "pos": [
+        4462,
+        1854.9183823652934
+      ],
+      "size": [
+        320,
+        224
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 27
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY",
+          "links": [
+            58,
+            59
+          ]
+        }
+      ],
+      "title": "Paint interiors white (fill)",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "255",
+        2,
+        true,
+        0
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 24,
+      "type": "CV_CVToMask",
+      "pos": [
+        5908,
+        1856.9734207986824
+      ],
+      "size": [
+        310,
+        72
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 58
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Contour interiors as MASK",
+      "properties": {
+        "Node name for S&R": "CV_CVToMask"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 25,
+      "type": "MaskPreview",
+      "pos": [
+        6951,
+        1504.0873777537277
+      ],
+      "size": [
+        260,
+        304
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 31
+        }
+      ],
+      "outputs": [],
+      "title": "Preview (contour mask)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "MaskPreview"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 26,
+      "type": "cv2_bitwise_and",
+      "pos": [
+        5910,
+        1968.234795684535
+      ],
+      "size": [
+        310,
+        120
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 32
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 33
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 59
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "title": "Apply as mask (bitwise_and)",
+      "properties": {
+        "Node name for S&R": "cv2_bitwise_and"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 28,
+      "type": "CV_CVPreview",
+      "pos": [
+        6621,
+        1829.2320500369474
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 35
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (image under the mask)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 29,
+      "type": "CV_CVInspect",
+      "pos": [
+        3190,
+        -37.65812225844379
+      ],
+      "size": [
+        298.9375,
+        90
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "Inspect (how many contours)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": [],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 30,
+      "type": "CV_CVInspect",
+      "pos": [
+        2458,
+        130
+      ],
+      "size": [
+        310,
+        90
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "title": "Inspect (threshold Otsu picked)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 31,
+      "type": "PreviewAny",
+      "pos": [
+        3241,
+        130.054361386821
+      ],
+      "size": [
+        360,
+        176
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ],
+      "color": "#322",
+      "bgcolor": "#533",
+      "title": "Preview as Text: Inspect (threshold Otsu picked)"
+    },
+    {
+      "id": 32,
+      "type": "PreviewAny",
+      "pos": [
+        3611,
+        -52.529017407095296
+      ],
+      "size": [
+        340,
+        176
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ],
+      "color": "#322",
+      "bgcolor": "#533",
+      "title": "Preview as Text: Inspect (how many contours)"
+    },
+    {
+      "id": 33,
+      "type": "PreviewAny",
+      "pos": [
+        4779,
+        638.2082296874975
+      ],
+      "size": [
+        360,
+        176
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "title": "Preview as Text: Inspect (circularity values kept)"
+    },
+    {
+      "id": 34,
+      "type": "PreviewAny",
+      "pos": [
+        6547,
+        1271.104639940029
+      ],
+      "size": [
+        320,
+        176
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ],
+      "color": "#322",
+      "bgcolor": "#533",
+      "title": "Preview as Text: Inspect (shape distances)"
+    },
+    {
+      "id": 39,
+      "type": "CV_ColorFromHex",
+      "pos": [
+        2792,
+        940.1225477528176
+      ],
+      "size": [
+        313.40625,
+        168
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "tuple_string",
+          "type": "STRING",
+          "links": [
+            43,
+            44,
+            45,
+            46,
+            56
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_ColorFromHex"
+      },
+      "widgets_values": [
+        "#a70000",
+        "COLOR_RGB2BGR",
+        false
+      ]
+    },
+    {
+      "id": 40,
+      "type": "CV_CVPreview",
+      "pos": [
+        5585,
+        2261.3899291952794
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 55
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (merged groups)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 41,
+      "type": "CV_MergeContours",
+      "pos": [
+        3225,
+        2259.7319311553574
+      ],
+      "size": [
+        580,
+        184
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 51
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 52
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            53
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Merge Contours] Merge contours closer than 64 px (also clears insiders)",
+      "properties": {
+        "Node name for S&R": "CV_MergeContours"
+      },
+      "widgets_values": [
+        64,
+        "trace merged outline (close gaps)"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 42,
+      "type": "CV_DrawContours",
+      "pos": [
+        4487,
+        2261.2584017458557
+      ],
+      "size": [
+        320,
+        224
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 54
+        },
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 53
+        },
+        {
+          "name": "color",
+          "type": "STRING",
+          "widget": {
+            "name": "color"
+          },
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "source",
+          "type": "IMAGE",
+          "links": [
+            55
+          ]
+        }
+      ],
+      "title": "Outline merged groups",
+      "properties": {
+        "Node name for S&R": "CV_DrawContours"
+      },
+      "widgets_values": [
+        "(255, 255, 0)",
+        3,
+        false,
+        0
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 43,
+      "type": "Note",
+      "pos": [
+        2788,
+        528.4995109964239
+      ],
+      "size": [
+        320.90625,
+        116
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "RETR_LIST uses TRUCO ( faster detection )"
+      ],
+      "color": "#323",
+      "bgcolor": "#535"
+    }
+  ],
+  "links": [
+    [
+      2,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      5,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      2,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      7,
+      0,
+      8,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      8,
+      8,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      7,
+      0,
+      10,
+      0,
+      "CV_CONTOURS"
+    ],
+    [
+      10,
+      2,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      10,
+      0,
+      11,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      12,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      10,
+      2,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      7,
+      0,
+      14,
+      0,
+      "CV_CONTOURS"
+    ],
+    [
+      15,
+      7,
+      0,
+      15,
+      0,
+      "CV_CONTOURS"
+    ],
+    [
+      16,
+      14,
+      0,
+      15,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      17,
+      2,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      18,
+      15,
+      0,
+      16,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      19,
+      16,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      20,
+      15,
+      2,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      2,
+      0,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      22,
+      7,
+      0,
+      19,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      23,
+      2,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      24,
+      19,
+      0,
+      20,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      25,
+      20,
+      0,
+      21,
+      0,
+      "IMAGE"
+    ],
+    [
+      26,
+      2,
+      0,
+      22,
+      0,
+      "IMAGE"
+    ],
+    [
+      27,
+      22,
+      0,
+      23,
+      0,
+      "NPARRAY"
+    ],
+    [
+      31,
+      24,
+      0,
+      25,
+      0,
+      "MASK"
+    ],
+    [
+      32,
+      2,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ],
+    [
+      33,
+      2,
+      0,
+      26,
+      1,
+      "IMAGE"
+    ],
+    [
+      35,
+      26,
+      0,
+      28,
+      0,
+      "IMAGE"
+    ],
+    [
+      36,
+      7,
+      1,
+      29,
+      0,
+      "INT"
+    ],
+    [
+      37,
+      6,
+      0,
+      30,
+      0,
+      "FLOAT"
+    ],
+    [
+      38,
+      30,
+      0,
+      31,
+      0,
+      "STRING"
+    ],
+    [
+      39,
+      29,
+      0,
+      32,
+      0,
+      "STRING"
+    ],
+    [
+      40,
+      13,
+      0,
+      33,
+      0,
+      "STRING"
+    ],
+    [
+      41,
+      18,
+      0,
+      34,
+      0,
+      "STRING"
+    ],
+    [
+      43,
+      39,
+      0,
+      11,
+      2,
+      "STRING"
+    ],
+    [
+      44,
+      39,
+      0,
+      8,
+      2,
+      "STRING"
+    ],
+    [
+      45,
+      39,
+      0,
+      16,
+      2,
+      "STRING"
+    ],
+    [
+      46,
+      39,
+      0,
+      20,
+      2,
+      "STRING"
+    ],
+    [
+      48,
+      6,
+      1,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      50,
+      19,
+      0,
+      23,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      51,
+      2,
+      0,
+      41,
+      0,
+      "IMAGE"
+    ],
+    [
+      52,
+      7,
+      0,
+      41,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      53,
+      41,
+      0,
+      42,
+      1,
+      "CV_CONTOURS"
+    ],
+    [
+      54,
+      2,
+      0,
+      42,
+      0,
+      "IMAGE"
+    ],
+    [
+      55,
+      42,
+      0,
+      40,
+      0,
+      "IMAGE"
+    ],
+    [
+      56,
+      39,
+      0,
+      42,
+      2,
+      "STRING"
+    ],
+    [
+      58,
+      23,
+      0,
+      24,
+      0,
+      "NPARRAY"
+    ],
+    [
+      59,
+      23,
+      0,
+      26,
+      2,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.2673486306413836,
+      "offset": [
+        676.1655475355544,
+        869.64420464734
+      ]
+    },
+    "frontendVersion": "1.45.20"
+  },
+  "version": 0.4
+}

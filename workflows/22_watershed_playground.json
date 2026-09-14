@@ -1,0 +1,1657 @@
+{
+  "id": "508a10e3-629a-4455-9cfa-dd78d33aafef",
+  "revision": 0,
+  "last_node_id": 31,
+  "last_link_id": 113,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        760,
+        168.62699999999998
+      ],
+      "size": [
+        834,
+        223.015625
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Watershed playground: separating touching blobs\n\nPlain thresholding fuses touching objects into one contour. The watershed recipe: Otsu binary -> open (drop specks) -> the blob cores via distanceTransform (pixels far from any background survive a high threshold on the normalized distance - one core per object even when they touch) -> dilate the binary for the sure-background rim; between them lies the 'unknown' band where cv2.watershed floods from the cores and draws -1 boundary lines where two floods meet. The 'Watershed markers' subgraph builds the int32 seed map from generic arithmetic: connected-component labels + 1, unknown band zeroed. A blank image flows through with seeds=1 and no boundaries - nothing raises."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        383,
+        240
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            19
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "water_coins.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_ImageToCV",
+      "pos": [
+        733,
+        440
+      ],
+      "size": [
+        290,
+        168
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "To grayscale",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "GRAY",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "cv2_threshold",
+      "pos": [
+        1083,
+        440
+      ],
+      "size": [
+        475.59375,
+        264
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "title": "Otsu binary (blobs = white)",
+      "properties": {
+        "Node name for S&R": "cv2_threshold"
+      },
+      "widgets_values": [
+        0,
+        255,
+        "THRESH_BINARY_INV | THRESH_OTSU"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "cv2_getStructuringElement",
+      "pos": [
+        1083,
+        840
+      ],
+      "size": [
+        290,
+        212
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            4,
+            7
+          ]
+        }
+      ],
+      "title": "3x3 ellipse kernel",
+      "properties": {
+        "Node name for S&R": "cv2_getStructuringElement"
+      },
+      "widgets_values": [
+        "MORPH_ELLIPSE",
+        "(3, 3)",
+        "(-1, -1)"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        1630,
+        440
+      ],
+      "size": [
+        290,
+        338
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 3
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            5,
+            6,
+            8
+          ]
+        }
+      ],
+      "title": "Open: drop specks",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_OPEN",
+        "(-1, -1)",
+        2,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_CVPreview",
+      "pos": [
+        1630,
+        40
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Cleaned binary",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 8,
+      "type": "cv2_dilate",
+      "pos": [
+        1980,
+        240
+      ],
+      "size": [
+        290,
+        312
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 6
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "Sure background rim (dilated)",
+      "properties": {
+        "Node name for S&R": "cv2_dilate"
+      },
+      "widgets_values": [
+        "(-1, -1)",
+        3,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "cv2_distanceTransform",
+      "pos": [
+        1980,
+        640
+      ],
+      "size": [
+        362.828125,
+        164
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            9,
+            10
+          ]
+        }
+      ],
+      "title": "[cv2.distanceTransform] Distance to background",
+      "properties": {
+        "Node name for S&R": "cv2_distanceTransform"
+      },
+      "widgets_values": [
+        "DIST_L2",
+        5,
+        "CV_32F"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "cv2_normalize",
+      "pos": [
+        2350,
+        640
+      ],
+      "size": [
+        290,
+        230
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        },
+        {
+          "name": "dst",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            11,
+            12
+          ]
+        }
+      ],
+      "title": "Stretch to 0..255 uint8",
+      "properties": {
+        "Node name for S&R": "cv2_normalize"
+      },
+      "widgets_values": [
+        0,
+        255,
+        "NORM_MINMAX",
+        "CV_8U"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_CVPreview",
+      "pos": [
+        2350,
+        1040
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Distance heatmap",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        false
+      ]
+    },
+    {
+      "id": 12,
+      "type": "cv2_threshold",
+      "pos": [
+        2700,
+        640
+      ],
+      "size": [
+        352.15625,
+        264
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            14,
+            16
+          ]
+        }
+      ],
+      "title": "Sure foreground cores (>59% of max distance)",
+      "properties": {
+        "Node name for S&R": "cv2_threshold"
+      },
+      "widgets_values": [
+        150,
+        255,
+        "THRESH_BINARY"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "cv2_subtract",
+      "pos": [
+        2700,
+        240
+      ],
+      "size": [
+        290,
+        152
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 13
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 14
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            15,
+            17
+          ]
+        }
+      ],
+      "title": "Unknown band (rim minus cores)",
+      "properties": {
+        "Node name for S&R": "cv2_subtract"
+      },
+      "widgets_values": [
+        "same as input"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_CVPreview",
+      "pos": [
+        2700,
+        40
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Unknown band",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 15,
+      "type": "5a8e2c4d-7f31-49b6-8c0a-d92e4b7a6f10",
+      "pos": [
+        3050,
+        440
+      ],
+      "size": [
+        320,
+        124
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "sure_foreground",
+          "type": "NPARRAY",
+          "link": 16
+        },
+        {
+          "name": "unknown",
+          "type": "NPARRAY",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "markers",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        },
+        {
+          "name": "seeds",
+          "type": "INT",
+          "links": [
+            113
+          ]
+        }
+      ],
+      "title": "[Watershed markers]",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 17,
+      "type": "cv2_watershed",
+      "pos": [
+        3459,
+        440
+      ],
+      "size": [
+        290,
+        104
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        },
+        {
+          "name": "markers",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            21,
+            22
+          ]
+        }
+      ],
+      "title": "[cv2.watershed] Watershed flood",
+      "properties": {
+        "Node name for S&R": "cv2_watershed"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 18,
+      "type": "CV_CVPreview",
+      "pos": [
+        3809,
+        240
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Regions (labels heatmap)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        false
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_ScalarArray",
+      "pos": [
+        3459,
+        840
+      ],
+      "size": [
+        286,
+        140
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "The boundary label (-1)",
+      "properties": {
+        "Node name for S&R": "CV_ScalarArray"
+      },
+      "widgets_values": [
+        "(-1,)",
+        "int32"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "cv2_compare",
+      "pos": [
+        3809,
+        640
+      ],
+      "size": [
+        294.390625,
+        128
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 22
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "title": "Boundary pixels (label == -1)",
+      "properties": {
+        "Node name for S&R": "cv2_compare"
+      },
+      "widgets_values": [
+        "CMP_EQ"
+      ]
+    },
+    {
+      "id": 21,
+      "type": "CV_CVPreview",
+      "pos": [
+        4159,
+        640
+      ],
+      "size": [
+        272.390625,
+        364
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Watershed boundaries",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 22,
+      "type": "PreviewAny",
+      "pos": [
+        3419,
+        600.4110600000013
+      ],
+      "size": [
+        326.453125,
+        176
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 113
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "How many seeds (incl. background)?",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "Note",
+      "pos": [
+        349.69999999999976,
+        645.9842975206612
+      ],
+      "size": [
+        349.984375,
+        216.375
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "water_coins.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   water_coins.jpg\nCreator: OpenCV project (sample data)\nLicense: Apache-2.0 (OpenCV) - sample data redistributed with the library\n         https://www.apache.org/licenses/LICENSE-2.0\nSource:  https://github.com/opencv/opencv (samples/data/water_coins.jpg)\nSize:    252x312 (the canonical OpenCV watershed tutorial image)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      4,
+      1,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      5,
+      0,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      5,
+      6,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      6,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      7,
+      5,
+      0,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      8,
+      6,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      9,
+      9,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      9,
+      0,
+      10,
+      2,
+      "NPARRAY"
+    ],
+    [
+      11,
+      10,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      10,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      8,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      12,
+      1,
+      13,
+      1,
+      "NPARRAY"
+    ],
+    [
+      15,
+      13,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      12,
+      1,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      17,
+      13,
+      0,
+      15,
+      1,
+      "NPARRAY"
+    ],
+    [
+      19,
+      2,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      20,
+      15,
+      0,
+      17,
+      1,
+      "NPARRAY"
+    ],
+    [
+      21,
+      17,
+      0,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      22,
+      17,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      19,
+      0,
+      20,
+      1,
+      "NPARRAY"
+    ],
+    [
+      24,
+      20,
+      0,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      113,
+      15,
+      1,
+      22,
+      0,
+      "INT"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "5a8e2c4d-7f31-49b6-8c0a-d92e4b7a6f10",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 31,
+          "lastLinkId": 113,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Watershed markers",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "ffa24863-32d4-589c-a30c-308a93694b8f",
+            "name": "sure_foreground",
+            "type": "NPARRAY",
+            "linkIds": [
+              101,
+              102
+            ],
+            "localized_name": "sure_foreground",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "838365fd-9702-5bec-8639-4ae689d61f80",
+            "name": "unknown",
+            "type": "NPARRAY",
+            "linkIds": [
+              106
+            ],
+            "localized_name": "unknown",
+            "pos": [
+              140,
+              240
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "dbf3f4f9-36de-5363-a958-79780871f5db",
+            "name": "markers",
+            "type": "NPARRAY",
+            "linkIds": [
+              111
+            ],
+            "localized_name": "markers",
+            "pos": [
+              2100,
+              220
+            ]
+          },
+          {
+            "id": "a9c87f92-2ae0-54c7-bba8-ad8b81531f44",
+            "name": "seeds",
+            "type": "INT",
+            "linkIds": [
+              112
+            ],
+            "localized_name": "seeds",
+            "pos": [
+              2100,
+              240
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 24,
+            "type": "cv2_connectedComponents",
+            "pos": [
+              40,
+              40
+            ],
+            "size": [
+              290,
+              156
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "int",
+                "name": "int",
+                "type": "INT",
+                "links": [
+                  112
+                ]
+              },
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              }
+            ],
+            "title": "Label the cores (int32)",
+            "properties": {
+              "Node name for S&R": "cv2_connectedComponents"
+            },
+            "widgets_values": [
+              8,
+              "CV_32S"
+            ]
+          },
+          {
+            "id": 25,
+            "type": "CV_ConstantLike",
+            "pos": [
+              40,
+              240
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  103
+                ]
+              }
+            ],
+            "title": "All-ones (uint8)",
+            "properties": {
+              "Node name for S&R": "CV_ConstantLike"
+            },
+            "widgets_values": [
+              1,
+              "grayscale (single channel)"
+            ]
+          },
+          {
+            "id": 26,
+            "type": "CV_CastArray",
+            "pos": [
+              390,
+              240
+            ],
+            "size": [
+              336.1216796875,
+              108
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  105
+                ]
+              }
+            ],
+            "title": "Ones as int32 (cv2.add refuses mixed types)",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "int32"
+            ]
+          },
+          {
+            "id": 27,
+            "type": "cv2_add",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              309.987890625,
+              152
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 104
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 105
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "title": "Labels + 1 (background seed becomes 1)",
+            "properties": {
+              "Node name for S&R": "cv2_add"
+            },
+            "widgets_values": [
+              "same as input"
+            ]
+          },
+          {
+            "id": 28,
+            "type": "cv2_bitwise_not",
+            "pos": [
+              390,
+              440
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 106
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "title": "Known region (not unknown)",
+            "properties": {
+              "Node name for S&R": "cv2_bitwise_not"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 29,
+            "type": "cv2_threshold",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 107
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  108
+                ]
+              }
+            ],
+            "title": "Known as 0/1",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              127,
+              1,
+              "THRESH_BINARY"
+            ]
+          },
+          {
+            "id": 30,
+            "type": "CV_CastArray",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  110
+                ]
+              }
+            ],
+            "title": "0/1 as int32",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "int32"
+            ]
+          },
+          {
+            "id": 31,
+            "type": "cv2_multiply",
+            "pos": [
+              1440,
+              240
+            ],
+            "size": [
+              374.8541015625,
+              156
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 109
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 110
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "title": "Zero the unknown band (watershed decides there)",
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 25,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": 25,
+            "origin_slot": 0,
+            "target_id": 26,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 24,
+            "origin_slot": 1,
+            "target_id": 27,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 26,
+            "origin_slot": 0,
+            "target_id": 27,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 28,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 28,
+            "origin_slot": 0,
+            "target_id": 29,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": 29,
+            "origin_slot": 1,
+            "target_id": 30,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": 27,
+            "origin_slot": 0,
+            "target_id": 31,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": 30,
+            "origin_slot": 0,
+            "target_id": 31,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 31,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": 24,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "INT"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9090909090909097,
+      "offset": [
+        39.248850117514294,
+        26.35315019932077
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

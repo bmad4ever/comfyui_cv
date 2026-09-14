@@ -1,0 +1,915 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "b3f27c4e-58a1-4d90-9c6b-2e7f1a04d5b8",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        320,
+        156
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "estimate",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "truth",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "gap_mask",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "units",
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "plot",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Trajectory Plot (Top-Down)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "b3f27c4e-58a1-4d90-9c6b-2e7f1a04d5b8",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 11,
+          "lastLinkId": 120,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Trajectory Plot (Top-Down)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "7430aaff-9be6-5789-9a01-7ac45d54090d",
+            "name": "estimate",
+            "type": "NPARRAY",
+            "linkIds": [
+              101,
+              104
+            ],
+            "localized_name": "estimate",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "ecef45e0-c6f5-5d6e-a4c8-ffb156d0d37b",
+            "name": "truth",
+            "type": "NPARRAY",
+            "linkIds": [
+              102
+            ],
+            "localized_name": "truth",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "afa5ed5c-7841-5799-95f4-0796014b3f2f",
+            "name": "gap_mask",
+            "type": "NPARRAY",
+            "linkIds": [
+              119
+            ],
+            "localized_name": "gap_mask",
+            "pos": [
+              140,
+              260
+            ]
+          },
+          {
+            "id": "2ff87509-ded6-58ac-b3a2-52e329ff334b",
+            "name": "units",
+            "type": "STRING",
+            "linkIds": [
+              114
+            ],
+            "localized_name": "units",
+            "pos": [
+              140,
+              280
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "a3b8e153-6107-5149-a011-35c39df19a7a",
+            "name": "plot",
+            "type": "NPARRAY",
+            "linkIds": [
+              120
+            ],
+            "localized_name": "plot",
+            "pos": [
+              2100,
+              220
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_MergePointClouds",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              148
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points_a",
+                "type": "NPARRAY",
+                "link": 101
+              },
+              {
+                "name": "points_b",
+                "type": "NPARRAY",
+                "link": 102,
+                "shape": 7
+              },
+              {
+                "name": "colors_a",
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "name": "colors_b",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  103
+                ]
+              },
+              {
+                "name": "colors",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "name": "count_a",
+                "type": "INT",
+                "links": [
+                  106
+                ]
+              },
+              {
+                "name": "count_b",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_MergePointClouds"
+            },
+            "widgets_values": [],
+            "title": "Both tracks, for a shared extent"
+          },
+          {
+            "id": 2,
+            "type": "CV_ProjectToPlane",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  105,
+                  108,
+                  110,
+                  113
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ProjectToPlane"
+            },
+            "widgets_values": [
+              "XZ (top-down)"
+            ],
+            "title": "Shared extent, top-down (XZ)"
+          },
+          {
+            "id": 3,
+            "type": "CV_ProjectToPlane",
+            "pos": [
+              740,
+              240
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ProjectToPlane"
+            },
+            "widgets_values": [
+              "XZ (top-down)"
+            ],
+            "title": "Estimate, top-down (XZ)"
+          },
+          {
+            "id": 4,
+            "type": "CV_SliceArray",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              234
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 105
+              },
+              {
+                "name": "start",
+                "type": "INT",
+                "widget": {
+                  "name": "start"
+                },
+                "link": 106
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_SliceArray"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              1,
+              true
+            ],
+            "title": "Truth = the merged tail (empty if unconnected)"
+          },
+          {
+            "id": 5,
+            "type": "CV_FitPointsToBox",
+            "pos": [
+              1090,
+              240
+            ],
+            "size": [
+              290,
+              252
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 107
+              },
+              {
+                "name": "extent_from",
+                "type": "NPARRAY",
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  118
+                ]
+              },
+              {
+                "name": "scale",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "offset_x",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "offset_y",
+                "type": "FLOAT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_FitPointsToBox"
+            },
+            "widgets_values": [
+              700,
+              700,
+              40,
+              "y up (world)"
+            ],
+            "title": "Estimate -> pixels (shared mapping)"
+          },
+          {
+            "id": 6,
+            "type": "CV_FitPointsToBox",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              252
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "name": "extent_from",
+                "type": "NPARRAY",
+                "link": 110
+              }
+            ],
+            "outputs": [
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  116
+                ]
+              },
+              {
+                "name": "scale",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "offset_x",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "offset_y",
+                "type": "FLOAT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_FitPointsToBox"
+            },
+            "widgets_values": [
+              700,
+              700,
+              40,
+              "y up (world)"
+            ],
+            "title": "Truth -> pixels (shared mapping)"
+          },
+          {
+            "id": 7,
+            "type": "EmptyImage",
+            "pos": [
+              390,
+              640
+            ],
+            "size": [
+              290,
+              186
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "EmptyImage"
+            },
+            "widgets_values": [
+              700,
+              700,
+              1,
+              0
+            ],
+            "title": "Blank plot canvas"
+          },
+          {
+            "id": 8,
+            "type": "CV_ImageToCV",
+            "pos": [
+              740,
+              640
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 111
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  112
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ImageToCV"
+            },
+            "widgets_values": [
+              "BGR (OpenCV default)",
+              "uint8 (0-255)",
+              0
+            ],
+            "title": "Canvas -> BGR array"
+          },
+          {
+            "id": 9,
+            "type": "CV_DrawPlotFrame",
+            "pos": [
+              1440,
+              640
+            ],
+            "size": [
+              290,
+              490
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "source",
+                "type": "NPARRAY",
+                "link": 112
+              },
+              {
+                "name": "extent_from",
+                "type": "NPARRAY",
+                "link": 113
+              },
+              {
+                "name": "units",
+                "type": "STRING",
+                "widget": {
+                  "name": "units"
+                },
+                "link": 114
+              }
+            ],
+            "outputs": [
+              {
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  115
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DrawPlotFrame"
+            },
+            "widgets_values": [
+              0.0,
+              100.0,
+              0.0,
+              100.0,
+              40,
+              6,
+              6,
+              "y up (world)",
+              "m",
+              "x",
+              "z",
+              "bottom-left",
+              "(200, 200, 200)",
+              "(70, 70, 70)"
+            ],
+            "title": "Axes, grid and scale bar"
+          },
+          {
+            "id": 10,
+            "type": "CV_DrawPath",
+            "pos": [
+              1790,
+              440
+            ],
+            "size": [
+              290,
+              386
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "source",
+                "type": "NPARRAY",
+                "link": 115
+              },
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 116
+              },
+              {
+                "name": "gap_mask",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  117
+                ]
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DrawPath"
+            },
+            "widgets_values": [
+              "(160, 160, 160)",
+              "solid",
+              "COLORMAP_VIRIDIS",
+              2,
+              "solid",
+              "filled square",
+              "triangle up",
+              7,
+              0,
+              "start / end"
+            ],
+            "title": "Ground truth (grey, solid)"
+          },
+          {
+            "id": 11,
+            "type": "CV_DrawPath",
+            "pos": [
+              2140,
+              440
+            ],
+            "size": [
+              290,
+              386
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "source",
+                "type": "NPARRAY",
+                "link": 117
+              },
+              {
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 118
+              },
+              {
+                "name": "gap_mask",
+                "type": "NPARRAY",
+                "link": 119
+              }
+            ],
+            "outputs": [
+              {
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  120
+                ]
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DrawPath"
+            },
+            "widgets_values": [
+              "(0, 200, 255)",
+              "colormap along path",
+              "COLORMAP_VIRIDIS",
+              2,
+              "solid",
+              "open square",
+              "triangle down",
+              6,
+              40,
+              "first / last index"
+            ],
+            "title": "Estimate (time ramp, arrows)"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 1,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 1,
+            "origin_slot": 2,
+            "target_id": 4,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 107,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 112,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 9,
+            "target_slot": 2,
+            "type": "STRING"
+          },
+          {
+            "id": 115,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 117,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 118,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 11,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          }
+        ]
+      }
+    ]
+  }
+}

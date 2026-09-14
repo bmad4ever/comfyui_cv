@@ -1,0 +1,1372 @@
+{
+  "id": "72879841-4e46-438b-9787-6f52db419bad",
+  "revision": 0,
+  "last_node_id": 29,
+  "last_link_id": 26,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        40
+      ],
+      "size": [
+        993.546875,
+        359.453125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Background subtraction with the real cv2 subtractors (core + bgsegm)\n\ncv2's BackgroundSubtractor objects are STATEFUL: apply() mutates the model on every call, so one cannot sit in a graph as a node output - the result would depend on how many times the node happened to run.\n\n'CV Background Subtract (Batch)' solves that by owning the whole life cycle inside ONE execute(): it creates the subtractor, streams the entire IMAGE batch through it in order, and drops it. Nothing stateful escapes, so the node is pure - the same batch always gives the same masks.\n\nALGORITHMS: MOG2 and KNN ship with core OpenCV; MOG, GMG, CNT, GSOC and LSBP come from contrib's bgsegm.\nThe usual advice is that GSOC and LSBP are the most accurate. That is true ONCE THEY HAVE CONVERGED, and convergence costs several hundred frames - which is the whole reason this graph loads a 200-frame clip instead of a couple of seconds. MEASURED on it (warmup_frames 12, learning_rate -1), against a temporal-median reference that calls 5.0% of the frame moving:\n    MOG2 4.6%   KNN 4.6%   MOG 3.7%   CNT 7.9%   GSOC 9.3%   LSBP 13.3%\nAll six now sit in the same range, so this is a fair comparison rather than a trick question: MOG2 and KNN land on the reference, MOG is the most conservative, and the bgsegm three read 1.5-3x high but are genuinely tracking the scene.\nShorten the clip and that collapses. Slice only the first 50 frames of this SAME video and CNT/GSOC/LSBP jump to 16.0/12.5/16.0% while MOG2 barely moves (3.7%) - they are not less accurate, they are unconverged. warmup_frames cannot rescue it either: it spends frames you do not have. Try it - set the Trim Video duration to 5 seconds and watch only the bgsegm branch move.\nThis is what 'foreground_fraction' is FOR - on static-camera footage a healthy result is a small minority of pixels (roughly 0.05-0.2), and anything above ~0.3 means the model never settled.\n\nwarmup_frames drops the first N results, which is what you want because every one of these models needs a few frames before its estimate means anything - without it the first frames come back almost entirely foreground. learning_rate -1 lets the algorithm choose its own rate; 0 freezes the model after warmup (useful when something parks in frame and you do NOT want it absorbed into the background).\n\nCompare with exercise_background_subtraction.json, which does the same job with a temporal-median plate and an Inspire foreach. That version is stateless and works on any single frame; this one is a real adaptive model and handles lighting drift, but it needs the frames in order."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadVideo",
+      "pos": [
+        40,
+        440
+      ],
+      "size": [
+        409.046875,
+        326
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "title": "Fixed-camera clip, 200 frames (place in ComfyUI/input)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadVideo"
+      },
+      "widgets_values": [
+        "people_walking.mp4",
+        "video"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "Video Slice",
+      "pos": [
+        450,
+        440
+      ],
+      "size": [
+        374.546875,
+        160
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VIDEO",
+          "type": "VIDEO",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "Whole clip (the bgsegm models need every frame)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "Video Slice"
+      },
+      "widgets_values": [
+        0,
+        0,
+        false
+      ]
+    },
+    {
+      "id": 4,
+      "type": "GetVideoComponents",
+      "pos": [
+        830,
+        440
+      ],
+      "size": [
+        290,
+        126
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            3,
+            4,
+            5,
+            16
+          ]
+        },
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": null
+        },
+        {
+          "name": "fps",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "bit_depth",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Clip -> IMAGE batch",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "GetVideoComponents"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "CV_BackgroundSubtractBatch",
+      "pos": [
+        1183,
+        12.020633226609903
+      ],
+      "size": [
+        620,
+        256
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "foreground",
+          "type": "MASK",
+          "links": [
+            6
+          ]
+        },
+        {
+          "name": "background",
+          "type": "NPARRAY",
+          "links": [
+            15,
+            18,
+            24
+          ]
+        },
+        {
+          "name": "foreground_fraction",
+          "type": "FLOAT",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "[CV Background Subtract (Batch)] Background subtract: MOG2 (core, sane default)",
+      "properties": {
+        "Node name for S&R": "CV_BackgroundSubtractBatch"
+      },
+      "widgets_values": [
+        "MOG2 (core)",
+        12,
+        -1,
+        true,
+        false
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_BackgroundSubtractBatch",
+      "pos": [
+        1180,
+        434.92489658396323
+      ],
+      "size": [
+        670,
+        256
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "foreground",
+          "type": "MASK",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "background",
+          "type": "NPARRAY",
+          "links": [
+            25
+          ]
+        },
+        {
+          "name": "foreground_fraction",
+          "type": "FLOAT",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "title": "[CV Background Subtract (Batch)] Background subtract: MOG (bgsegm, most conservative)",
+      "properties": {
+        "Node name for S&R": "CV_BackgroundSubtractBatch"
+      },
+      "widgets_values": [
+        "MOG (bgsegm)",
+        12,
+        -1,
+        true,
+        false
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_BackgroundSubtractBatch",
+      "pos": [
+        1180,
+        830.423101687291
+      ],
+      "size": [
+        700.5,
+        256
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "foreground",
+          "type": "MASK",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "background",
+          "type": "NPARRAY",
+          "links": [
+            26
+          ]
+        },
+        {
+          "name": "foreground_fraction",
+          "type": "FLOAT",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "[CV Background Subtract (Batch)] Background subtract: GSOC (bgsegm, accurate once converged)",
+      "properties": {
+        "Node name for S&R": "CV_BackgroundSubtractBatch"
+      },
+      "widgets_values": [
+        "GSOC (bgsegm)",
+        12,
+        -1,
+        true,
+        false
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_OverlayMasks",
+      "pos": [
+        1813,
+        12.020633226609903
+      ],
+      "size": [
+        360,
+        130
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "link": 6
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        }
+      ],
+      "title": "Foreground overlay (MOG2 (core, sane default))",
+      "properties": {
+        "Node name for S&R": "CV_OverlayMasks"
+      },
+      "widgets_values": [
+        0.6
+      ]
+    },
+    {
+      "id": 9,
+      "type": "PreviewImage",
+      "pos": [
+        2362,
+        12.020633226609903
+      ],
+      "size": [
+        324.5625,
+        290
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Moving objects: MOG2 (core, sane default)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "CV_CVInspect",
+      "pos": [
+        3350,
+        382.9483482752951
+      ],
+      "size": [
+        413.109375,
+        80.8125
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "Foreground fraction (MOG2 (core, sane default))",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "CV_OverlayMasks",
+      "pos": [
+        1860,
+        434.92489658396323
+      ],
+      "size": [
+        413.6875,
+        130
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "link": 9
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "IMAGE",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "Foreground overlay (MOG (bgsegm, most conservative))",
+      "properties": {
+        "Node name for S&R": "CV_OverlayMasks"
+      },
+      "widgets_values": [
+        0.6
+      ]
+    },
+    {
+      "id": 12,
+      "type": "PreviewImage",
+      "pos": [
+        2356,
+        434.92489658396323
+      ],
+      "size": [
+        380.015625,
+        290
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Moving objects: MOG (bgsegm, most conservative)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "CV_CVInspect",
+      "pos": [
+        3350,
+        582.9483482752956
+      ],
+      "size": [
+        420,
+        82
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            21
+          ]
+        }
+      ],
+      "title": "Foreground fraction (MOG (bgsegm, most conservative))",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "CV_OverlayMasks",
+      "pos": [
+        1880,
+        830.423101687291
+      ],
+      "size": [
+        430,
+        130
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "link": 12
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "IMAGE",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "Foreground overlay (GSOC (bgsegm, needs a LONG clip))",
+      "properties": {
+        "Node name for S&R": "CV_OverlayMasks"
+      },
+      "widgets_values": [
+        0.6
+      ]
+    },
+    {
+      "id": 15,
+      "type": "PreviewImage",
+      "pos": [
+        2357,
+        830.423101687291
+      ],
+      "size": [
+        390,
+        290
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Moving objects: GSOC (bgsegm, needs a LONG clip)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 16,
+      "type": "CV_CVInspect",
+      "pos": [
+        3350,
+        782.9483482752966
+      ],
+      "size": [
+        430,
+        81.96875
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "title": "Foreground fraction (GSOC (bgsegm, needs a LONG clip))",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CV_CVPreview",
+      "pos": [
+        2102,
+        1390.318480232615
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Learned background plate (MOG2)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_TemporalReduce",
+      "pos": [
+        1412,
+        1390.318480232615
+      ],
+      "size": [
+        680,
+        108
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE,LATENT",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "plate",
+          "type": "NPARRAY",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "title": "[CV Temporal Reduce (Background Plate)] Temporal median plate (the stateless alternative)",
+      "properties": {
+        "Node name for S&R": "CV_TemporalReduce"
+      },
+      "widgets_values": [
+        "median (robust static background)"
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_ImageQuality",
+      "pos": [
+        2452,
+        1390.318480232615
+      ],
+      "size": [
+        300,
+        152
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "reference",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 17
+        },
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "score",
+          "type": "FLOAT",
+          "links": [
+            19
+          ]
+        },
+        {
+          "name": "higher_is_better",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "quality_map",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "SSIM: MOG2 plate vs temporal median",
+      "properties": {
+        "Node name for S&R": "CV_ImageQuality"
+      },
+      "widgets_values": [
+        "SSIM (structural similarity)"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_CVInspect",
+      "pos": [
+        2802,
+        1390.318480232615
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "Do the two plates agree?",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "PreviewAny",
+      "pos": [
+        3829,
+        382.9483482752951
+      ],
+      "size": [
+        472.78125,
+        162
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Foreground fraction (MOG2 (core, sane default))",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "PreviewAny",
+      "pos": [
+        3829,
+        582.9483482752956
+      ],
+      "size": [
+        530,
+        162
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Foreground fraction (MOG (bgsegm, most conservative))",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 23,
+      "type": "PreviewAny",
+      "pos": [
+        3829,
+        782.9483482752966
+      ],
+      "size": [
+        540,
+        162
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Foreground fraction (GSOC (bgsegm, needs a LONG clip))",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 24,
+      "type": "PreviewAny",
+      "pos": [
+        3132,
+        1390.318480232615
+      ],
+      "size": [
+        320,
+        162
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Do the two plates agree?",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 25,
+      "type": "Note",
+      "pos": [
+        41,
+        823.7458841454174
+      ],
+      "size": [
+        483.90625,
+        217.859375
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "people_walking.mp4",
+      "properties": {},
+      "widgets_values": [
+        "Title:   vtest.avi (OpenCV sample clip)\nCreator: OpenCV contributors (samples/data)\nLicense: Apache License 2.0 (attribution)\n         https://www.apache.org/licenses/LICENSE-2.0\nSource:  https://github.com/opencv/opencv/blob/4.x/samples/data/vtest.avi\nSize:    200 frames, 512x288 @ 10fps - a crop of the walkway band out of\n         the 768x576 original (the full view moves only 2.1% of its\n         pixels, below a useful foreground_fraction).\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 27,
+      "type": "CV_CVPreview",
+      "pos": [
+        2756,
+        17.509212910720038
+      ],
+      "size": [
+        515.25,
+        370.34375
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: background - Background subtract: MOG2 (core, sane default)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 28,
+      "type": "CV_CVPreview",
+      "pos": [
+        2762,
+        434.5084286262965
+      ],
+      "size": [
+        570.703125,
+        358.890625
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: background - Background subtract: MOG (bgsegm, most conservative)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 29,
+      "type": "CV_CVPreview",
+      "pos": [
+        2760,
+        832.001939864787
+      ],
+      "size": [
+        580,
+        386.453125
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: background - Background subtract: GSOC (bgsegm, needs a LONG clip)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "VIDEO"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "VIDEO"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      4,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      4,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      5,
+      0,
+      8,
+      0,
+      "MASK"
+    ],
+    [
+      7,
+      8,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      5,
+      2,
+      10,
+      0,
+      "FLOAT"
+    ],
+    [
+      9,
+      6,
+      0,
+      11,
+      0,
+      "MASK"
+    ],
+    [
+      10,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      6,
+      2,
+      13,
+      0,
+      "FLOAT"
+    ],
+    [
+      12,
+      7,
+      0,
+      14,
+      0,
+      "MASK"
+    ],
+    [
+      13,
+      14,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      7,
+      2,
+      16,
+      0,
+      "FLOAT"
+    ],
+    [
+      15,
+      5,
+      1,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      4,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      18,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      18,
+      5,
+      1,
+      19,
+      1,
+      "NPARRAY"
+    ],
+    [
+      19,
+      19,
+      0,
+      20,
+      0,
+      "FLOAT"
+    ],
+    [
+      20,
+      10,
+      0,
+      21,
+      0,
+      "STRING"
+    ],
+    [
+      21,
+      13,
+      0,
+      22,
+      0,
+      "STRING"
+    ],
+    [
+      22,
+      16,
+      0,
+      23,
+      0,
+      "STRING"
+    ],
+    [
+      23,
+      20,
+      0,
+      24,
+      0,
+      "STRING"
+    ],
+    [
+      24,
+      5,
+      1,
+      27,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      6,
+      1,
+      28,
+      0,
+      "NPARRAY"
+    ],
+    [
+      26,
+      7,
+      1,
+      29,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.32491475466682335,
+      "offset": [
+        893.3017111778605,
+        607.8628750590815
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

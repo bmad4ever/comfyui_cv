@@ -1,0 +1,243 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "d41f6c28-9b73-4e05-8a16-7c2f0d95b3e1",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        320,
+        132
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "channel 0",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "channel 1",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "channel 2",
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Merge Channels (3)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "d41f6c28-9b73-4e05-8a16-7c2f0d95b3e1",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 1,
+          "lastLinkId": 104,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Merge Channels (3)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "f0944008-d3ef-5c06-83c9-79edd398b280",
+            "name": "channel 0",
+            "type": "NPARRAY",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "channel 0",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "e0f07480-4779-521a-a94c-cfc64a1c22f5",
+            "name": "channel 1",
+            "type": "NPARRAY",
+            "linkIds": [
+              102
+            ],
+            "localized_name": "channel 1",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "04d39609-350a-561b-9676-18dc39d359f1",
+            "name": "channel 2",
+            "type": "NPARRAY",
+            "linkIds": [
+              103
+            ],
+            "localized_name": "channel 2",
+            "pos": [
+              140,
+              260
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "c299a7b3-2206-5705-8ca7-dc1b1692e167",
+            "name": "nparray",
+            "type": "NPARRAY",
+            "linkIds": [
+              104
+            ],
+            "localized_name": "nparray",
+            "pos": [
+              2100,
+              220
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_ConcatArrays",
+            "pos": [
+              420,
+              320
+            ],
+            "size": [
+              290,
+              174
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "array1",
+                "type": "NPARRAY",
+                "link": 101
+              },
+              {
+                "name": "array2",
+                "type": "NPARRAY",
+                "link": 102
+              },
+              {
+                "name": "array3",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "name": "array4",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              },
+              {
+                "name": "length",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ConcatArrays"
+            },
+            "widgets_values": [
+              2
+            ],
+            "title": "Stack 3 channels into one array"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 1,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 1,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          }
+        ]
+      }
+    ]
+  }
+}

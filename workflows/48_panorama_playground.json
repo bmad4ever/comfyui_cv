@@ -1,0 +1,2366 @@
+{
+  "id": "6c1c080a-a613-4389-9c1a-5b19c0579ec8",
+  "revision": 0,
+  "last_node_id": 164,
+  "last_link_id": 173,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        1000,
+        12.584366157729743
+      ],
+      "size": [
+        1000.65625,
+        239.28125
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Panorama Stitching Playground\n\nThree approaches to stitch 2 overlapping images side by side:\n\n1. SUBGRAPH: manual pipeline (ORB → BFMatcher → RANSAC → StitchCanvas → ConstantLike masks → 4×warpPerspective BORDER_CONSTANT → FeatherBlend).\n\n2. STITCH (AUTO): cv2.Stitcher.create() - one-click, black-box stitching.\n\n3. STITCH (ADVANCED): cv2.detail pipeline with full control over features, matching, warps, exposure compensation, seam finding, and blending.\n\nImages: panorama_A.png and panorama_B.png (place overlapping photos in ComfyUI/input)."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        68.44073837930273,
+        240
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            139,
+            164
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Panorama A",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "panorama_A.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        68.44073837930273,
+        640
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            149,
+            165
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Panorama B",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "panorama_B.png",
+        "image"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "a9b7c3d5-1e24-4f68-9a0c-6d8e2b5f17a4",
+      "pos": [
+        1007,
+        709.5562349379422
+      ],
+      "size": [
+        363.515625,
+        102
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image_a",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 164
+        },
+        {
+          "name": "image_1",
+          "type": "IMAGE",
+          "link": 165
+        }
+      ],
+      "outputs": [
+        {
+          "name": "panorama",
+          "type": "NPARRAY",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[Panorama Stitch (pipeline)] Subgraph: manual stitch",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 8,
+      "type": "CV_CVPreview",
+      "pos": [
+        1005,
+        301.98396045153635
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Subgraph panorama",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_CVPreview",
+      "pos": [
+        1416,
+        298.411315668802
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 150
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Auto stitch panorama",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_CVPreview",
+      "pos": [
+        1792,
+        303.4022868460839
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 147
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Advanced stitch panorama",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 27,
+      "type": "CreateList",
+      "pos": [
+        1011,
+        863.5524714960691
+      ],
+      "size": [
+        225,
+        98
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "input0",
+          "name": "inputs.input0",
+          "type": "IMAGE",
+          "link": 139
+        },
+        {
+          "label": "input1",
+          "name": "inputs.input1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 149
+        },
+        {
+          "label": "input2",
+          "name": "inputs.input2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "list",
+          "shape": 6,
+          "type": "IMAGE",
+          "links": [
+            143,
+            145
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "CreateList"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 28,
+      "type": "CV_Stitch_List",
+      "pos": [
+        1407,
+        713.495552782852
+      ],
+      "size": [
+        302.96875,
+        344
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image list",
+          "name": "images",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 143
+        },
+        {
+          "label": "mask list",
+          "name": "masks",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "panorama",
+          "type": "NPARRAY",
+          "links": [
+            150
+          ]
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "success",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_Stitch_List"
+      },
+      "widgets_values": [
+        "Stitcher_PANORAMA",
+        -1,
+        -1,
+        -1,
+        1,
+        "true",
+        "INTER_LINEAR"
+      ]
+    },
+    {
+      "id": 29,
+      "type": "CV_Stitch_Advanced_List",
+      "pos": [
+        1762,
+        719.0866717015097
+      ],
+      "size": [
+        352.953125,
+        760
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image list",
+          "name": "images",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 145
+        },
+        {
+          "label": "mask list",
+          "name": "masks",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "panorama",
+          "type": "NPARRAY",
+          "links": [
+            147
+          ]
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "success",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_Stitch_Advanced_List"
+      },
+      "widgets_values": [
+        "orb",
+        "best_of_2_nearest",
+        -1,
+        -1,
+        "homography",
+        "ray",
+        1,
+        "spherical",
+        "auto",
+        -1,
+        -1,
+        -1,
+        "INTER_LINEAR",
+        "gain_blocks",
+        1,
+        2,
+        32,
+        "gc_colorgrad",
+        "multiband",
+        5
+      ]
+    },
+    {
+      "id": 33,
+      "type": "LoadImage",
+      "pos": [
+        35,
+        1497.7340646057005
+      ],
+      "size": [
+        282.796875,
+        346
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            166
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "boat1.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 34,
+      "type": "LoadImage",
+      "pos": [
+        350,
+        1503.477795674828
+      ],
+      "size": [
+        282.796875,
+        346
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            167
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "boat2.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 35,
+      "type": "LoadImage",
+      "pos": [
+        31,
+        1878.5334354433303
+      ],
+      "size": [
+        282.796875,
+        346
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            168
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "boat3.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 36,
+      "type": "LoadImage",
+      "pos": [
+        352,
+        1899.3490878434654
+      ],
+      "size": [
+        282.796875,
+        346
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            169
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "boat4.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 37,
+      "type": "LoadImage",
+      "pos": [
+        33,
+        2272.8651872211503
+      ],
+      "size": [
+        282.796875,
+        346
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            170
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "boat5.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 38,
+      "type": "LoadImage",
+      "pos": [
+        343,
+        2286.6061066659067
+      ],
+      "size": [
+        282.796875,
+        346
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            171
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "boat6.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 39,
+      "type": "BatchImagesNode",
+      "pos": [
+        1193,
+        2092.9841684532066
+      ],
+      "size": [
+        225,
+        192
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image0",
+          "name": "images.image0",
+          "type": "IMAGE",
+          "link": 166
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 167
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 168
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 169
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 170
+        },
+        {
+          "label": "image5",
+          "name": "images.image5",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 171
+        },
+        {
+          "label": "image6",
+          "name": "images.image6",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            172
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "BatchImagesNode"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 41,
+      "type": "CV_Stitch",
+      "pos": [
+        1498,
+        2092.553290778585
+      ],
+      "size": [
+        407.796875,
+        344
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "image batch",
+          "name": "images",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 172
+        },
+        {
+          "label": "mask batch",
+          "name": "masks",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "panorama",
+          "type": "NPARRAY",
+          "links": [
+            173
+          ]
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "success",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_Stitch"
+      },
+      "widgets_values": [
+        "Stitcher_PANORAMA",
+        0.15,
+        0.15,
+        -1,
+        1,
+        "true",
+        "INTER_LINEAR"
+      ]
+    },
+    {
+      "id": 42,
+      "type": "CV_CVPreview",
+      "pos": [
+        1193,
+        1649.7735524749203
+      ],
+      "size": [
+        903.84375,
+        395.765625
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 173
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 43,
+      "type": "Note",
+      "pos": [
+        40.02598846225828,
+        1248.8954166721617
+      ],
+      "size": [
+        519.984375,
+        196.875
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "boat1.jpg .. boat6.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   boat1.jpg .. boat6.jpg (stitching test set)\nCreator: OpenCV project (opencv_extra test data)\nLicense: Apache-2.0 (OpenCV) - sample data redistributed with the library\n         https://www.apache.org/licenses/LICENSE-2.0\nSource:  https://github.com/opencv/opencv_extra/tree/5.x/testdata/stitching\nSize:    six overlapping views of a boat/harbour scene, captured with horizontal camera rotation\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 44,
+      "type": "Note",
+      "pos": [
+        422.97838270976786,
+        411.04617028322167
+      ],
+      "size": [
+        549.359375,
+        163.984375
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "panorama_A.png / panorama_B.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Neuschwanstein Castle (photochrom print)\nCreator: Photoglob Zurich / Detroit Publishing Co.; held by the Library of Congress\nLicense: Public domain (LoC Photochrom Print Collection, no known restrictions)\nSource:  https://commons.wikimedia.org/wiki/File:Neuschwanstein_Castle_LOC_print.jpg\nSize:    820-wide each - two overlapping crops of the one photochrom\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      7,
+      7,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      139,
+      2,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ],
+    [
+      143,
+      27,
+      0,
+      28,
+      0,
+      "IMAGE"
+    ],
+    [
+      145,
+      27,
+      0,
+      29,
+      0,
+      "IMAGE"
+    ],
+    [
+      147,
+      29,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      149,
+      3,
+      0,
+      27,
+      1,
+      "IMAGE"
+    ],
+    [
+      150,
+      28,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      164,
+      2,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      165,
+      3,
+      0,
+      7,
+      1,
+      "IMAGE"
+    ],
+    [
+      166,
+      33,
+      0,
+      39,
+      0,
+      "IMAGE"
+    ],
+    [
+      167,
+      34,
+      0,
+      39,
+      1,
+      "IMAGE"
+    ],
+    [
+      168,
+      35,
+      0,
+      39,
+      2,
+      "IMAGE"
+    ],
+    [
+      169,
+      36,
+      0,
+      39,
+      3,
+      "IMAGE"
+    ],
+    [
+      170,
+      37,
+      0,
+      39,
+      4,
+      "IMAGE"
+    ],
+    [
+      171,
+      38,
+      0,
+      39,
+      5,
+      "IMAGE"
+    ],
+    [
+      172,
+      39,
+      0,
+      41,
+      0,
+      "IMAGE"
+    ],
+    [
+      173,
+      41,
+      0,
+      42,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "a9b7c3d5-1e24-4f68-9a0c-6d8e2b5f17a4",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 164,
+          "lastLinkId": 173,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Panorama Stitch (pipeline)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -592.6671094629979,
+            547.4091432315705,
+            128,
+            88
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            3136.267089512925,
+            673.0812201409508,
+            128,
+            88
+          ]
+        },
+        "inputs": [
+          {
+            "id": "8f69440f-7b9b-4874-ad5b-6ae4b24a1a9b",
+            "name": "image",
+            "type": "IMAGE",
+            "linkIds": [
+              151
+            ],
+            "label": "image_a",
+            "pos": [
+              -488.6671094629979,
+              571.4091432315705
+            ]
+          },
+          {
+            "id": "97fa6388-0bf0-4874-9163-183de08b69e7",
+            "name": "image_1",
+            "type": "IMAGE",
+            "linkIds": [
+              152
+            ],
+            "pos": [
+              -488.6671094629979,
+              591.4091432315705
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "c5e0ec76-307d-5033-b62b-f36a22b6de42",
+            "name": "panorama",
+            "type": "NPARRAY",
+            "linkIds": [
+              137
+            ],
+            "localized_name": "panorama",
+            "pos": [
+              3160.267089512925,
+              697.0812201409508
+            ]
+          },
+          {
+            "id": "5c08c1d7-814c-528a-a0db-bc52b7107bda",
+            "name": "found",
+            "type": "BOOLEAN",
+            "linkIds": [
+              138
+            ],
+            "localized_name": "found",
+            "pos": [
+              3160.267089512925,
+              717.0812201409508
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 15,
+            "type": "CV_MatchFeatures",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              460
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "keypoints_a",
+                "name": "keypoints_a",
+                "type": "CV_KEYPOINTS",
+                "link": 103
+              },
+              {
+                "localized_name": "descriptors_a",
+                "name": "descriptors_a",
+                "type": "NPARRAY",
+                "link": 104
+              },
+              {
+                "localized_name": "keypoints_b",
+                "name": "keypoints_b",
+                "type": "CV_KEYPOINTS",
+                "link": 105
+              },
+              {
+                "localized_name": "descriptors_b",
+                "name": "descriptors_b",
+                "type": "NPARRAY",
+                "link": 106
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "matches",
+                "name": "matches",
+                "type": "CV_MATCHES",
+                "links": null
+              },
+              {
+                "localized_name": "points_a",
+                "name": "points_a",
+                "type": "NPARRAY",
+                "links": [
+                  107
+                ]
+              },
+              {
+                "localized_name": "points_b",
+                "name": "points_b",
+                "type": "NPARRAY",
+                "links": [
+                  108
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Match B → A",
+            "properties": {
+              "Node name for S&R": "CV_MatchFeatures"
+            },
+            "widgets_values": [
+              "BFMatcher",
+              "auto",
+              "ratio test (Lowe)",
+              0.75,
+              2,
+              0,
+              "auto",
+              5,
+              50,
+              6,
+              12,
+              1
+            ]
+          },
+          {
+            "id": 16,
+            "type": "CV_FindHomography",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              226
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points_a",
+                "name": "points_a",
+                "type": "NPARRAY",
+                "link": 107
+              },
+              {
+                "localized_name": "points_b",
+                "name": "points_b",
+                "type": "NPARRAY",
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "homography",
+                "name": "homography",
+                "type": "NPARRAY",
+                "links": [
+                  111
+                ]
+              },
+              {
+                "localized_name": "inlier_mask",
+                "name": "inlier_mask",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "inlier_count",
+                "name": "inlier_count",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "found",
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": [
+                  134,
+                  138
+                ]
+              }
+            ],
+            "title": "RANSAC homography",
+            "properties": {
+              "Node name for S&R": "CV_FindHomography"
+            },
+            "widgets_values": [
+              "RANSAC",
+              3,
+              10
+            ]
+          },
+          {
+            "id": 17,
+            "type": "CV_StitchCanvas",
+            "pos": [
+              1440,
+              440
+            ],
+            "size": [
+              290,
+              196
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image_warp",
+                "name": "image_warp",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 109
+              },
+              {
+                "localized_name": "image_ref",
+                "name": "image_ref",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 110
+              },
+              {
+                "localized_name": "homography",
+                "name": "homography",
+                "type": "NPARRAY",
+                "link": 111
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "warp_matrix",
+                "name": "warp_matrix",
+                "type": "NPARRAY",
+                "links": [
+                  115,
+                  123
+                ]
+              },
+              {
+                "localized_name": "ref_matrix",
+                "name": "ref_matrix",
+                "type": "NPARRAY",
+                "links": [
+                  119,
+                  127
+                ]
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "localized_name": "width",
+                "name": "width",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "localized_name": "height",
+                "name": "height",
+                "type": "INT",
+                "links": []
+              },
+              {
+                "localized_name": "size",
+                "name": "size",
+                "type": "CV_TUPLE",
+                "links": [
+                  128,
+                  116,
+                  124,
+                  120
+                ]
+              }
+            ],
+            "title": "Canvas (b → a)",
+            "properties": {
+              "Node name for S&R": "CV_StitchCanvas"
+            },
+            "widgets_values": [
+              16384
+            ]
+          },
+          {
+            "id": 18,
+            "type": "CV_ConstantLike",
+            "pos": [
+              1440,
+              40
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 158
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  122
+                ]
+              }
+            ],
+            "title": "Mask B (white)",
+            "properties": {
+              "Node name for S&R": "CV_ConstantLike"
+            },
+            "widgets_values": [
+              255,
+              "grayscale (single channel)"
+            ]
+          },
+          {
+            "id": 19,
+            "type": "CV_ConstantLike",
+            "pos": [
+              1440,
+              840
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 157
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  126
+                ]
+              }
+            ],
+            "title": "Mask A (white)",
+            "properties": {
+              "Node name for S&R": "CV_ConstantLike"
+            },
+            "widgets_values": [
+              255,
+              "grayscale (single channel)"
+            ]
+          },
+          {
+            "id": 23,
+            "type": "cv2_warpPerspective",
+            "pos": [
+              2140,
+              640
+            ],
+            "size": [
+              290,
+              356
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 126
+              },
+              {
+                "localized_name": "M",
+                "name": "M",
+                "type": "NPARRAY",
+                "link": 127
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "dsize"
+                },
+                "link": 128
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  133
+                ]
+              }
+            ],
+            "title": "Warp mask A onto canvas",
+            "properties": {
+              "Node name for S&R": "cv2_warpPerspective"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              "INTER_LINEAR",
+              "BORDER_CONSTANT",
+              "(0, 0, 0, 0)",
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 20,
+            "type": "cv2_warpPerspective",
+            "pos": [
+              1790,
+              40
+            ],
+            "size": [
+              290,
+              356
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 162
+              },
+              {
+                "localized_name": "M",
+                "name": "M",
+                "type": "NPARRAY",
+                "link": 115
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "dsize"
+                },
+                "link": 116
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  130
+                ]
+              }
+            ],
+            "title": "Warp B onto canvas",
+            "properties": {
+              "Node name for S&R": "cv2_warpPerspective"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              "INTER_LINEAR",
+              "BORDER_CONSTANT",
+              "(0, 0, 0, 0)",
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 22,
+            "type": "cv2_warpPerspective",
+            "pos": [
+              2140,
+              40
+            ],
+            "size": [
+              290,
+              356
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 122
+              },
+              {
+                "localized_name": "M",
+                "name": "M",
+                "type": "NPARRAY",
+                "link": 123
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "dsize"
+                },
+                "link": 124
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  132
+                ]
+              }
+            ],
+            "title": "Warp mask B onto canvas",
+            "properties": {
+              "Node name for S&R": "cv2_warpPerspective"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              "INTER_LINEAR",
+              "BORDER_CONSTANT",
+              "(0, 0, 0, 0)",
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 21,
+            "type": "cv2_warpPerspective",
+            "pos": [
+              1790,
+              640
+            ],
+            "size": [
+              290,
+              356
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 161
+              },
+              {
+                "localized_name": "M",
+                "name": "M",
+                "type": "NPARRAY",
+                "link": 119
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "dsize"
+                },
+                "link": 120
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  136,
+                  163
+                ]
+              }
+            ],
+            "title": "Warp A (ref) onto canvas",
+            "properties": {
+              "Node name for S&R": "cv2_warpPerspective"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              "INTER_LINEAR",
+              "BORDER_CONSTANT",
+              "(0, 0, 0, 0)",
+              "ALGO_HINT_DEFAULT"
+            ]
+          },
+          {
+            "id": 31,
+            "type": "CV_ImageToCV",
+            "pos": [
+              -319.02329014773454,
+              631.6966867860883
+            ],
+            "size": [
+              288.80268976477794,
+              106
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "IMAGE",
+                "link": 151
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  153,
+                  157,
+                  161
+                ]
+              }
+            ],
+            "title": "A → BGR NPARRAY",
+            "properties": {
+              "Node name for S&R": "CV_ImageToCV"
+            },
+            "widgets_values": [
+              "BGR (OpenCV default)",
+              "uint8 (0-255)",
+              0
+            ]
+          },
+          {
+            "id": 32,
+            "type": "CV_ImageToCV",
+            "pos": [
+              -311.76988734099405,
+              461.06995461808896
+            ],
+            "size": [
+              278.2466834076588,
+              106
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "IMAGE",
+                "link": 152
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  154,
+                  158,
+                  162
+                ]
+              }
+            ],
+            "title": "B → BGR NPARRAY",
+            "properties": {
+              "Node name for S&R": "CV_ImageToCV"
+            },
+            "widgets_values": [
+              "BGR (OpenCV default)",
+              "uint8 (0-255)",
+              0
+            ]
+          },
+          {
+            "id": 13,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              188.2297848598861,
+              620.9263474825002
+            ],
+            "size": [
+              285.21075905911175,
+              146
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 153
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  105
+                ]
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  106
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "ORB features A (ref)",
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "ORB",
+              2000,
+              false
+            ]
+          },
+          {
+            "id": 14,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              185.13076285221024,
+              433.53223110759933
+            ],
+            "size": [
+              299.5784818817765,
+              146
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE",
+                "link": 154
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "keypoints",
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  103
+                ]
+              },
+              {
+                "localized_name": "descriptors",
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "ORB features B (warp)",
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "ORB",
+              2000,
+              false
+            ]
+          },
+          {
+            "id": 24,
+            "type": "CV_FeatherBlend",
+            "pos": [
+              2500.5363300699537,
+              437.3659174825116
+            ],
+            "size": [
+              291.31704125874467,
+              118
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image_a",
+                "name": "image_a",
+                "type": "NPARRAY",
+                "link": 130
+              },
+              {
+                "localized_name": "image_b",
+                "name": "image_b",
+                "type": "NPARRAY",
+                "link": 163
+              },
+              {
+                "localized_name": "mask_a",
+                "name": "mask_a",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": 132
+              },
+              {
+                "localized_name": "mask_b",
+                "name": "mask_b",
+                "shape": 7,
+                "type": "NPARRAY,MASK",
+                "link": 133
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY",
+                "links": [
+                  135
+                ]
+              },
+              {
+                "localized_name": "weights",
+                "name": "weights",
+                "type": "NPARRAY",
+                "links": null
+              }
+            ],
+            "title": "Feather blend (32 px)",
+            "properties": {
+              "Node name for S&R": "CV_FeatherBlend"
+            },
+            "widgets_values": [
+              32
+            ]
+          },
+          {
+            "id": 25,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2837.3659174825157,
+              592.7767860143379
+            ],
+            "size": [
+              272.87846363632434,
+              78
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 136
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 135
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 134
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  137
+                ]
+              }
+            ],
+            "title": "Skip on failure",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              true
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 103,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 104,
+            "origin_id": 14,
+            "origin_slot": 1,
+            "target_id": 15,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 2,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 106,
+            "origin_id": 13,
+            "origin_slot": 1,
+            "target_id": 15,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 15,
+            "origin_slot": 1,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": 15,
+            "origin_slot": 2,
+            "target_id": 16,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 17,
+            "origin_slot": 5,
+            "target_id": 20,
+            "target_slot": 2,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 119,
+            "origin_id": 17,
+            "origin_slot": 1,
+            "target_id": 21,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 17,
+            "origin_slot": 5,
+            "target_id": 21,
+            "target_slot": 2,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 122,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": 22,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 123,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 22,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 124,
+            "origin_id": 17,
+            "origin_slot": 5,
+            "target_id": 22,
+            "target_slot": 2,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 126,
+            "origin_id": 19,
+            "origin_slot": 0,
+            "target_id": 23,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 127,
+            "origin_id": 17,
+            "origin_slot": 1,
+            "target_id": 23,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": 17,
+            "origin_slot": 5,
+            "target_id": 23,
+            "target_slot": 2,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 130,
+            "origin_id": 20,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 132,
+            "origin_id": 22,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 133,
+            "origin_id": 23,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 134,
+            "origin_id": 16,
+            "origin_slot": 3,
+            "target_id": 25,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 135,
+            "origin_id": 24,
+            "origin_slot": 0,
+            "target_id": 25,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 136,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 25,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 137,
+            "origin_id": 25,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 138,
+            "origin_id": 16,
+            "origin_slot": 3,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 151,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 31,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 152,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 32,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 153,
+            "origin_id": 31,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 154,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 157,
+            "origin_id": 31,
+            "origin_slot": 0,
+            "target_id": 19,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 158,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 161,
+            "origin_id": 31,
+            "origin_slot": 0,
+            "target_id": 21,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 162,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 163,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.2580158430780876,
+      "offset": [
+        1061.3071104166354,
+        788.7051528861119
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

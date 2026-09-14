@@ -1,0 +1,190 @@
+{
+  "id": "9c081c0e-1e89-4ebc-8ccf-a2a7eebc6834",
+  "revision": 0,
+  "last_node_id": 5,
+  "last_link_id": 2,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "CV_InstallExampleInputs",
+      "pos": [
+        120,
+        200
+      ],
+      "size": [
+        491.765625,
+        194
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "copied",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "would_copy",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "skipped",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "ok",
+          "type": "BOOLEAN",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "[CV Install Example Inputs] Copy example_inputs into ComfyUI/input",
+      "properties": {
+        "Node name for S&R": "CV_InstallExampleInputs"
+      },
+      "widgets_values": [
+        "copy the files",
+        "keep the file already there"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "PreviewAny",
+      "pos": [
+        716.6666666666666,
+        200
+      ],
+      "size": [
+        420,
+        180
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: report (what was copied)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 3,
+      "type": "PreviewAny",
+      "pos": [
+        716.6666666666666,
+        430
+      ],
+      "size": [
+        420,
+        162
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: ok (false = read the report)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "MarkdownNote",
+      "pos": [
+        121.11111111111111,
+        437.77777777777777
+      ],
+      "size": [
+        400,
+        468.5625
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Read me first",
+      "properties": {},
+      "widgets_values": [
+        "## Install the example inputs\n\nThe example workflows load their photos, videos and the MilkTruck model from this pack's `example_inputs/` folder - but a **Load Image** / **Load Video** / **Load 3D** dropdown can only offer what is already inside `ComfyUI/input`. Run this graph **once** after installing the pack and the copy is done for you.\n\n1. Press **Run**. `mode` = *copy the files* writes them; switch it to *list what would be copied (dry run)* first if your `input` folder holds work of your own.\n2. `existing_files` = *keep the file already there* never overwrites - a second run is a no-op and reports everything as `skipped`.\n3. **Reload the ComfyUI page.** The Load\\* dropdowns are built when the node definitions are fetched, so files copied during this session only show up after a refresh.\n\n3D models (`.glb`) go to `ComfyUI/input/3d` - the only folder core's Load 3D nodes list. Everything else lands in `ComfyUI/input` itself. Nothing outside `input` is touched and nothing is ever deleted.\n\nThe `report` names its destinations RELATIVE to the ComfyUI folder and runs any error text through the same path redaction as **CV Build Information**, so you can paste it into a bug report without handing over your drive layout, install location or user name.\n\n`ok` is false when the source folder is missing or a file could not be written; the `report` names what went wrong."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "STRING"
+    ],
+    [
+      2,
+      1,
+      4,
+      3,
+      0,
+      "BOOLEAN"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9,
+      "offset": [
+        21.111111111111107,
+        13.333333333333332
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

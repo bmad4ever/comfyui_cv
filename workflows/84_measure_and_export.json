@@ -1,0 +1,937 @@
+{
+  "id": "70000131-d495-438b-922e-9bb0ee90fb42",
+  "revision": 0,
+  "last_node_id": 18,
+  "last_link_id": 16,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        60,
+        218.24897246618156
+      ],
+      "size": [
+        790.703125,
+        309.984375
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "MEASURE AND EXPORT: numbers out of the graph\n\nEverything measured here already existed as an array; what was missing was a way OUT of it. Three nodes close that:\n\n  'CV Concat Arrays' (axis 1) glues the per-region columns into ONE table - box geometry from 'CV BBoxes To Array', area from 'Masks to BBoxes'. Axis 1 is side by side; axis 0 would have appended rows.\n\n  'CV Array To Text' formats the table as CSV/TSV/JSON. It has no file picker on purpose: wire it into 'Basic data handling: save STRING to file' to write a .csv, and into core 'Preview as Text' to read it here. 'Parse Matrix' is the return leg - this graph runs it in-place to prove the round trip, which is what a file would go through in a real run.\n\n  'CV Array To Numbers' / 'CV Numbers To Array' are the LIST bridge: the first emits a ComfyUI list of FLOATs, so basic_data_handling's sort / filter / min / max surface and an Inspire foreach can finally reach array values; the second collects them back. Keep the counts small - each value is a separate downstream execution.\n\nThe chart at the end is fed by the ROUND-TRIPPED table, not the original, so anything the text step loses would be visible."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        60,
+        580
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Regions to measure",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "inpaint_mask_holes.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "ImageToMask",
+      "pos": [
+        420,
+        580
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "Use the image as a mask",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "ImageToMask"
+      },
+      "widgets_values": [
+        "red"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ConnectedComponents",
+      "pos": [
+        780,
+        580
+      ],
+      "size": [
+        290,
+        230
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "region_masks",
+          "type": "MASK",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "One mask per region",
+      "properties": {
+        "Node name for S&R": "CV_ConnectedComponents"
+      },
+      "widgets_values": [
+        "8",
+        64,
+        64,
+        "largest first"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_MasksToBBoxes",
+      "pos": [
+        1140,
+        580
+      ],
+      "size": [
+        290,
+        200
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "areas",
+          "type": "NPARRAY",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "valid",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Box + area per region",
+      "properties": {
+        "Node name for S&R": "CV_MasksToBBoxes"
+      },
+      "widgets_values": [
+        0.5,
+        true
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_BBoxesToArray",
+      "pos": [
+        1500,
+        320
+      ],
+      "size": [
+        290,
+        218
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "boxes",
+          "type": "NPARRAY",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "scores",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "label_ids",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "labels",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "group_index",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV BBoxes To Array] Boxes -> (N,4)",
+      "properties": {
+        "Node name for S&R": "CV_BBoxesToArray"
+      },
+      "widgets_values": [
+        "x, y, width, height"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_CastArray",
+      "pos": [
+        1500,
+        840
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "title": "areas -> float",
+      "properties": {
+        "Node name for S&R": "CV_CastArray"
+      },
+      "widgets_values": [
+        "float32"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        1860,
+        840
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "areas -> one COLUMN (N,1)",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CV_ConcatArrays",
+      "pos": [
+        2224,
+        751.2671749460417
+      ],
+      "size": [
+        290,
+        174
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "array1",
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "name": "array2",
+          "type": "NPARRAY",
+          "link": 8
+        },
+        {
+          "name": "array3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "array4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            9,
+            12
+          ]
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Table: (N,4) + (N,1) side by side",
+      "properties": {
+        "Node name for S&R": "CV_ConcatArrays"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_ArrayToText",
+      "pos": [
+        2584,
+        805.5714011484451
+      ],
+      "size": [
+        290,
+        230
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            10,
+            11
+          ]
+        },
+        {
+          "name": "rows",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "truncated",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Array To Text] Format as CSV",
+      "properties": {
+        "Node name for S&R": "CV_ArrayToText"
+      },
+      "widgets_values": [
+        "CSV (comma)",
+        1,
+        "x, y, width, height, area",
+        100000
+      ]
+    },
+    {
+      "id": 11,
+      "type": "PreviewAny",
+      "pos": [
+        2944,
+        751.2671749460417
+      ],
+      "size": [
+        289.078125,
+        211.078125
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "title": "Preview as Text: Format as CSV"
+    },
+    {
+      "id": 12,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        2944,
+        1011.2671749460417
+      ],
+      "size": [
+        290,
+        186
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "title": "Read the CSV back (Parse Matrix)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "1 2 3\n4 5 6",
+        "CV_32F",
+        false,
+        1
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_ArrayToNumbers",
+      "pos": [
+        2940,
+        60
+      ],
+      "size": [
+        300,
+        156
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "value",
+          "shape": 6,
+          "type": "FLOAT",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "The area COLUMN as a list of FLOATs",
+      "properties": {
+        "Node name for S&R": "CV_ArrayToNumbers"
+      },
+      "widgets_values": [
+        4,
+        64
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_NumbersToArray",
+      "pos": [
+        3300,
+        60
+      ],
+      "size": [
+        370,
+        156
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "values",
+          "type": "FLOAT",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV Numbers To Array] ...and back into one array",
+      "properties": {
+        "Node name for S&R": "CV_NumbersToArray"
+      },
+      "widgets_values": [
+        0,
+        "float32"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_ChartSeries",
+      "pos": [
+        3680,
+        60
+      ],
+      "size": [
+        464.21875,
+        782
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "values",
+          "type": "NPARRAY",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "spec",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Chart the round-tripped areas",
+      "properties": {
+        "Node name for S&R": "CV_ChartSeries"
+      },
+      "widgets_values": [
+        "bar",
+        "Region area (px)",
+        "",
+        "area",
+        "",
+        "series color",
+        "vertical (bars go up)",
+        true,
+        "start at zero",
+        0,
+        1,
+        "region",
+        "pixels",
+        "bright",
+        "viridis",
+        "dark",
+        0,
+        320
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_CVInspect",
+      "pos": [
+        3304,
+        1011.2671749460417
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "title": "Round-tripped table",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "PreviewAny",
+      "pos": [
+        3634,
+        1011.2671749460417
+      ],
+      "size": [
+        290,
+        220
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "title": "Preview as Text: Round-tripped table"
+    },
+    {
+      "id": 18,
+      "type": "Note",
+      "pos": [
+        61,
+        970.644056124436
+      ],
+      "size": [
+        486.4375,
+        163.125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "inpaint_mask_holes.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   inpaint_mask_holes.png\nCreator: generated (this repo) - synthetic mask image\nLicense: no third-party rights (synthetic binary mask; white spots on black)\nSource:  synthetic; bundled as example_inputs/inpaint_mask_holes.png\nSize:    768x768\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "MASK"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "MASK"
+    ],
+    [
+      4,
+      5,
+      0,
+      6,
+      0,
+      "BOUNDING_BOX"
+    ],
+    [
+      5,
+      5,
+      1,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      7,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      7,
+      6,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      8,
+      8,
+      0,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      9,
+      9,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      10,
+      0,
+      11,
+      0,
+      "STRING"
+    ],
+    [
+      11,
+      10,
+      0,
+      12,
+      0,
+      "STRING"
+    ],
+    [
+      12,
+      9,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      13,
+      0,
+      14,
+      0,
+      "FLOAT"
+    ],
+    [
+      14,
+      14,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      15,
+      12,
+      0,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      16,
+      0,
+      17,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.23939204936916375,
+      "offset": [
+        396.0412363766794,
+        1315.2284780916907
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

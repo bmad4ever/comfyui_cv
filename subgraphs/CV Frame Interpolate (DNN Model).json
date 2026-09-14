@@ -1,0 +1,1490 @@
+{
+  "last_node_id": 2,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "c4a7e21b-8d35-4f60-b9a2-1e7c3d05f8a9",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        320,
+        180
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frame_a",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "frame_b",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "model",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "t",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "engine",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "middle",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "middle_array",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Frame Interpolate (DNN Model)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 2,
+      "type": "MarkdownNote",
+      "pos": [
+        750,
+        240
+      ],
+      "size": [
+        380,
+        190
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Model: rife_v4.9.onnx",
+      "properties": {},
+      "widgets_values": [
+        "rife_v4.9.onnx at\nhttps://huggingface.co/FuryTMP/RIFE_v4.9\n(21 MB fp32)\n\nDrop it into ComfyUI/models/onnx. NOT the export at https://huggingface.co/FuryTMP/RIFE_fp32 - cv2.dnn cannot run that graph."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "c4a7e21b-8d35-4f60-b9a2-1e7c3d05f8a9",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 20,
+          "lastLinkId": 133,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Frame Interpolate (DNN Model)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "316a5789-572a-5185-9d18-1bd1851f8526",
+            "name": "frame_a",
+            "type": "IMAGE",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "frame_a",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "42ec808a-721f-59c0-98df-6c3827870491",
+            "name": "frame_b",
+            "type": "IMAGE",
+            "linkIds": [
+              102
+            ],
+            "localized_name": "frame_b",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "d653b21c-4b34-527e-933a-6be16e432798",
+            "name": "model",
+            "type": "COMBO",
+            "linkIds": [
+              122
+            ],
+            "localized_name": "model",
+            "pos": [
+              140,
+              260
+            ]
+          },
+          {
+            "id": "18182bb3-78fa-5072-b4b0-2d8c274661fa",
+            "name": "t",
+            "type": "FLOAT",
+            "linkIds": [
+              116
+            ],
+            "localized_name": "t",
+            "pos": [
+              140,
+              280
+            ]
+          },
+          {
+            "id": "b30ce1ce-09bb-5347-be42-64313e6f7c9f",
+            "name": "engine",
+            "type": "COMBO",
+            "linkIds": [
+              123
+            ],
+            "localized_name": "engine",
+            "pos": [
+              140,
+              300
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "a762be65-a042-5e42-a520-6dc7eb24d4d7",
+            "name": "middle",
+            "type": "IMAGE",
+            "linkIds": [
+              132
+            ],
+            "localized_name": "middle",
+            "pos": [
+              2100,
+              220
+            ]
+          },
+          {
+            "id": "34627fb2-b890-5b9e-bbc1-89c44b6bd5be",
+            "name": "middle_array",
+            "type": "NPARRAY",
+            "linkIds": [
+              133
+            ],
+            "localized_name": "middle_array",
+            "pos": [
+              2100,
+              240
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_ImageToCV",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  103,
+                  106
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ImageToCV"
+            },
+            "widgets_values": [
+              "RGB",
+              "float32 (0-1)",
+              0
+            ],
+            "title": "Frame A -> RGB 0..1 (what RIFE wants)"
+          },
+          {
+            "id": 2,
+            "type": "CV_ImageToCV",
+            "pos": [
+              390,
+              240
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ImageToCV"
+            },
+            "widgets_values": [
+              "RGB",
+              "float32 (0-1)",
+              0
+            ],
+            "title": "Frame B -> RGB 0..1"
+          },
+          {
+            "id": 3,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              148
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "name": "height",
+                "type": "INT",
+                "links": [
+                  104,
+                  128
+                ]
+              },
+              {
+                "name": "width",
+                "type": "INT",
+                "links": [
+                  105,
+                  130
+                ]
+              },
+              {
+                "name": "channels",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            },
+            "widgets_values": [],
+            "title": "source H / W"
+          },
+          {
+            "id": 4,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 104
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  107,
+                  110
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "(0 - a) % 32"
+            ],
+            "title": "pad rows to a multiple of 32"
+          },
+          {
+            "id": 5,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1090,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 105
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  108,
+                  111
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "(0 - a) % 32"
+            ],
+            "title": "pad cols to a multiple of 32"
+          },
+          {
+            "id": 6,
+            "type": "cv2_copyMakeBorder",
+            "pos": [
+              1440,
+              40
+            ],
+            "size": [
+              290,
+              360
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 106
+              },
+              {
+                "name": "bottom",
+                "type": "INT",
+                "widget": {
+                  "name": "bottom"
+                },
+                "link": 107
+              },
+              {
+                "name": "right",
+                "type": "INT",
+                "widget": {
+                  "name": "right"
+                },
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  112,
+                  114
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_copyMakeBorder"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              0,
+              "BORDER_REPLICATE",
+              "(0, 0, 0, 0)"
+            ],
+            "title": "Pad A (the net rejects other sizes)"
+          },
+          {
+            "id": 7,
+            "type": "cv2_copyMakeBorder",
+            "pos": [
+              1440,
+              240
+            ],
+            "size": [
+              290,
+              360
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "name": "bottom",
+                "type": "INT",
+                "widget": {
+                  "name": "bottom"
+                },
+                "link": 110
+              },
+              {
+                "name": "right",
+                "type": "INT",
+                "widget": {
+                  "name": "right"
+                },
+                "link": 111
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  113
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_copyMakeBorder"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              0,
+              "BORDER_REPLICATE",
+              "(0, 0, 0, 0)"
+            ],
+            "title": "Pad B (identically)"
+          },
+          {
+            "id": 8,
+            "type": "CV_ToBlob",
+            "pos": [
+              1790,
+              40
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 112
+              }
+            ],
+            "outputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "links": [
+                  117
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ToBlob"
+            },
+            "widgets_values": [
+              1.0,
+              0,
+              0
+            ],
+            "title": "A -> (1, 3, H, W)"
+          },
+          {
+            "id": 9,
+            "type": "CV_ToBlob",
+            "pos": [
+              1790,
+              240
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 113
+              }
+            ],
+            "outputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "links": [
+                  118
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ToBlob"
+            },
+            "widgets_values": [
+              1.0,
+              0,
+              0
+            ],
+            "title": "B -> (1, 3, H, W)"
+          },
+          {
+            "id": 10,
+            "type": "CV_ConstantLike",
+            "pos": [
+              1790,
+              440
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 114
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  115
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ConstantLike"
+            },
+            "widgets_values": [
+              1,
+              "grayscale (single channel)"
+            ],
+            "title": "a plane of ONES"
+          },
+          {
+            "id": 11,
+            "type": "CV_ToBlob",
+            "pos": [
+              2140,
+              440
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 115
+              },
+              {
+                "name": "scale",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "scale"
+                },
+                "link": 116
+              }
+            ],
+            "outputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "links": [
+                  120
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ToBlob"
+            },
+            "widgets_values": [
+              0.5,
+              0,
+              0
+            ],
+            "title": "1 * t -> (1, 1, H, W) filled with exactly t"
+          },
+          {
+            "id": 12,
+            "type": "CV_ConcatArrays",
+            "pos": [
+              2490,
+              40
+            ],
+            "size": [
+              290,
+              174
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "array1",
+                "type": "NPARRAY",
+                "link": 117
+              },
+              {
+                "name": "array2",
+                "type": "NPARRAY",
+                "link": 118
+              },
+              {
+                "name": "array3",
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "name": "array4",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  119
+                ]
+              },
+              {
+                "name": "length",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ConcatArrays"
+            },
+            "widgets_values": [
+              1
+            ],
+            "title": "A|B -> (1, 6, H, W)"
+          },
+          {
+            "id": 13,
+            "type": "CV_ConcatArrays",
+            "pos": [
+              2840,
+              40
+            ],
+            "size": [
+              290,
+              174
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "array1",
+                "type": "NPARRAY",
+                "link": 119
+              },
+              {
+                "name": "array2",
+                "type": "NPARRAY",
+                "link": 120
+              },
+              {
+                "name": "array3",
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "name": "array4",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  121
+                ]
+              },
+              {
+                "name": "length",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ConcatArrays"
+            },
+            "widgets_values": [
+              1
+            ],
+            "title": "+ timestep -> (1, 7, H, W)"
+          },
+          {
+            "id": 14,
+            "type": "CV_DnnForwardAll",
+            "pos": [
+              3190,
+              40
+            ],
+            "size": [
+              290,
+              282
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "link": 121
+              },
+              {
+                "name": "model",
+                "type": "COMBO",
+                "widget": {
+                  "name": "model"
+                },
+                "link": 122
+              },
+              {
+                "name": "engine",
+                "type": "COMBO",
+                "widget": {
+                  "name": "engine"
+                },
+                "link": 123
+              }
+            ],
+            "outputs": [
+              {
+                "name": "outputs",
+                "type": "NPARRAY",
+                "links": [
+                  124
+                ]
+              },
+              {
+                "name": "output_names",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DnnForwardAll"
+            },
+            "widgets_values": [
+              "rife_v4.9.onnx",
+              "",
+              "auto (default backend)",
+              "auto (default target)",
+              "auto (default engine)",
+              ""
+            ],
+            "title": "Forward (one 7-channel input, batch 1)",
+            "color": "#2a363b",
+            "bgcolor": "#3f5159"
+          },
+          {
+            "id": 15,
+            "type": "CV_DnnPickOutput",
+            "pos": [
+              3540,
+              40
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "outputs",
+                "type": "NPARRAY",
+                "link": 124
+              },
+              {
+                "name": "output_names",
+                "type": "STRING",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  125
+                ]
+              },
+              {
+                "name": "index",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DnnPickOutput"
+            },
+            "widgets_values": [
+              "first",
+              0,
+              ""
+            ],
+            "title": "the single output"
+          },
+          {
+            "id": 16,
+            "type": "CV_DnnImagesFromBlob",
+            "pos": [
+              3890,
+              40
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "link": 125
+              }
+            ],
+            "outputs": [
+              {
+                "name": "images",
+                "type": "NPARRAY",
+                "links": [
+                  126
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DnnImagesFromBlob"
+            },
+            "widgets_values": [],
+            "title": "NCHW -> (1, H, W, 3)"
+          },
+          {
+            "id": 17,
+            "type": "CV_IndexBatch",
+            "pos": [
+              4240,
+              40
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 126
+              }
+            ],
+            "outputs": [
+              {
+                "name": "frame",
+                "type": "NPARRAY",
+                "links": [
+                  127
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_IndexBatch"
+            },
+            "widgets_values": [
+              0
+            ],
+            "title": "the single frame"
+          },
+          {
+            "id": 18,
+            "type": "CV_SliceArray",
+            "pos": [
+              4590,
+              40
+            ],
+            "size": [
+              290,
+              234
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 127
+              },
+              {
+                "name": "stop",
+                "type": "INT",
+                "widget": {
+                  "name": "stop"
+                },
+                "link": 128
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  129
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_SliceArray"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              1,
+              true
+            ],
+            "title": "crop rows back to the source height"
+          },
+          {
+            "id": 19,
+            "type": "CV_SliceArray",
+            "pos": [
+              4940,
+              40
+            ],
+            "size": [
+              290,
+              234
+            ],
+            "flags": {},
+            "order": 18,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 129
+              },
+              {
+                "name": "stop",
+                "type": "INT",
+                "widget": {
+                  "name": "stop"
+                },
+                "link": 130
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  131,
+                  133
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_SliceArray"
+            },
+            "widgets_values": [
+              1,
+              0,
+              0,
+              1,
+              true
+            ],
+            "title": "crop cols back to the source width"
+          },
+          {
+            "id": 20,
+            "type": "CV_CVToImage",
+            "pos": [
+              5290,
+              40
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 19,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 131
+              }
+            ],
+            "outputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "links": [
+                  132
+                ]
+              },
+              {
+                "name": "alpha",
+                "type": "MASK",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVToImage"
+            },
+            "widgets_values": [
+              "RGB"
+            ],
+            "title": "-> IMAGE (the array is already RGB)"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 103,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 105,
+            "origin_id": 3,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 106,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 4,
+            "origin_slot": 1,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 108,
+            "origin_id": 5,
+            "origin_slot": 1,
+            "target_id": 6,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 109,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": 4,
+            "origin_slot": 1,
+            "target_id": 7,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 111,
+            "origin_id": 5,
+            "origin_slot": 1,
+            "target_id": 7,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 112,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 117,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 118,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 12,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": 12,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 122,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 14,
+            "target_slot": 1,
+            "type": "COMBO"
+          },
+          {
+            "id": 123,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 14,
+            "target_slot": 2,
+            "type": "COMBO"
+          },
+          {
+            "id": 124,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 125,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 127,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 129,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": 19,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 130,
+            "origin_id": 3,
+            "origin_slot": 1,
+            "target_id": 19,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 131,
+            "origin_id": 19,
+            "origin_slot": 0,
+            "target_id": 20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 132,
+            "origin_id": 20,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 133,
+            "origin_id": 19,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,15 +1,27 @@
 [project]
-name = "opencv-comfyui"
-description = "all top-level standalone functions of OpenCV Python cv2 auto-generated from the type definitions"
-version = "0.1.2"
-license = {file = "LICENSE"}
+name = "comfyui-cv"
+description = "Computer-vision nodes for ComfyUI: curated high-level nodes plus auto-generated wrappers for ~470 raw functions of the OpenCV (cv2) library. Built on the V3 node API."
+version = "1.0.0"
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
+authors = [{ name = "bmad4ever" }]
+requires-python = ">=3.12"
+# Kept STATIC and in sync with requirements.txt on purpose: the ComfyUI Registry
+# reads this list straight out of pyproject.toml, and a dynamic declaration
+# publishes with no dependencies at all.
+dependencies = [
+    "opencv-contrib-python-headless~=5.0.0.93",
+    "numpy",
+    "torch",
+]
+classifiers = [
+    "Operating System :: OS Independent",
+]
 
 [project.urls]
-Repository = "https://github.com/geroldmeisinger/opencv-comfyui"
-#  Used by Comfy Registry https://comfyregistry.org
+Repository = "https://github.com/bmad4ever/comfyui_cv"
 
 [tool.comfy]
-PublisherId = "geroldmeisinger"
-DisplayName = "OpenCV"
-Icon = ""
-
+PublisherId = "bmad4ever"
+DisplayName = "ComfyUI CV"
+Icon = "https://raw.githubusercontent.com/bmad4ever/comfyui_cv/master/docs/icon.png"

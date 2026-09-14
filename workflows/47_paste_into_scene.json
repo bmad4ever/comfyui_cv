@@ -1,0 +1,1382 @@
+{
+  "id": "3b5ab1ca-33cc-4865-84fb-215b40e6856c",
+  "revision": 0,
+  "last_node_id": 25,
+  "last_link_id": 35,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        163,
+        162.82842531871495
+      ],
+      "size": [
+        914.359375,
+        290.8125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Paste a picture into a scene - and pick the model the surface deserves.\n\nRun once so the two images reach the editor, then drag the pairs. Because 'background' is connected, the annotate surface splits in TWO: the picture on the left carries the cyan 'from' ends, the wall on the right carries the orange 'to' ends, and 'points_to' comes out in the WALL's pixels - which is exactly what 'Paste Through Warp' wants. 'pin image corners' seeds a full-frame paste to deform from.\n\nTEN pairs are annotated here: the picture's four corners onto the wall's left poster, its centre, and five edge points - with the bottom edge dragged well BELOW the poster, so the target is a sagging, bowed surface and not a flat quad. The same ten pairs feed three pastes:\n  * affine - 6 parameters (rotation, scale, shear, translation), 3+ pairs. Parallel lines stay parallel, so it cannot reach the wall's perspective, let alone the sag: every pair is least-squares AVERAGED and the residual stays large (~40 px mean, ~120 px worst). Switch the combo to 'homography' and the perspective comes back - the sag still does not, which is what the combo is there to show.\n  * thin plate spline - lands every pair exactly (residual ~0) and BENDS the picture in between. This is the one for a curved poster, a flag, cloth.\n  * spline again, with 'background_paintable' - the inverse of an annotated polygon, so whatever that polygon covers stays IN FRONT of the paste (here it takes the drooping bottom away).\n\nFewer pairs than the model needs (spline 3, affine 3) is not an error: 'found' goes false, the wall comes through untouched, and the if/else stamps the picture so a passing preview cannot lie about it."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        1134,
+        114.04221150083077
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            4,
+            10,
+            18
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "The picture to paste",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 3,
+      "type": "LoadImage",
+      "pos": [
+        1140,
+        498
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2,
+            7,
+            13,
+            16,
+            21,
+            23
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "The scene to paste it into",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "art_posters_wall.png",
+        "image"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 4,
+      "type": "CV_AnnotateCorrespondences",
+      "pos": [
+        1567,
+        115.14856346121007
+      ],
+      "size": [
+        972.984375,
+        720.828125
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 1
+        },
+        {
+          "name": "background",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points_from",
+          "type": "NPARRAY",
+          "links": [
+            5,
+            11,
+            19
+          ]
+        },
+        {
+          "name": "points_to",
+          "type": "NPARRAY",
+          "links": [
+            6,
+            12,
+            20
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "title": "Drag pairs: cyan on the picture, orange on the wall",
+      "properties": {
+        "Node name for S&R": "CV_AnnotateCorrespondences"
+      },
+      "widgets_values": [
+        "[[[0,0],[0.068,0.1344]],[[1,0],[0.3431,0.103]],[[1,1],[0.3574,0.442]],[[0,1],[0.0772,0.4721]],[[0.5,0.5],[0.2218,0.3825]],[[0.4567,1],[0.2233,0.5661]],[[0.2531,0.0018],[0.1395,0.2182]],[[0.7239,0],[0.2719,0.2037]],[[0,0.4556],[0.0708,0.2999]],[[1,0.4191],[0.351,0.275]]]"
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 6,
+      "type": "CV_PasteThroughWarp",
+      "pos": [
+        1140,
+        962
+      ],
+      "size": [
+        540,
+        244
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 4
+        },
+        {
+          "name": "points_from",
+          "type": "NPARRAY",
+          "link": 5
+        },
+        {
+          "name": "points_to",
+          "type": "NPARRAY",
+          "link": 6
+        },
+        {
+          "name": "background",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE",
+          "link": 7
+        },
+        {
+          "name": "content_mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        },
+        {
+          "name": "background_paintable",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "name": "residual",
+          "type": "NPARRAY",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Paste Through Warp] Paste without a bend (affine - parallels kept)",
+      "properties": {
+        "Node name for S&R": "CV_PasteThroughWarp"
+      },
+      "widgets_values": [
+        "affine",
+        0
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 7,
+      "type": "CV_CVPreview",
+      "pos": [
+        1690,
+        923.3889943423892
+      ],
+      "size": [
+        294.15625,
+        342
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (affine paste)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 8,
+      "type": "CV_CVInspect",
+      "pos": [
+        2170,
+        959.7799250167226
+      ],
+      "size": [
+        410,
+        82
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "title": "Inspect (affine residual - large, the fit must compromise)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": [],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 9,
+      "type": "CV_PasteThroughWarp",
+      "pos": [
+        1136,
+        1300.1792700973372
+      ],
+      "size": [
+        484.7486328125,
+        244
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 10
+        },
+        {
+          "name": "points_from",
+          "type": "NPARRAY",
+          "link": 11
+        },
+        {
+          "name": "points_to",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "background",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE",
+          "link": 13
+        },
+        {
+          "name": "content_mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        },
+        {
+          "name": "background_paintable",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "name": "residual",
+          "type": "NPARRAY",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Paste Through Warp] Paste with a bend (thin plate spline)",
+      "properties": {
+        "Node name for S&R": "CV_PasteThroughWarp"
+      },
+      "widgets_values": [
+        "thin plate spline",
+        0
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 10,
+      "type": "CV_CVPreview",
+      "pos": [
+        1690,
+        1297.3889943423892
+      ],
+      "size": [
+        290,
+        342
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (spline paste)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 11,
+      "type": "CV_CVInspect",
+      "pos": [
+        2158,
+        1194.7357136028636
+      ],
+      "size": [
+        352.944921875,
+        82
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Inspect (spline residual - ~0, every pair landed)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": [],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 12,
+      "type": "CV_AnnotatePoints",
+      "pos": [
+        1140,
+        1736
+      ],
+      "size": [
+        387.796875,
+        338.640625
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "title": "Outline what stays IN FRONT of the paste",
+      "properties": {
+        "Node name for S&R": "CV_AnnotatePoints"
+      },
+      "widgets_values": [
+        "[[0.0276,0.4802],[0.4024,0.4415],[0.4302,0.6292],[0.0482,0.7102]]"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 13,
+      "type": "cv2_bitwise_not",
+      "pos": [
+        1143,
+        2130.1914735177115
+      ],
+      "size": [
+        405.984375,
+        102.734375
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 17
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            22,
+            32
+          ]
+        }
+      ],
+      "title": "Paintable = everything the outline does NOT cover",
+      "properties": {
+        "Node name for S&R": "cv2_bitwise_not"
+      },
+      "widgets_values": [],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 14,
+      "type": "CV_PasteThroughWarp",
+      "pos": [
+        1630,
+        1736
+      ],
+      "size": [
+        625.452734375,
+        244
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 18
+        },
+        {
+          "name": "points_from",
+          "type": "NPARRAY",
+          "link": 19
+        },
+        {
+          "name": "points_to",
+          "type": "NPARRAY",
+          "link": 20
+        },
+        {
+          "name": "background",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE",
+          "link": 21
+        },
+        {
+          "name": "content_mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        },
+        {
+          "name": "background_paintable",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            25
+          ]
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            28
+          ]
+        },
+        {
+          "name": "residual",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": [
+            26
+          ]
+        }
+      ],
+      "title": "[CV Paste Through Warp] Paste behind the outline (spline + background_paintable)",
+      "properties": {
+        "Node name for S&R": "CV_PasteThroughWarp"
+      },
+      "widgets_values": [
+        "thin plate spline",
+        0
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 15,
+      "type": "CV_DrawText",
+      "pos": [
+        1991,
+        2033.7428470307411
+      ],
+      "size": [
+        300,
+        270
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "title": "Stamp NO FIT over the untouched wall",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "NO FIT - DRAG 3+ PAIRS",
+        24,
+        64,
+        2,
+        "(0, 94, 213)",
+        3,
+        true
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 16,
+      "type": "ComfySwitchNode",
+      "pos": [
+        2356,
+        1769.5548391754185
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "on_false",
+          "type": "IMAGE",
+          "link": 24
+        },
+        {
+          "name": "on_true",
+          "type": "IMAGE",
+          "link": 25
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "IMAGE",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "title": "if found: the paste, else: the stamp",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        false
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 17,
+      "type": "CV_CVPreview",
+      "pos": [
+        2695,
+        1770.610384665559
+      ],
+      "size": [
+        312.28125,
+        342
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (found: the occluded paste)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 18,
+      "type": "CV_CVPreview",
+      "pos": [
+        2340,
+        1966.6932457709831
+      ],
+      "size": [
+        340.8931640625,
+        342
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (coverage: where the picture landed)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 20,
+      "type": "Note",
+      "pos": [
+        521,
+        573.6336208780469
+      ],
+      "size": [
+        560,
+        190
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "art_posters_wall.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Synthetic composite: three public-domain paintings on a generated plaster wall\nCreator: generated (this repo)\nLicense: source paintings public domain; wall texture synthetic (no third-party rights)\nSource:  synthetic; paintings: art_ref_starry.png (Van Gogh), art_ref_wave.png (Hokusai), art_ref_pearl.png (Vermeer)\nSize:    1500x1050\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 21,
+      "type": "PreviewAny",
+      "pos": [
+        2678,
+        153.68527124965038
+      ],
+      "size": [
+        225,
+        162
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 35
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Inspect (pair count)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 22,
+      "type": "PreviewAny",
+      "title": "Affine residual (text)",
+      "pos": [
+        2614,
+        960.5199500111484
+      ],
+      "size": [
+        288.640625,
+        162
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 23,
+      "type": "PreviewAny",
+      "title": "Spline residual (text)",
+      "pos": [
+        2615,
+        1185.7035970772822
+      ],
+      "size": [
+        301.203125,
+        158
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 24,
+      "type": "CV_CVPreview",
+      "title": "Preview (paintable - everything outside the outline)",
+      "pos": [
+        1611,
+        2049.686398677595
+      ],
+      "size": [
+        370,
+        342
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      1,
+      "IMAGE"
+    ],
+    [
+      4,
+      2,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      4,
+      0,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      6,
+      4,
+      1,
+      6,
+      2,
+      "NPARRAY"
+    ],
+    [
+      7,
+      3,
+      0,
+      6,
+      3,
+      "IMAGE"
+    ],
+    [
+      8,
+      6,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      6,
+      2,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      2,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      4,
+      0,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      12,
+      4,
+      1,
+      9,
+      2,
+      "NPARRAY"
+    ],
+    [
+      13,
+      3,
+      0,
+      9,
+      3,
+      "IMAGE"
+    ],
+    [
+      14,
+      9,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      9,
+      2,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      3,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      12,
+      2,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      18,
+      2,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ],
+    [
+      19,
+      4,
+      0,
+      14,
+      1,
+      "NPARRAY"
+    ],
+    [
+      20,
+      4,
+      1,
+      14,
+      2,
+      "NPARRAY"
+    ],
+    [
+      21,
+      3,
+      0,
+      14,
+      3,
+      "IMAGE"
+    ],
+    [
+      22,
+      13,
+      0,
+      14,
+      5,
+      "NPARRAY"
+    ],
+    [
+      23,
+      3,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      24,
+      15,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      25,
+      14,
+      0,
+      16,
+      1,
+      "IMAGE"
+    ],
+    [
+      26,
+      14,
+      3,
+      16,
+      2,
+      "BOOLEAN"
+    ],
+    [
+      27,
+      16,
+      0,
+      17,
+      0,
+      "*"
+    ],
+    [
+      28,
+      14,
+      1,
+      18,
+      0,
+      "MASK"
+    ],
+    [
+      30,
+      8,
+      0,
+      22,
+      0,
+      "STRING"
+    ],
+    [
+      31,
+      11,
+      0,
+      23,
+      0,
+      "STRING"
+    ],
+    [
+      32,
+      13,
+      0,
+      24,
+      0,
+      "NPARRAY"
+    ],
+    [
+      35,
+      4,
+      2,
+      21,
+      0,
+      "INT"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Author the correspondences (run once, then drag)",
+      "bounding": [
+        16,
+        44,
+        2944,
+        816.3262980831948
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "One rigid fit vs one bending fit - read the residuals",
+      "bounding": [
+        1096,
+        866,
+        1864,
+        764
+      ],
+      "color": "#8A8",
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "Occlusion, and what happens when nothing is annotated",
+      "bounding": [
+        1096,
+        1640,
+        1934,
+        764
+      ],
+      "color": "#b06634",
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.32349184307607604,
+      "offset": [
+        1210.7542814200788,
+        425.40078893593557
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

@@ -1,0 +1,264 @@
+{
+  "id": "949c170f-55c2-4060-8467-40272a80cfb1",
+  "revision": 0,
+  "last_node_id": 6,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        49,
+        -5.7634408602150415
+      ],
+      "size": [
+        775.25,
+        205.5625
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "HFS hierarchical feature selection (cv2.hfs)\n\nSegments the image into regions by merging SLIC superpixels along a texton + colour gradient criterion (two stages). 'CV HFS Segmentation' outputs a uint16 per-pixel region index map ('labels'), a region-coloured repaint of the image (each region = its average colour), and the region count.\n\nTry raising 'egb thresholds' to merge more aggressively, or lowering 'min region sizes'; lower 'spatial weight' to let colour/texture dominate. Runs on CPU - no GPU needed. The input image must be copied from example_inputs/water_coins.jpg into ComfyUI/input."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        250
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load the coins photo",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "water_coins.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_HfsSegment",
+      "pos": [
+        419,
+        295.4982078853046
+      ],
+      "size": [
+        595.21875,
+        318
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "segmented",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "num_regions",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV HFS Segmentation (hierarchical feature selection)] HFS: coins into regions",
+      "properties": {
+        "Node name for S&R": "CV_HfsSegment"
+      },
+      "widgets_values": [
+        0.08,
+        100,
+        0.28,
+        200,
+        0.6,
+        8,
+        5
+      ]
+    },
+    {
+      "id": 4,
+      "type": "PreviewImage",
+      "pos": [
+        1022,
+        171.2831541218638
+      ],
+      "size": [
+        341.359375,
+        290
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: segmented - HFS: coins into regions",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "CV_CVPreview",
+      "pos": [
+        1019,
+        501.089605734767
+      ],
+      "size": [
+        300,
+        346
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "HFS region labels (normalized)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "normalize",
+        false
+      ]
+    },
+    {
+      "id": 6,
+      "type": "Note",
+      "pos": [
+        -115,
+        638.4086021505377
+      ],
+      "size": [
+        474.34375,
+        167.859375
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "water_coins.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   water_coins.jpg\nCreator: OpenCV project (sample data)\nLicense: Apache-2.0 (OpenCV) - sample data redistributed with the library\n         https://www.apache.org/licenses/LICENSE-2.0\nSource:  https://github.com/opencv/opencv (samples/data/water_coins.jpg)\nSize:    252x312 (the canonical OpenCV watershed tutorial image)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      1,
+      5,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.513158118230707,
+      "offset": [
+        394.62186322370405,
+        509.57140313503356
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

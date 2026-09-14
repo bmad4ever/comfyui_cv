@@ -1,0 +1,2230 @@
+{
+  "id": "9d23f33f-06fc-46c5-8958-8e5a434ace3a",
+  "revision": 0,
+  "last_node_id": 39,
+  "last_link_id": 122,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        43,
+        9.131586924302187
+      ],
+      "size": [
+        839.59375,
+        385.09375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Saliency + superpixels - building a subject mask with no model\n\nTwo more contrib modules: cv2.saliency and the ximgproc superpixel family. Together they give you a rough subject mask from pure image statistics, which is often enough to seed an inpaint or a region-limited edit.\n\nSALIENCY ('CV Saliency', cv2.saliency):\n  fine-grained       centre-surround contrast at several scales; keeps object shape, so it is the one to use for masks.\n  spectral-residual  the FFT log-spectrum trick; much faster and coarser, better as an attention heat map than as a mask.\nThe node returns the saliency map AND an Otsu-thresholded binary version, both as MASK, and normalises the map to 0-1 so the two methods are directly comparable. The MAP is deterministic; the BINARY one is not, because computeBinaryMap k-means the map before Otsu and cv2.kmeans draws its initial centres from cv2's ONE global RNG - so the same photo gives a different binary mask depending on what else in the graph drew from it first (measured here: 2400-5800 set pixels, a 2.4x spread). 'CV Random Seed' on each saliency node's input wire pins it: it passes the image through untouched and exists only to be forced into the data path, since execution order follows the links. Both saliency nodes share that one RNG, so both wires are seeded - pinning one alone would still leave it at the mercy of whichever ran first.\n\nSUPERPIXELS ('CV Superpixels', cv2.ximgproc + cv2.ximgproc.segmentation): SLIC/SLICO/MSLIC/LSC/SEEDS/ScanSegment all group pixels into perceptually uniform regions that SNAP TO EDGES. Rounding a rough mask to superpixel boundaries is a cheap way to make it follow the object outline. Note region_size drives the SLIC family while num_superpixels drives SEEDS and ScanSegment; the node feeds each algorithm the one it actually uses.\n\nSNAPPING ('CV Snap Mask To Labels', a blueprint in subgraphs/): the step that actually does the rounding. It averages the rough mask over each label region, so the per-region average IS the fraction of that region the mask covers, and it fills every region whose coverage reaches coverage_percent. Raise the percentage and the mask retreats to the regions it really owns; lower it and it grows to every region it merely touches. The 'coverage' output previews that fraction as a heat map, so you can read off the threshold that keeps the subject and drops the halo. Nothing in the blueprint is superpixel-specific - any label map works (watershed, connected components, HFS, k-means).\n\nThe chain: saliency -> binary -> 'Connected Components' keeps the largest blob (dropping speckle) -> 'Crop by Masks' cuts the subject out, while the SAME blob mask is rounded to the superpixel regions and overlaid on the photo beside the raw boundary map, so you can see the edges it snapped to and the edges it ignored."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        440
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load a photo with one clear subject",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "cv2_resize",
+      "pos": [
+        390,
+        440
+      ],
+      "size": [
+        288.71875,
+        178
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            2,
+            3,
+            7,
+            10,
+            14,
+            18,
+            30
+          ]
+        }
+      ],
+      "title": "Downscale",
+      "properties": {
+        "Node name for S&R": "cv2_resize"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "0.5",
+        "0.5",
+        "INTER_AREA"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_Saliency",
+      "pos": [
+        1178,
+        426.0244675493925
+      ],
+      "size": [
+        446.1875,
+        128
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "saliency",
+          "type": "MASK",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "binary",
+          "type": "MASK",
+          "links": [
+            6,
+            9
+          ]
+        }
+      ],
+      "title": "[CV Saliency] Saliency: fine-grained (shape-preserving)",
+      "properties": {
+        "Node name for S&R": "CV_Saliency"
+      },
+      "widgets_values": [
+        "fine-grained"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_Saliency",
+      "pos": [
+        728,
+        433.0900581393808
+      ],
+      "size": [
+        436.5625,
+        128
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "saliency",
+          "type": "MASK",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "binary",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "[CV Saliency] Saliency: spectral-residual (fast, coarse)",
+      "properties": {
+        "Node name for S&R": "CV_Saliency"
+      },
+      "widgets_values": [
+        "spectral-residual"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_CVPreview",
+      "pos": [
+        1232,
+        602.5320124049606
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Fine-grained saliency",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_CVPreview",
+      "pos": [
+        850,
+        602.2032104570106
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Spectral-residual saliency",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_OverlayMasks",
+      "pos": [
+        1640.7057214363358,
+        465.76181494809344
+      ],
+      "size": [
+        288.453125,
+        106
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "link": 6
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "Binary saliency over the photo",
+      "properties": {
+        "Node name for S&R": "CV_OverlayMasks"
+      },
+      "widgets_values": [
+        0.55
+      ]
+    },
+    {
+      "id": 9,
+      "type": "PreviewImage",
+      "pos": [
+        1645.9762935799693,
+        618.5769918596601
+      ],
+      "size": [
+        280,
+        290
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Where the eye goes",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "CV_ConnectedComponents",
+      "pos": [
+        1584,
+        151.13988687700643
+      ],
+      "size": [
+        311.59375,
+        210
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "region_masks",
+          "type": "MASK",
+          "links": [
+            11,
+            25
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Largest salient blob (drop speckle)",
+      "properties": {
+        "Node name for S&R": "CV_ConnectedComponents"
+      },
+      "widgets_values": [
+        "8",
+        400,
+        1,
+        "largest first"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_CropByMasks",
+      "pos": [
+        1982,
+        388.7883700015904
+      ],
+      "size": [
+        290,
+        226
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 10
+        },
+        {
+          "name": "masks",
+          "type": "MASK",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "crops",
+          "shape": 6,
+          "type": "IMAGE",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "crop_masks",
+          "shape": 6,
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "name": "bboxes",
+          "shape": 6,
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "region_index",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "Cut the subject out",
+      "properties": {
+        "Node name for S&R": "CV_CropByMasks"
+      },
+      "widgets_values": [
+        24,
+        false,
+        "one source, regions -> batch"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "PreviewImage",
+      "pos": [
+        2282,
+        613.1823247819956
+      ],
+      "size": [
+        386.375,
+        304.578125
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Subject crop(s)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 14,
+      "type": "CV_Superpixels",
+      "pos": [
+        872,
+        1213.677347185533
+      ],
+      "size": [
+        330,
+        282
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": [
+            15,
+            26
+          ]
+        },
+        {
+          "name": "contours",
+          "type": "NPARRAY",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": [
+            24,
+            27
+          ]
+        }
+      ],
+      "title": "[CV Superpixels] Superpixels (SLICO)",
+      "properties": {
+        "Node name for S&R": "CV_Superpixels"
+      },
+      "widgets_values": [
+        "SLICO",
+        24,
+        250,
+        10,
+        10,
+        true
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_CVPreview",
+      "pos": [
+        1208,
+        1585.3349460640836
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Superpixel labels",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "normalize",
+        false
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_CVToMask",
+      "pos": [
+        1212,
+        1233.981270146697
+      ],
+      "size": [
+        290,
+        82
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "title": "Contours -> Mask",
+      "properties": {
+        "Node name for S&R": "CV_CVToMask"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CV_OverlayMasks",
+      "pos": [
+        1546,
+        1400.1482950001111
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "link": 17
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "IMAGE",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "title": "Superpixel edges over the photo",
+      "properties": {
+        "Node name for S&R": "CV_OverlayMasks"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 18,
+      "type": "PreviewImage",
+      "pos": [
+        1541,
+        1641.1246351995671
+      ],
+      "size": [
+        298.890625,
+        301
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Boundaries a mask can snap to",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "PreviewAny",
+      "pos": [
+        1213,
+        1379.142138848183
+      ],
+      "size": [
+        284.15625,
+        162
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Superpixel count",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "d5b81e6a-2c47-4f39-9a06-7be3418cf25d",
+      "pos": [
+        1942,
+        1160
+      ],
+      "size": [
+        450.609375,
+        226
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 25
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "link": 26
+        },
+        {
+          "name": "num_labels",
+          "type": "INT",
+          "widget": {
+            "name": "num_labels"
+          },
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            28
+          ]
+        },
+        {
+          "name": "coverage",
+          "type": "NPARRAY",
+          "links": [
+            29
+          ]
+        },
+        {
+          "name": "table",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "counts",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[CV Snap Mask To Labels] Snap the mask to superpixel edges",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "previewExposures": []
+      },
+      "widgets_values": [
+        50,
+        25,
+        0.5
+      ],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 23,
+      "type": "CV_OverlayMasks",
+      "pos": [
+        2638,
+        1580
+      ],
+      "size": [
+        290,
+        130
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "link": 28
+        },
+        {
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "overlay",
+          "type": "IMAGE",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "Snapped mask over the photo",
+      "properties": {
+        "Node name for S&R": "CV_OverlayMasks"
+      },
+      "widgets_values": [
+        0.55
+      ]
+    },
+    {
+      "id": 24,
+      "type": "PreviewImage",
+      "pos": [
+        2998,
+        1560
+      ],
+      "size": [
+        302.390625,
+        300
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Mask rounded to superpixel boundaries",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 25,
+      "type": "CV_CVPreview",
+      "pos": [
+        2638,
+        1140
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Coverage per superpixel",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        true
+      ]
+    },
+    {
+      "id": 26,
+      "type": "CV_SetRNGSeed",
+      "pos": [
+        390,
+        620
+      ],
+      "size": [
+        420,
+        123
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "title": "[CV Random Seed] Seed cv2's RNG (fine-grained binary)",
+      "properties": {
+        "Node name for S&R": "CV_SetRNGSeed"
+      },
+      "widgets_values": [
+        50,
+        "fixed"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "CV_SetRNGSeed",
+      "pos": [
+        390,
+        780
+      ],
+      "size": [
+        450,
+        123
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "links": [
+            33
+          ]
+        }
+      ],
+      "title": "[CV Random Seed] Seed cv2's RNG (spectral-residual binary)",
+      "properties": {
+        "Node name for S&R": "CV_SetRNGSeed"
+      },
+      "widgets_values": [
+        0,
+        "fixed"
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      4,
+      0,
+      6,
+      0,
+      "MASK"
+    ],
+    [
+      5,
+      5,
+      0,
+      7,
+      0,
+      "MASK"
+    ],
+    [
+      6,
+      4,
+      1,
+      8,
+      0,
+      "MASK"
+    ],
+    [
+      7,
+      3,
+      0,
+      8,
+      1,
+      "IMAGE"
+    ],
+    [
+      8,
+      8,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      4,
+      1,
+      10,
+      0,
+      "MASK"
+    ],
+    [
+      10,
+      3,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      10,
+      0,
+      11,
+      1,
+      "MASK"
+    ],
+    [
+      12,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      3,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      14,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      14,
+      1,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      17,
+      16,
+      0,
+      17,
+      0,
+      "MASK"
+    ],
+    [
+      18,
+      3,
+      0,
+      17,
+      1,
+      "IMAGE"
+    ],
+    [
+      19,
+      17,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      24,
+      14,
+      2,
+      21,
+      0,
+      "INT"
+    ],
+    [
+      25,
+      10,
+      0,
+      22,
+      0,
+      "MASK"
+    ],
+    [
+      26,
+      14,
+      0,
+      22,
+      1,
+      "NPARRAY"
+    ],
+    [
+      27,
+      14,
+      2,
+      22,
+      2,
+      "INT"
+    ],
+    [
+      28,
+      22,
+      0,
+      23,
+      0,
+      "MASK"
+    ],
+    [
+      29,
+      22,
+      1,
+      25,
+      0,
+      "NPARRAY"
+    ],
+    [
+      30,
+      3,
+      0,
+      23,
+      1,
+      "IMAGE"
+    ],
+    [
+      31,
+      23,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      32,
+      26,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      33,
+      27,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "d5b81e6a-2c47-4f39-9a06-7be3418cf25d",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 39,
+          "lastLinkId": 122,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Snap Mask To Labels.json",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -240,
+            120,
+            130,
+            148
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2680,
+            120,
+            128,
+            128
+          ]
+        },
+        "inputs": [
+          {
+            "id": "10d5012e-e734-5229-b2a0-7de5f9319d7e",
+            "name": "mask",
+            "type": "MASK",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "mask",
+            "pos": [
+              -136,
+              150
+            ]
+          },
+          {
+            "id": "646fa176-b58a-570b-8aaf-49469bcf9c86",
+            "name": "labels",
+            "type": "NPARRAY",
+            "linkIds": [
+              104,
+              108,
+              115,
+              119
+            ],
+            "localized_name": "labels",
+            "pos": [
+              -136,
+              170
+            ]
+          },
+          {
+            "id": "1c8adbc1-9666-5e5b-a00a-402e4c23311d",
+            "name": "num_labels",
+            "type": "INT",
+            "linkIds": [
+              109
+            ],
+            "localized_name": "num_labels",
+            "pos": [
+              -136,
+              190
+            ]
+          },
+          {
+            "id": "0a466cf4-edf6-5218-88c2-8161c57dab26",
+            "name": "coverage_percent",
+            "type": "FLOAT",
+            "linkIds": [
+              110
+            ],
+            "localized_name": "coverage_percent",
+            "pos": [
+              -136,
+              210
+            ]
+          },
+          {
+            "id": "705416e4-caaa-5016-8833-2241b613099e",
+            "name": "mask_threshold",
+            "type": "FLOAT",
+            "linkIds": [
+              103
+            ],
+            "localized_name": "mask_threshold",
+            "pos": [
+              -136,
+              230
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "10d5012e-e734-5229-b2a0-7de5f9319d7e",
+            "name": "mask",
+            "type": "MASK",
+            "linkIds": [
+              117
+            ],
+            "localized_name": "mask",
+            "pos": [
+              2704,
+              150
+            ]
+          },
+          {
+            "id": "7e177786-4068-562e-8208-9ff9c93de8d7",
+            "name": "coverage",
+            "type": "NPARRAY",
+            "linkIds": [
+              120
+            ],
+            "localized_name": "coverage",
+            "pos": [
+              2704,
+              170
+            ]
+          },
+          {
+            "id": "4c5a9fe3-c46d-5657-9912-64c8e51de9fd",
+            "name": "table",
+            "type": "NPARRAY",
+            "linkIds": [
+              121
+            ],
+            "localized_name": "table",
+            "pos": [
+              2704,
+              190
+            ]
+          },
+          {
+            "id": "6ba396b1-9f5a-58d4-8a98-332c6dd2e03b",
+            "name": "counts",
+            "type": "NPARRAY",
+            "linkIds": [
+              122
+            ],
+            "localized_name": "counts",
+            "pos": [
+              2704,
+              210
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 28,
+            "type": "CV_MaskToCV",
+            "pos": [
+              80,
+              120
+            ],
+            "size": [
+              290,
+              106
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "MASK",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  102
+                ]
+              }
+            ],
+            "title": "Mask -> CV Array (float32 0-1)",
+            "properties": {
+              "Node name for S&R": "CV_MaskToCV"
+            },
+            "widgets_values": [
+              "float32 (0-1)",
+              0
+            ]
+          },
+          {
+            "id": 29,
+            "type": "cv2_threshold",
+            "pos": [
+              430,
+              120
+            ],
+            "size": [
+              290,
+              174
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 102
+              },
+              {
+                "localized_name": "thresh",
+                "name": "thresh",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "thresh"
+                },
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  105
+                ]
+              }
+            ],
+            "title": "Binarize the rough mask",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0.5,
+              1,
+              "THRESH_BINARY"
+            ]
+          },
+          {
+            "id": 30,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              430,
+              430
+            ],
+            "size": [
+              250,
+              144
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "height",
+                "name": "height",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "width",
+                "name": "width",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "localized_name": "size",
+                "name": "size",
+                "type": "CV_TUPLE",
+                "links": [
+                  106
+                ]
+              }
+            ],
+            "title": "Label grid size",
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 31,
+            "type": "cv2_resize",
+            "pos": [
+              790,
+              120
+            ],
+            "size": [
+              349.116796875,
+              178
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 105
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "dsize"
+                },
+                "link": 106
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "title": "Fit the mask to the label grid (area = coverage)",
+            "properties": {
+              "Node name for S&R": "cv2_resize"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              0,
+              0,
+              "INTER_AREA"
+            ]
+          },
+          {
+            "id": 32,
+            "type": "CV_ReduceArrayByLabel",
+            "pos": [
+              1160,
+              120
+            ],
+            "size": [
+              290,
+              190
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "link": 107
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "NPARRAY",
+                "link": 108
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "localized_name": "num_labels",
+                "name": "num_labels",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "num_labels"
+                },
+                "link": 109
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "links": [
+                  112,
+                  118,
+                  121
+                ]
+              },
+              {
+                "localized_name": "counts",
+                "name": "counts",
+                "type": "NPARRAY",
+                "links": [
+                  122
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Coverage fraction per region",
+            "properties": {
+              "Node name for S&R": "CV_ReduceArrayByLabel"
+            },
+            "widgets_values": [
+              "mean",
+              0,
+              0
+            ]
+          },
+          {
+            "id": 33,
+            "type": "PrimitiveFloat",
+            "pos": [
+              1160,
+              470
+            ],
+            "size": [
+              270,
+              58
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "coverage_percent",
+                "localized_name": "value",
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 110
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "title": "Coverage % of the region area",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "PrimitiveFloat",
+              "min": 0,
+              "max": 100,
+              "precision": 1,
+              "step": 1
+            },
+            "widgets_values": [
+              50
+            ]
+          },
+          {
+            "id": 34,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1470,
+              470
+            ],
+            "size": [
+              400,
+              160
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 111
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  113
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "percent -> fraction (inclusive)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / 100 - 0.000001"
+            ]
+          },
+          {
+            "id": 35,
+            "type": "cv2_threshold",
+            "pos": [
+              1520,
+              120
+            ],
+            "size": [
+              290,
+              174
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 112
+              },
+              {
+                "localized_name": "thresh",
+                "name": "thresh",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "thresh"
+                },
+                "link": 113
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  114
+                ]
+              }
+            ],
+            "title": "Keep the regions at or above it",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0.5,
+              1,
+              "THRESH_BINARY"
+            ]
+          },
+          {
+            "id": 36,
+            "type": "CV_TakeByIndex",
+            "pos": [
+              1900,
+              120
+            ],
+            "size": [
+              280,
+              130
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "link": 114
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "NPARRAY",
+                "link": 115
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  116
+                ]
+              }
+            ],
+            "title": "Paint the verdict over the labels",
+            "properties": {
+              "Node name for S&R": "CV_TakeByIndex"
+            },
+            "widgets_values": [
+              "clamp",
+              0
+            ]
+          },
+          {
+            "id": 37,
+            "type": "CV_CVToMask",
+            "pos": [
+              2260,
+              120
+            ],
+            "size": [
+              270,
+              60
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 116
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "MASK",
+                "links": [
+                  117
+                ]
+              }
+            ],
+            "title": "CV Array -> Mask",
+            "properties": {
+              "Node name for S&R": "CV_CVToMask"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 38,
+            "type": "CV_TakeByIndex",
+            "pos": [
+              1900,
+              330
+            ],
+            "size": [
+              280,
+              130
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "link": 118
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "NPARRAY",
+                "link": 119
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  120
+                ]
+              }
+            ],
+            "title": "Paint the coverage over the labels",
+            "properties": {
+              "Node name for S&R": "CV_TakeByIndex"
+            },
+            "widgets_values": [
+              "clamp",
+              0
+            ]
+          },
+          {
+            "id": 39,
+            "type": "MarkdownNote",
+            "pos": [
+              80,
+              620
+            ],
+            "size": [
+              660,
+              700
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [],
+            "title": "mask_threshold is 0-1, coverage_percent is 0-100",
+            "properties": {},
+            "widgets_values": [
+              "## Two thresholds, two different scales\n\nThey deliberately do NOT share a range, because they are not the same kind of\nnumber. Read them as **\"what counts as masked\"** and **\"how much of a region\nmust be masked\"**.\n\n| input | range | unit | default | decides |\n|---|---|---|---|---|\n| `mask_threshold` | 0.0 - 1.0 | MASK pixel value | 0.5 | which **pixels** count as masked |\n| `coverage_percent` | 0 - 100 | percent of region area | 50 | which **regions** get filled |\n\n**`mask_threshold` is 0-1 because a ComfyUI MASK is 0-1.** It goes straight into\n`cv2.threshold` on the incoming mask, so it is compared against that mask's own\npixel values. A hard mask is already 0 or 1 and any setting in between behaves\nthe same; it only matters for a soft or antialiased mask. It is **exclusive**\n(`>`): a flat 0.3 mask passes nothing at `mask_threshold` 0.3. Use 0 to accept\nevery non-black pixel.\n\n**`coverage_percent` is 0-100 because it is an AREA percentage, not a pixel\nvalue.** Once the mask is binarized, each region's average IS the fraction of\nthat region the mask covers, and the blueprint divides this input by 100 before\ncomparing. 50 means \"fill a region once the mask covers half of it\". It is\n**inclusive** (`>=`): a region covered exactly 50% survives at 50.\n\n### Tuning\n\n`coverage_percent` is the knob you actually turn. Raise it and the mask retreats\nonto the regions it really owns; lower it and it grows outwards.\n\n* **0** fills *every* region, including ones the mask never touched (0% >= 0%).\n  If you want \"every region the mask touches at all\", use a small non-zero\n  value such as 0.001, not 0.\n* **100** fills only regions the mask covers completely.\n\nPreview the `coverage` output as a heat map to pick the value: it paints each\nregion with its own fraction, 0.0 to 1.0. `table` is the same numbers as one row\nper label, and `counts` is each region's pixel area.\n\n### Not superpixel-specific\n\n`labels` is any integer `[H,W]` label map - superpixels, watershed, connected\ncomponents, HFS, k-means. Wire `num_labels` from the segmenter's region count to\npin the table height (0 derives it). The mask may be a different resolution from\nthe label map; it is area-resampled onto the label grid, so the fractions stay\nexact either way."
+            ],
+            "color": "#2a363b",
+            "bgcolor": "#3f5159"
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 28,
+            "target_slot": 0,
+            "type": "MASK"
+          },
+          {
+            "id": 102,
+            "origin_id": 28,
+            "origin_slot": 0,
+            "target_id": 29,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 29,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 104,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 30,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 29,
+            "origin_slot": 1,
+            "target_id": 31,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 30,
+            "origin_slot": 4,
+            "target_id": 31,
+            "target_slot": 1,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 107,
+            "origin_id": 31,
+            "origin_slot": 0,
+            "target_id": 32,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 32,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 32,
+            "target_slot": 3,
+            "type": "INT"
+          },
+          {
+            "id": 110,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 33,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 111,
+            "origin_id": 33,
+            "origin_slot": 0,
+            "target_id": 34,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 112,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": 35,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 34,
+            "origin_slot": 0,
+            "target_id": 35,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 114,
+            "origin_id": 35,
+            "origin_slot": 1,
+            "target_id": 36,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 36,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 36,
+            "origin_slot": 0,
+            "target_id": 37,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 117,
+            "origin_id": 37,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "MASK"
+          },
+          {
+            "id": 118,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": 38,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 38,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 38,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 122,
+            "origin_id": 32,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.33378476027316006,
+      "offset": [
+        564.2997911292922,
+        227.0914713021692
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

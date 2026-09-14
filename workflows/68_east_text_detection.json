@@ -1,0 +1,493 @@
+{
+  "id": "d8e3f1a2-7b94-4c5e-a6d0-2f8e3c5b7a91",
+  "revision": 0,
+  "last_node_id": 12,
+  "last_link_id": 11,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        -493.0345209750001,
+        233.0608241624999
+      ],
+      "size": [
+        517.875,
+        493.5
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "EAST scene-text detection (cv2.dnn.TextDetectionModel_EAST)\n\nWraps the EAST CNN for scene-text detection (mirrors the east_text_detection_demo reference). Unlike the generic DNN pipeline, EAST's high-level API handles preprocessing, forward, decode, and NMS internally.\n\nPipeline:\n  Load Image\n   -> EAST Text Detect  (detection: rotated rects + axis-aligned bboxes)\n   -> Draw Polygon      (rotated quads drawn on the image, thickness=2)\n   -> Preview Image     (visualization of detected text regions)\n\nThe detector outputs:\n  - bboxes: axis-aligned {x,y,w,h,score,label} for the core 'Draw BBoxes' node\n  - quads: (N,4,2) rotated corner points for 'CV Draw Polygon'\n  - scores: per-detection confidence\n\nThe quads are wired to BOTH:\n  1. Draw Polygon (thickness=2): outlines on the original image\n  2. Draw Polygon (thickness=0): filled quads on the original image (overlay)\n\nTo create a pure black/white mask, wire a blank IMAGE/MASK into Draw Polygon with thickness=0.\n\nModel: east_text_detection_2026jul.onnx\n  Source:  https://huggingface.co/opencv/opencv_contribution\n  License: Apache-2.0 (OpenCV)\n           https://www.apache.org/licenses/LICENSE-2.0"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        380
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            8
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "box_in_scene.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_EastTextDetect",
+      "pos": [
+        420,
+        380
+      ],
+      "size": [
+        330,
+        230
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": null
+        },
+        {
+          "name": "quads",
+          "type": "NPARRAY",
+          "links": [
+            2,
+            4
+          ]
+        },
+        {
+          "name": "scores",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "det_count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV EAST Text Detect]",
+      "properties": {
+        "Node name for S&R": "CV_EastTextDetect"
+      },
+      "widgets_values": [
+        "east_text_detection_2026jul.onnx",
+        0.5,
+        0.4,
+        320
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 4,
+      "type": "CV_DrawPolygon",
+      "pos": [
+        820,
+        380
+      ],
+      "size": [
+        330,
+        198
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 1
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "title": "Draw Rotated Quads (outline)",
+      "properties": {
+        "Node name for S&R": "CV_DrawPolygon"
+      },
+      "widgets_values": [
+        "(0, 255, 0)",
+        2,
+        true,
+        "solid"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "PreviewImage",
+      "pos": [
+        1220,
+        380
+      ],
+      "size": [
+        320,
+        320
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "EAST Text Detection (rotated outlines)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "CV_DrawPolygon",
+      "pos": [
+        820,
+        620
+      ],
+      "size": [
+        330,
+        198
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "Fill Quads (filled overlay)",
+      "properties": {
+        "Node name for S&R": "CV_DrawPolygon"
+      },
+      "widgets_values": [
+        "255",
+        0,
+        true,
+        "solid"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_ConstantLike",
+      "pos": [
+        421.0580631343482,
+        651.6572689015442
+      ],
+      "size": [
+        326.34375,
+        114
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_ConstantLike"
+      },
+      "widgets_values": [
+        0,
+        "grayscale (single channel)"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CV_CVToMask",
+      "pos": [
+        826.274909314383,
+        867.3978469766935
+      ],
+      "size": [
+        319.609375,
+        58
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_CVToMask"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "MaskPreview",
+      "pos": [
+        1221.51073030189,
+        748.5487039128141
+      ],
+      "size": [
+        308.75,
+        290
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "MaskPreview"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "Note",
+      "pos": [
+        -159.51298622499996,
+        789.9613599125
+      ],
+      "size": [
+        525.34375,
+        189.65625
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "box.png / box_in_scene.png",
+      "properties": {},
+      "widgets_values": [
+        "Title:   box.png / box_in_scene.png\nCreator: OpenCV project (sample data)\nLicense: Apache-2.0 (OpenCV) - sample data redistributed with the library\n         https://www.apache.org/licenses/LICENSE-2.0\nSource:  https://github.com/opencv/opencv (samples/data/)\nSize:    box.png 324x223, box_in_scene.png 512x384 (the canonical OpenCV feature-matching / homography pair)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 12,
+      "type": "MarkdownNote",
+      "pos": [
+        427.63525000000004,
+        236.22987500000113
+      ],
+      "size": [
+        314.109375,
+        102
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Model: east_text_detection_2026jul.onnx",
+      "properties": {},
+      "widgets_values": [
+        "east_text_detection_2026jul.onnx at\nhttps://huggingface.co/opencv/opencv_contribution"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      1,
+      4,
+      1,
+      "NPARRAY"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      3,
+      1,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      8,
+      2,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      8,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      6,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      9,
+      0,
+      10,
+      0,
+      "MASK"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.3084346315436258,
+      "offset": [
+        802.5374142555725,
+        975.9969700308001
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

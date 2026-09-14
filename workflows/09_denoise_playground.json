@@ -1,0 +1,2254 @@
+{
+  "id": "889d3948-16e9-4fb2-8bf9-139467a46ff3",
+  "revision": 0,
+  "last_node_id": 148,
+  "last_link_id": 199,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        44,
+        -7.816982681864299
+      ],
+      "size": [
+        849.40625,
+        200.5625
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Noise & denoise playground\n\nThe photo is corrupted twice - zero-mean Gaussian noise (the 'Add Gaussian noise' subgraph: cv2.randn centered at 128, then image + noise - 128 so it can darken AND brighten in uint8) and salt & pepper (the 'Add salt & pepper' subgraph: a uniform field thresholded at both tails) - then handed to four denoisers. What to look for: the median filter erases salt & pepper outright but rounds corners; Gaussian blur just smears both noise and edges; bilateral keeps strong edges (it refuses to average across them); NL-means searches the whole window for similar patches and wins on texture, at 100x the cost. The labels are stamped per tile and the sheet is tiled with 'CV Stack Images'.\n\nThe displayed upper row is the result of using Canny edge detection over the below blured images without additional morphologic operations."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_ImageToCV",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        305.421875,
+        168
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "Photo as BGR",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "b3f17d96-2e84-4c5b-9a07-e6d1c8f25b43",
+      "pos": [
+        395,
+        454.87280479868343
+      ],
+      "size": [
+        298.953125,
+        124
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "noisy",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "noise",
+          "type": "NPARRAY",
+          "links": []
+        }
+      ],
+      "title": "[Add Gaussian noise]",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 5,
+      "type": "c8d24e07-5a91-4b36-8f72-1e9a6d40c5b8",
+      "pos": [
+        411,
+        619.2721319600921
+      ],
+      "size": [
+        290.765625,
+        148
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "noisy",
+          "type": "NPARRAY",
+          "links": [
+            5,
+            7,
+            8,
+            9,
+            145
+          ]
+        },
+        {
+          "name": "salt",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "pepper",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "[Add salt & pepper]",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 7,
+      "type": "cv2_medianBlur",
+      "pos": [
+        1230,
+        1265.117037048431
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "title": "Median 5x5",
+      "properties": {
+        "Node name for S&R": "cv2_medianBlur"
+      },
+      "widgets_values": [
+        5
+      ]
+    },
+    {
+      "id": 9,
+      "type": "cv2_bilateralFilter",
+      "pos": [
+        2003,
+        1271.0058315986885
+      ],
+      "size": [
+        320,
+        196
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            12
+          ]
+        }
+      ],
+      "title": "[cv2.bilateralFilter] Bilateral (edge-keeping)",
+      "properties": {
+        "Node name for S&R": "cv2_bilateralFilter"
+      },
+      "widgets_values": [
+        9,
+        500,
+        75,
+        "BORDER_DEFAULT"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "cv2_fastNlMeansDenoisingColored",
+      "pos": [
+        2372,
+        1270.3170203205013
+      ],
+      "size": [
+        450,
+        130
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        }
+      ],
+      "title": "[cv2.fastNlMeansDenoisingColored] NL-means (patch search)",
+      "properties": {
+        "Node name for S&R": "cv2_fastNlMeansDenoisingColored"
+      },
+      "widgets_values": [
+        40,
+        10,
+        9,
+        41
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_DrawText",
+      "pos": [
+        473,
+        810.9448763259822
+      ],
+      "size": [
+        225,
+        270
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "Label: corrupted",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "corrupted",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_DrawText",
+      "pos": [
+        1294,
+        1425.7144658943052
+      ],
+      "size": [
+        225,
+        34
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "title": "Label: median",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "median",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_DrawText",
+      "pos": [
+        1660,
+        1529.4916183666978
+      ],
+      "size": [
+        225,
+        34
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 146
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            142
+          ]
+        }
+      ],
+      "title": "Label: gaussian",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "gaussian",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_DrawText",
+      "pos": [
+        2055,
+        1517.2289216415834
+      ],
+      "size": [
+        225,
+        34
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            143
+          ]
+        }
+      ],
+      "title": "Label: bilateral",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "bilateral",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_DrawText",
+      "pos": [
+        2435,
+        1444.8388687409424
+      ],
+      "size": [
+        225,
+        34
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            144
+          ]
+        }
+      ],
+      "title": "Label: NL-means",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "NL-means",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_StackImages",
+      "pos": [
+        811,
+        259.9843983988184
+      ],
+      "size": [
+        225,
+        174
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images.image0",
+          "type": "NPARRAY",
+          "link": 14
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 142
+        },
+        {
+          "label": "image3",
+          "name": "images.image3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 143
+        },
+        {
+          "label": "image4",
+          "name": "images.image4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 144
+        },
+        {
+          "label": "image5",
+          "name": "images.image5",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 175
+        },
+        {
+          "label": "image6",
+          "name": "images.image6",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            188,
+            199
+          ]
+        }
+      ],
+      "title": "Stack",
+      "properties": {
+        "Node name for S&R": "CV_StackImages"
+      },
+      "widgets_values": [
+        "horizontal (a then b)",
+        2
+      ]
+    },
+    {
+      "id": 20,
+      "type": "CV_CVPreview",
+      "pos": [
+        809,
+        305.2677547702924
+      ],
+      "size": [
+        2292.625,
+        907.921875
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 193
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Denoiser sheet",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 55,
+      "type": "cv2_GaussianBlur",
+      "pos": [
+        1629,
+        1267.8314801288216
+      ],
+      "size": [
+        270,
+        202
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 10,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 145
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            146,
+            165
+          ]
+        }
+      ],
+      "title": "Gaussian 9x9",
+      "properties": {
+        "Node name for S&R": "cv2_GaussianBlur"
+      },
+      "widgets_values": [
+        "(9, 9)",
+        0,
+        0,
+        "BORDER_DEFAULT",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 56,
+      "type": "cv2_Canny_0",
+      "pos": [
+        1090,
+        85.58095650635377
+      ],
+      "size": [
+        320,
+        138
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 188
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            198
+          ]
+        }
+      ],
+      "title": "Canny edge detection",
+      "properties": {
+        "Node name for S&R": "cv2_Canny_0"
+      },
+      "widgets_values": [
+        100,
+        200,
+        3,
+        false
+      ]
+    },
+    {
+      "id": 63,
+      "type": "cv2_stackBlur",
+      "pos": [
+        2832,
+        1280.2492944824867
+      ],
+      "size": [
+        270,
+        150
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 165
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            172
+          ]
+        }
+      ],
+      "title": "[cv2.stackBlur]",
+      "properties": {
+        "Node name for S&R": "cv2_stackBlur"
+      },
+      "widgets_values": [
+        "(9, 9)"
+      ]
+    },
+    {
+      "id": 140,
+      "type": "CV_DrawText",
+      "pos": [
+        2875,
+        1476.2895930217123
+      ],
+      "size": [
+        225,
+        34
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 172
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            175
+          ]
+        }
+      ],
+      "title": "Label: stack",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "stack",
+        8,
+        24,
+        0.7,
+        "0",
+        2,
+        true
+      ]
+    },
+    {
+      "id": 147,
+      "type": "CV_StackImages",
+      "pos": [
+        897,
+        1275.4705590888836
+      ],
+      "size": [
+        225,
+        102
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images.image0",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "*",
+          "links": []
+        }
+      ],
+      "title": "Stack",
+      "properties": {
+        "Node name for S&R": "CV_StackImages"
+      },
+      "widgets_values": [
+        "horizontal (a then b)",
+        2
+      ]
+    },
+    {
+      "id": 148,
+      "type": "CV_StackImages",
+      "pos": [
+        1461,
+        259.1973013355706
+      ],
+      "size": [
+        225,
+        94
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images.image0",
+          "type": "NPARRAY",
+          "link": 198
+        },
+        {
+          "label": "image1",
+          "name": "images.image1",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 199
+        },
+        {
+          "label": "image2",
+          "name": "images.image2",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            193
+          ]
+        }
+      ],
+      "title": "Stack",
+      "properties": {
+        "Node name for S&R": "CV_StackImages"
+      },
+      "widgets_values": [
+        "vertical (a above b)",
+        2
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      5,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      7,
+      5,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      8,
+      5,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      9,
+      5,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      7,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      9,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      10,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      11,
+      0,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      15,
+      12,
+      0,
+      16,
+      1,
+      "NPARRAY"
+    ],
+    [
+      142,
+      13,
+      0,
+      16,
+      2,
+      "NPARRAY"
+    ],
+    [
+      143,
+      14,
+      0,
+      16,
+      3,
+      "NPARRAY"
+    ],
+    [
+      144,
+      15,
+      0,
+      16,
+      4,
+      "NPARRAY"
+    ],
+    [
+      145,
+      5,
+      0,
+      55,
+      0,
+      "NPARRAY"
+    ],
+    [
+      146,
+      55,
+      0,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      165,
+      55,
+      0,
+      63,
+      0,
+      "NPARRAY"
+    ],
+    [
+      172,
+      63,
+      0,
+      140,
+      0,
+      "NPARRAY"
+    ],
+    [
+      175,
+      140,
+      0,
+      16,
+      5,
+      "NPARRAY"
+    ],
+    [
+      188,
+      16,
+      0,
+      56,
+      0,
+      "NPARRAY"
+    ],
+    [
+      193,
+      148,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      198,
+      56,
+      0,
+      148,
+      0,
+      "NPARRAY"
+    ],
+    [
+      199,
+      16,
+      0,
+      148,
+      1,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "b3f17d96-2e84-4c5b-9a07-e6d1c8f25b43",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 148,
+          "lastLinkId": 199,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Add Gaussian noise",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -160.0229904106489,
+            -95.14559891514219,
+            128,
+            68
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            1141.1834817882177,
+            25.614234530635684,
+            128,
+            88
+          ]
+        },
+        "inputs": [
+          {
+            "id": "97c8c609-39c7-50f5-b113-72218e9430e5",
+            "name": "image",
+            "type": "NPARRAY",
+            "linkIds": [
+              101,
+              105
+            ],
+            "localized_name": "image",
+            "pos": [
+              -56.0229904106489,
+              -71.14559891514219
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "81397e4e-8dd9-50f8-bdb3-685f024d0ead",
+            "name": "noisy",
+            "type": "NPARRAY",
+            "linkIds": [
+              107
+            ],
+            "localized_name": "noisy",
+            "pos": [
+              1165.1834817882177,
+              49.614234530635684
+            ]
+          },
+          {
+            "id": "364b71df-84e4-5123-9809-7ad29ce0c81c",
+            "name": "noise",
+            "type": "NPARRAY",
+            "linkIds": [
+              108
+            ],
+            "localized_name": "noise",
+            "pos": [
+              1165.1834817882177,
+              69.61423453063568
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 24,
+            "type": "CV_ConstantLike",
+            "pos": [
+              40,
+              40
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  102
+                ]
+              }
+            ],
+            "title": "Same-shape canvas",
+            "properties": {
+              "Node name for S&R": "CV_ConstantLike"
+            },
+            "widgets_values": [
+              0,
+              "same as input"
+            ]
+          },
+          {
+            "id": 25,
+            "type": "CV_ScalarArray",
+            "pos": [
+              -16.671829096061575,
+              181.2534105025241
+            ],
+            "size": [
+              347.202734375,
+              82
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  103
+                ]
+              }
+            ],
+            "title": "Mean 128 (so noise can go both ways in uint8)",
+            "properties": {
+              "Node name for S&R": "CV_ScalarArray"
+            },
+            "widgets_values": [
+              "(128, 128, 128)",
+              "float64 (cv2 Scalar default)"
+            ]
+          },
+          {
+            "id": 26,
+            "type": "CV_ScalarArray",
+            "pos": [
+              23.68385969318995,
+              320.8921757602867
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              }
+            ],
+            "title": "Sigma 25",
+            "properties": {
+              "Node name for S&R": "CV_ScalarArray"
+            },
+            "widgets_values": [
+              "(25, 25, 25)",
+              "float64 (cv2 Scalar default)"
+            ]
+          },
+          {
+            "id": 27,
+            "type": "cv2_randn",
+            "pos": [
+              412.84259642953424,
+              113.42263138064521
+            ],
+            "size": [
+              290,
+              66
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "dst",
+                "name": "dst",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 102
+              },
+              {
+                "localized_name": "mean",
+                "name": "mean",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 103
+              },
+              {
+                "localized_name": "stddev",
+                "name": "stddev",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  106,
+                  108
+                ]
+              }
+            ],
+            "title": "Gaussian noise field",
+            "properties": {
+              "Node name for S&R": "cv2_randn"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 28,
+            "type": "cv2_addWeighted",
+            "pos": [
+              710.5137975603386,
+              -96.21007618650552
+            ],
+            "size": [
+              285.2223077953597,
+              150
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 105
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 106
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "title": "image + noise - 128 (saturating)",
+            "properties": {
+              "Node name for S&R": "cv2_addWeighted"
+            },
+            "widgets_values": [
+              1,
+              1,
+              -128,
+              "same as input"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": 24,
+            "origin_slot": 0,
+            "target_id": 27,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": 25,
+            "origin_slot": 0,
+            "target_id": 27,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 26,
+            "origin_slot": 0,
+            "target_id": 27,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 28,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 27,
+            "origin_slot": 0,
+            "target_id": 28,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 28,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": 27,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "c8d24e07-5a91-4b36-8f72-1e9a6d40c5b8",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 148,
+          "lastLinkId": 199,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Add salt & pepper",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -149.07150480256124,
+            -140.03557452863737,
+            128,
+            68
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2155.5352680185,
+            247.20954251156172,
+            128,
+            108
+          ]
+        },
+        "inputs": [
+          {
+            "id": "79dd3eb6-006f-5865-9980-2bab14f8b9d4",
+            "name": "image",
+            "type": "NPARRAY",
+            "linkIds": [
+              107,
+              110,
+              135
+            ],
+            "localized_name": "image",
+            "pos": [
+              -45.071504802561236,
+              -116.03557452863737
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "bb614776-8ebe-51db-9adf-91678f1984b3",
+            "name": "noisy",
+            "type": "NPARRAY",
+            "linkIds": [
+              116
+            ],
+            "localized_name": "noisy",
+            "pos": [
+              2179.5352680185,
+              271.2095425115617
+            ]
+          },
+          {
+            "id": "7019979f-71c7-5550-b96b-d39cfb2a64e5",
+            "name": "salt",
+            "type": "NPARRAY",
+            "linkIds": [
+              117
+            ],
+            "localized_name": "salt",
+            "pos": [
+              2179.5352680185,
+              291.2095425115617
+            ]
+          },
+          {
+            "id": "885927c3-2c0d-5dd4-bdf4-6fce081efdcd",
+            "name": "pepper",
+            "type": "NPARRAY",
+            "linkIds": [
+              118
+            ],
+            "localized_name": "pepper",
+            "pos": [
+              2179.5352680185,
+              311.2095425115617
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 36,
+            "type": "cv2_copyTo",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 108
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 109
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "title": "White only at salt",
+            "properties": {
+              "Node name for S&R": "cv2_copyTo"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 37,
+            "type": "cv2_bitwise_or",
+            "pos": [
+              1440,
+              40
+            ],
+            "size": [
+              290,
+              126
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 110
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 111
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  113,
+                  114
+                ]
+              }
+            ],
+            "title": "Paste the salt",
+            "properties": {
+              "Node name for S&R": "cv2_bitwise_or"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 38,
+            "type": "cv2_bitwise_not",
+            "pos": [
+              1440,
+              440
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 112
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  115
+                ]
+              }
+            ],
+            "title": "Keep (not pepper)",
+            "properties": {
+              "Node name for S&R": "cv2_bitwise_not"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 39,
+            "type": "cv2_bitwise_and",
+            "pos": [
+              1790,
+              40
+            ],
+            "size": [
+              290,
+              126
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 113
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 114
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 115
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  116
+                ]
+              }
+            ],
+            "title": "Punch the pepper holes",
+            "properties": {
+              "Node name for S&R": "cv2_bitwise_and"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 35,
+            "type": "CV_ConstantLike",
+            "pos": [
+              741.4656705798648,
+              532.3372465314836
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 107
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  108
+                ]
+              }
+            ],
+            "title": "White (image-shaped)",
+            "properties": {
+              "Node name for S&R": "CV_ConstantLike"
+            },
+            "widgets_values": [
+              255,
+              "same as input"
+            ]
+          },
+          {
+            "id": 34,
+            "type": "cv2_threshold",
+            "pos": [
+              740,
+              278.10743507648533
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 106
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  112,
+                  118
+                ]
+              }
+            ],
+            "title": "Pepper mask (~3%)",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              8,
+              255,
+              "THRESH_BINARY_INV"
+            ]
+          },
+          {
+            "id": 31,
+            "type": "CV_ScalarArray",
+            "pos": [
+              34.13731768054075,
+              343.26574172892185
+            ],
+            "size": [
+              307.5723411597296,
+              82
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              }
+            ],
+            "title": "256",
+            "properties": {
+              "Node name for S&R": "CV_ScalarArray"
+            },
+            "widgets_values": [
+              "(256,)",
+              "float32"
+            ]
+          },
+          {
+            "id": 33,
+            "type": "cv2_threshold",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 105
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": []
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  109,
+                  117
+                ]
+              }
+            ],
+            "title": "Salt mask (~3%)",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              247,
+              255,
+              "THRESH_BINARY"
+            ]
+          },
+          {
+            "id": 32,
+            "type": "cv2_randu",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              286.00700000000006,
+              66
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "dst",
+                "name": "dst",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 136
+              },
+              {
+                "localized_name": "low",
+                "name": "low",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 103
+              },
+              {
+                "localized_name": "high",
+                "name": "high",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  105,
+                  106
+                ]
+              }
+            ],
+            "title": "Uniform field",
+            "properties": {
+              "Node name for S&R": "cv2_randu"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 30,
+            "type": "CV_ScalarArray",
+            "pos": [
+              38.53432942013519,
+              191.63287086446093
+            ],
+            "size": [
+              307.303,
+              82
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  103
+                ]
+              }
+            ],
+            "title": "0",
+            "properties": {
+              "Node name for S&R": "CV_ScalarArray"
+            },
+            "widgets_values": [
+              "(0,)",
+              "float32"
+            ]
+          },
+          {
+            "id": 54,
+            "type": "CV_ZeroStrideLike",
+            "pos": [
+              51.97545359798489,
+              28.048600157711384
+            ],
+            "size": [
+              282.8638671875,
+              106
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 135
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  136
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ZeroStrideLike"
+            },
+            "widgets_values": [
+              0,
+              "grayscale (single channel)",
+              "uint8"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 103,
+            "origin_id": 30,
+            "origin_slot": 0,
+            "target_id": 32,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 31,
+            "origin_slot": 0,
+            "target_id": 32,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": 33,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": 34,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 35,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": 35,
+            "origin_slot": 0,
+            "target_id": 36,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": 33,
+            "origin_slot": 1,
+            "target_id": 36,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 110,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 37,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": 36,
+            "origin_slot": 0,
+            "target_id": 37,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 112,
+            "origin_id": 34,
+            "origin_slot": 1,
+            "target_id": 38,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 37,
+            "origin_slot": 0,
+            "target_id": 39,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 114,
+            "origin_id": 37,
+            "origin_slot": 0,
+            "target_id": 39,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": 38,
+            "origin_slot": 0,
+            "target_id": 39,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 39,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 117,
+            "origin_id": 33,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 118,
+            "origin_id": 34,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 135,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 54,
+            "target_slot": 0,
+            "type": "NPARRAY,IMAGE,MASK"
+          },
+          {
+            "id": 136,
+            "origin_id": 54,
+            "origin_slot": 0,
+            "target_id": 32,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6303940863128622,
+      "offset": [
+        -155.20113016433987,
+        352.657227834085
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

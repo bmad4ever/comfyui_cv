@@ -1,0 +1,12 @@
+* text=auto
+
+# Belt and braces: never let newline normalisation touch a binary asset.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.mp4  binary
+*.avi  binary
+*.glb  binary
+*.woff2 binary
+*.onnx binary

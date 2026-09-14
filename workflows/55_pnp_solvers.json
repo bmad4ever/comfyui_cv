@@ -1,0 +1,2505 @@
+{
+  "id": "fe70959e-fe21-4799-95fe-9ebcc8474e44",
+  "revision": 0,
+  "last_node_id": 53,
+  "last_link_id": 78,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        45,
+        49.547881607742966
+      ],
+      "size": [
+        771.65625,
+        144.234375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Multi-solution PnP. A KNOWN pose is projected to 2D, then recovered three ways with 'CV Solve PnP (All Poses)': the generic solver over all six points (one answer), IPPE over the four PLANAR ones (TWO answers - the classic planar flip) and P3P over the same four. Every candidate carries the reprojection error this node computes uniformly, so the lowest one is the physical pose; the two axis previews draw the best candidate and the runner-up so the ambiguity is visible, not just tabulated. The last row feeds two points into the same node: too few for any solver, so it reports found=false with empty stacks instead of raising."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "CV_CameraMatrix",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        292.328125,
+        186
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "links": [
+            4,
+            8,
+            11,
+            14,
+            63,
+            66
+          ]
+        }
+      ],
+      "title": "K (fx = fy = 800)",
+      "properties": {
+        "Node name for S&R": "CV_CameraMatrix"
+      },
+      "widgets_values": [
+        800,
+        800,
+        320,
+        240
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        40,
+        464.0044352376001
+      ],
+      "size": [
+        320,
+        258.546875
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            1,
+            9
+          ]
+        }
+      ],
+      "title": "Object points: 4 planar + 2 off-plane (mm)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-80  -60  0\n80  -60  0\n80  60  0\n-80  60  0\n0  0  60\n50  -30  -40",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        40,
+        948.5421999662099
+      ],
+      "size": [
+        295.796875,
+        233.0625
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            5,
+            12,
+            15
+          ]
+        }
+      ],
+      "title": "Object points: the planar four (mm)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-80  -60  0\n80  -60  0\n80  60  0\n-80  60  0",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        453,
+        539.8685859314479
+      ],
+      "size": [
+        240,
+        161.28125
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            2,
+            6
+          ]
+        }
+      ],
+      "title": "Truth rotation (Rodrigues, rad)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0.15  -0.25  0.08",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        454,
+        740.6836950606049
+      ],
+      "size": [
+        239.109375,
+        160
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            7
+          ]
+        }
+      ],
+      "title": "Truth translation (mm)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-40  25  620",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        3493,
+        1520.4348093757399
+      ],
+      "size": [
+        225,
+        157.71875
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            38,
+            44
+          ]
+        }
+      ],
+      "title": "No lens distortion",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "0 0 0 0 0",
+        "CV_64F",
+        false,
+        0
+      ]
+    },
+    {
+      "id": 8,
+      "type": "cv2_projectPoints",
+      "pos": [
+        979,
+        260.03091869991846
+      ],
+      "size": [
+        290,
+        196
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "objectPoints",
+          "type": "NPARRAY",
+          "link": 1
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 2
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 3
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 4
+        },
+        {
+          "name": "distCoeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "imagePoints",
+          "type": "NPARRAY",
+          "links": [
+            10
+          ]
+        },
+        {
+          "name": "jacobian",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "Project all 6 points",
+      "properties": {
+        "Node name for S&R": "cv2_projectPoints"
+      },
+      "widgets_values": [
+        0
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 9,
+      "type": "cv2_projectPoints",
+      "pos": [
+        975,
+        942.1239017743383
+      ],
+      "size": [
+        290,
+        196
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "objectPoints",
+          "type": "NPARRAY",
+          "link": 5
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 6
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 7
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 8
+        },
+        {
+          "name": "distCoeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "imagePoints",
+          "type": "NPARRAY",
+          "links": [
+            13,
+            16,
+            35
+          ]
+        },
+        {
+          "name": "jacobian",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "title": "Project the planar four",
+      "properties": {
+        "Node name for S&R": "cv2_projectPoints"
+      },
+      "widgets_values": [
+        0
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_SolvePnPPoses",
+      "pos": [
+        1325,
+        465.95980543109556
+      ],
+      "size": [
+        460,
+        244
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "object_points",
+          "type": "NPARRAY",
+          "link": 9
+        },
+        {
+          "name": "image_points",
+          "type": "NPARRAY",
+          "link": 10
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 11
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rvecs",
+          "type": "NPARRAY",
+          "links": [
+            74
+          ]
+        },
+        {
+          "name": "tvecs",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "reprojection_error",
+          "type": "NPARRAY",
+          "links": [
+            72
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "best_index",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Solve PnP (All Poses)] Generic ITERATIVE, all 6 points",
+      "properties": {
+        "Node name for S&R": "CV_SolvePnPPoses"
+      },
+      "widgets_values": [
+        "generic - every solution the method finds",
+        "SOLVEPNP_ITERATIVE"
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 11,
+      "type": "CV_SolvePnPPoses",
+      "pos": [
+        1325,
+        942.1239017743383
+      ],
+      "size": [
+        490,
+        244
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "object_points",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "image_points",
+          "type": "NPARRAY",
+          "link": 13
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 14
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rvecs",
+          "type": "NPARRAY",
+          "links": [
+            20,
+            26,
+            50
+          ]
+        },
+        {
+          "name": "tvecs",
+          "type": "NPARRAY",
+          "links": [
+            22,
+            28
+          ]
+        },
+        {
+          "name": "reprojection_error",
+          "type": "NPARRAY",
+          "links": [
+            18,
+            19
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "best_index",
+          "type": "INT",
+          "links": [
+            21,
+            23
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Solve PnP (All Poses)] Generic IPPE, planar four (2 poses)",
+      "properties": {
+        "Node name for S&R": "CV_SolvePnPPoses"
+      },
+      "widgets_values": [
+        "generic - every solution the method finds",
+        "SOLVEPNP_IPPE"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_SolvePnPPoses",
+      "pos": [
+        485,
+        1568.0581134576123
+      ],
+      "size": [
+        360,
+        243.984375
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "object_points",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "image_points",
+          "type": "NPARRAY",
+          "link": 16
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 65
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rvecs",
+          "type": "NPARRAY",
+          "links": [
+            78
+          ]
+        },
+        {
+          "name": "tvecs",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "reprojection_error",
+          "type": "NPARRAY",
+          "links": [
+            75
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "best_index",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        }
+      ],
+      "title": "[CV Solve PnP (All Poses)] P3P, planar four",
+      "properties": {
+        "Node name for S&R": "CV_SolvePnPPoses"
+      },
+      "widgets_values": [
+        "P3P - 3 or 4 points, up to 4 poses",
+        "SOLVEPNP_ITERATIVE"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_ChartSeries",
+      "pos": [
+        2995,
+        315.3550279184403
+      ],
+      "size": [
+        352.9375,
+        782
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 25,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "values",
+          "type": "NPARRAY",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "spec",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Error per IPPE candidate",
+      "properties": {
+        "Node name for S&R": "CV_ChartSeries"
+      },
+      "widgets_values": [
+        "bar",
+        "IPPE candidates: reprojection error",
+        "",
+        "",
+        "",
+        "series color",
+        "vertical (bars go up)",
+        true,
+        "start at zero",
+        0,
+        1,
+        "candidate",
+        "pixels",
+        "bright",
+        "viridis",
+        "dark",
+        4,
+        320
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_PickValue",
+      "pos": [
+        2247,
+        1919.0093528387738
+      ],
+      "size": [
+        500,
+        156
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "values",
+          "type": "NPARRAY",
+          "link": 19
+        },
+        {
+          "name": "key",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "links": [
+            27,
+            29
+          ]
+        }
+      ],
+      "title": "[CV Pick Value (sorted)] Runner-up candidate (2nd lowest error)",
+      "properties": {
+        "Node name for S&R": "CV_PickValue"
+      },
+      "widgets_values": [
+        "smallest first",
+        2
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 15,
+      "type": "CV_IndexBatch",
+      "pos": [
+        2347,
+        1322.9544472073217
+      ],
+      "size": [
+        225,
+        129.984375
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 20
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "widget": {
+            "name": "index"
+          },
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "title": "rvec of the best pose",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        0
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 16,
+      "type": "CV_IndexBatch",
+      "pos": [
+        2344,
+        1104.3198811161774
+      ],
+      "size": [
+        225,
+        129.984375
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 22
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "widget": {
+            "name": "index"
+          },
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            25
+          ]
+        }
+      ],
+      "title": "tvec of the best pose",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        0
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 17,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        2611,
+        1322.9186993248522
+      ],
+      "size": [
+        225,
+        159.984375
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "rvec as 3x1 (best)",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        3,
+        1,
+        0
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 18,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        2612,
+        1104.3198811161772
+      ],
+      "size": [
+        225,
+        159.984375
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "title": "tvec as 3x1 (best)",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        3,
+        1,
+        0
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 19,
+      "type": "CV_IndexBatch",
+      "pos": [
+        2757,
+        1808.3889467369447
+      ],
+      "size": [
+        225,
+        129.984375
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 26
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "widget": {
+            "name": "index"
+          },
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            30
+          ]
+        }
+      ],
+      "title": "rvec of the runner-up pose",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        0
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 20,
+      "type": "CV_IndexBatch",
+      "pos": [
+        2757,
+        2007.3280710027516
+      ],
+      "size": [
+        225,
+        130
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 28
+        },
+        {
+          "name": "index",
+          "type": "INT",
+          "widget": {
+            "name": "index"
+          },
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frame",
+          "type": "NPARRAY",
+          "links": [
+            31
+          ]
+        }
+      ],
+      "title": "tvec of the runner-up pose",
+      "properties": {
+        "Node name for S&R": "CV_IndexBatch"
+      },
+      "widgets_values": [
+        0
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 21,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        3021,
+        1808.3889467369447
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 30
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            45
+          ]
+        }
+      ],
+      "title": "rvec as 3x1 (runner-up)",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        3,
+        1,
+        0
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 22,
+      "type": "CV_ReshapeArray",
+      "pos": [
+        3021,
+        2008.388946736945
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            46
+          ]
+        }
+      ],
+      "title": "tvec as 3x1 (runner-up)",
+      "properties": {
+        "Node name for S&R": "CV_ReshapeArray"
+      },
+      "widgets_values": [
+        3,
+        1,
+        0
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 23,
+      "type": "SolidMask",
+      "pos": [
+        1989,
+        1584.230091119585
+      ],
+      "size": [
+        237.75,
+        142
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "title": "Blank 640x480 canvas",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "SolidMask"
+      },
+      "widgets_values": [
+        0.12,
+        640,
+        480
+      ]
+    },
+    {
+      "id": 24,
+      "type": "CV_MaskToCV",
+      "pos": [
+        2255,
+        1587.0541423240086
+      ],
+      "size": [
+        225,
+        114
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            33
+          ]
+        }
+      ],
+      "title": "Canvas as uint8",
+      "properties": {
+        "Node name for S&R": "CV_MaskToCV"
+      },
+      "widgets_values": [
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 25,
+      "type": "cv2_cvtColor",
+      "pos": [
+        2500,
+        1584.230091119585
+      ],
+      "size": [
+        246.21875,
+        110
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "title": "Canvas to BGR",
+      "properties": {
+        "Node name for S&R": "cv2_cvtColor"
+      },
+      "widgets_values": [
+        "COLOR_GRAY2BGR",
+        0,
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 26,
+      "type": "CV_DrawPoints",
+      "pos": [
+        2917,
+        1584.230091119586
+      ],
+      "size": [
+        377.15625,
+        162
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 34
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 35
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            36,
+            42
+          ]
+        }
+      ],
+      "title": "The four image points the solvers were given",
+      "properties": {
+        "Node name for S&R": "CV_DrawPoints"
+      },
+      "widgets_values": [
+        6,
+        "(0, 200, 255)"
+      ]
+    },
+    {
+      "id": 27,
+      "type": "cv2_drawFrameAxes",
+      "pos": [
+        3815,
+        1157.7852956239717
+      ],
+      "size": [
+        290,
+        222
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 36
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 67
+        },
+        {
+          "name": "distCoeffs",
+          "type": "NPARRAY",
+          "link": 38
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 39
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "title": "Axes of the best pose",
+      "properties": {
+        "Node name for S&R": "cv2_drawFrameAxes"
+      },
+      "widgets_values": [
+        60,
+        3
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 28,
+      "type": "CV_CVPreview",
+      "pos": [
+        4174,
+        1267.3546698864739
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Pose preview: best",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 29,
+      "type": "cv2_drawFrameAxes",
+      "pos": [
+        3826,
+        1884.4260717272846
+      ],
+      "size": [
+        290,
+        222
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 42
+        },
+        {
+          "name": "cameraMatrix",
+          "type": "NPARRAY",
+          "link": 68
+        },
+        {
+          "name": "distCoeffs",
+          "type": "NPARRAY",
+          "link": 44
+        },
+        {
+          "name": "rvec",
+          "type": "NPARRAY",
+          "link": 45
+        },
+        {
+          "name": "tvec",
+          "type": "NPARRAY",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            47
+          ]
+        }
+      ],
+      "title": "Axes of the runner-up pose",
+      "properties": {
+        "Node name for S&R": "cv2_drawFrameAxes"
+      },
+      "widgets_values": [
+        60,
+        3
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 30,
+      "type": "CV_CVPreview",
+      "pos": [
+        4174,
+        1654.3809784052323
+      ],
+      "size": [
+        290,
+        346
+      ],
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Pose preview: runner-up",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 33,
+      "type": "CV_CVInspect",
+      "pos": [
+        2344,
+        975.6886152327205
+      ],
+      "size": [
+        227.75,
+        81.984375
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            59
+          ]
+        }
+      ],
+      "title": "IPPE rotations summary",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 36,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        80,
+        2069.800898502093
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            53
+          ]
+        }
+      ],
+      "title": "Two object points (not solvable)",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "-80  -60  0\n80  -60  0",
+        "CV_64F",
+        false,
+        0
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 37,
+      "type": "CV_ParseMatrix",
+      "pos": [
+        80,
+        2269.800898502093
+      ],
+      "size": [
+        290,
+        160
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            54
+          ]
+        }
+      ],
+      "title": "Two image points",
+      "properties": {
+        "Node name for S&R": "CV_ParseMatrix"
+      },
+      "widgets_values": [
+        "300 250\n400 260",
+        "CV_64F",
+        false,
+        0
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 38,
+      "type": "CV_SolvePnPPoses",
+      "pos": [
+        430,
+        2069.800898502093
+      ],
+      "size": [
+        450,
+        244
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "object_points",
+          "type": "NPARRAY",
+          "link": 53
+        },
+        {
+          "name": "image_points",
+          "type": "NPARRAY",
+          "link": 54
+        },
+        {
+          "name": "camera_matrix",
+          "type": "NPARRAY",
+          "link": 64
+        },
+        {
+          "name": "dist_coeffs",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "rvecs",
+          "type": "NPARRAY",
+          "links": [
+            71
+          ]
+        },
+        {
+          "name": "tvecs",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "reprojection_error",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "best_index",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": [
+            69
+          ]
+        }
+      ],
+      "title": "[CV Solve PnP (All Poses)] Too few points -> found=false",
+      "properties": {
+        "Node name for S&R": "CV_SolvePnPPoses"
+      },
+      "widgets_values": [
+        "generic - every solution the method finds",
+        "SOLVEPNP_ITERATIVE"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 42,
+      "type": "PreviewAny",
+      "pos": [
+        2606,
+        899.7207898304765
+      ],
+      "size": [
+        310,
+        161.984375
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 59
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#223",
+      "bgcolor": "#335",
+      "title": "Preview as Text: IPPE rotations summary"
+    },
+    {
+      "id": 46,
+      "type": "Reroute",
+      "pos": [
+        225,
+        1642.9021021101405
+      ],
+      "size": [
+        140,
+        26
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 63
+        }
+      ],
+      "outputs": [
+        {
+          "name": "NPARRAY",
+          "type": "NPARRAY",
+          "links": [
+            64,
+            65
+          ]
+        }
+      ],
+      "title": "camera_matrix",
+      "properties": {
+        "showOutputText": true,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 47,
+      "type": "Reroute",
+      "pos": [
+        3241,
+        243.7878350660285
+      ],
+      "size": [
+        98.796875,
+        26
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 66
+        }
+      ],
+      "outputs": [
+        {
+          "name": "NPARRAY",
+          "type": "NPARRAY",
+          "links": [
+            67,
+            68
+          ]
+        }
+      ],
+      "properties": {
+        "showOutputText": true,
+        "horizontal": false
+      }
+    },
+    {
+      "id": 48,
+      "type": "PreviewAny",
+      "pos": [
+        892,
+        2278.04204489819
+      ],
+      "size": [
+        288.9375,
+        158
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 69
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "found",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 49,
+      "type": "PreviewAny",
+      "pos": [
+        890,
+        2070.1104009962364
+      ],
+      "size": [
+        286.828125,
+        158
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 71
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "rvecs",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 50,
+      "type": "PreviewAny",
+      "pos": [
+        1797,
+        670.1173683645453
+      ],
+      "size": [
+        225,
+        162
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 72
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "reprojection_error",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 51,
+      "type": "PreviewAny",
+      "pos": [
+        1795,
+        465.1278527472325
+      ],
+      "size": [
+        225,
+        162
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "rvecs",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 52,
+      "type": "PreviewAny",
+      "pos": [
+        1044,
+        1768.010844360867
+      ],
+      "size": [
+        294.859375,
+        158
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 75
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "P3P error",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 53,
+      "type": "PreviewAny",
+      "pos": [
+        1045,
+        1572.35759087698
+      ],
+      "size": [
+        294.859375,
+        158
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 78
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "P3P rotations",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      1,
+      3,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      2,
+      5,
+      0,
+      8,
+      1,
+      "NPARRAY"
+    ],
+    [
+      3,
+      6,
+      0,
+      8,
+      2,
+      "NPARRAY"
+    ],
+    [
+      4,
+      2,
+      0,
+      8,
+      3,
+      "NPARRAY"
+    ],
+    [
+      5,
+      4,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      5,
+      0,
+      9,
+      1,
+      "NPARRAY"
+    ],
+    [
+      7,
+      6,
+      0,
+      9,
+      2,
+      "NPARRAY"
+    ],
+    [
+      8,
+      2,
+      0,
+      9,
+      3,
+      "NPARRAY"
+    ],
+    [
+      9,
+      3,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      8,
+      0,
+      10,
+      1,
+      "NPARRAY"
+    ],
+    [
+      11,
+      2,
+      0,
+      10,
+      2,
+      "NPARRAY"
+    ],
+    [
+      12,
+      4,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      9,
+      0,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      14,
+      2,
+      0,
+      11,
+      2,
+      "NPARRAY"
+    ],
+    [
+      15,
+      4,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      9,
+      0,
+      12,
+      1,
+      "NPARRAY"
+    ],
+    [
+      18,
+      11,
+      2,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      11,
+      2,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      20,
+      11,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      11,
+      4,
+      15,
+      1,
+      "INT"
+    ],
+    [
+      22,
+      11,
+      1,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      11,
+      4,
+      16,
+      1,
+      "INT"
+    ],
+    [
+      24,
+      15,
+      0,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      16,
+      0,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      26,
+      11,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      27,
+      14,
+      1,
+      19,
+      1,
+      "INT"
+    ],
+    [
+      28,
+      11,
+      1,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      29,
+      14,
+      1,
+      20,
+      1,
+      "INT"
+    ],
+    [
+      30,
+      19,
+      0,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      31,
+      20,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      32,
+      23,
+      0,
+      24,
+      0,
+      "MASK"
+    ],
+    [
+      33,
+      24,
+      0,
+      25,
+      0,
+      "NPARRAY"
+    ],
+    [
+      34,
+      25,
+      0,
+      26,
+      0,
+      "NPARRAY"
+    ],
+    [
+      35,
+      9,
+      0,
+      26,
+      1,
+      "NPARRAY"
+    ],
+    [
+      36,
+      26,
+      0,
+      27,
+      0,
+      "NPARRAY"
+    ],
+    [
+      38,
+      7,
+      0,
+      27,
+      2,
+      "NPARRAY"
+    ],
+    [
+      39,
+      17,
+      0,
+      27,
+      3,
+      "NPARRAY"
+    ],
+    [
+      40,
+      18,
+      0,
+      27,
+      4,
+      "NPARRAY"
+    ],
+    [
+      41,
+      27,
+      0,
+      28,
+      0,
+      "NPARRAY"
+    ],
+    [
+      42,
+      26,
+      0,
+      29,
+      0,
+      "NPARRAY"
+    ],
+    [
+      44,
+      7,
+      0,
+      29,
+      2,
+      "NPARRAY"
+    ],
+    [
+      45,
+      21,
+      0,
+      29,
+      3,
+      "NPARRAY"
+    ],
+    [
+      46,
+      22,
+      0,
+      29,
+      4,
+      "NPARRAY"
+    ],
+    [
+      47,
+      29,
+      0,
+      30,
+      0,
+      "NPARRAY"
+    ],
+    [
+      50,
+      11,
+      0,
+      33,
+      0,
+      "NPARRAY"
+    ],
+    [
+      53,
+      36,
+      0,
+      38,
+      0,
+      "NPARRAY"
+    ],
+    [
+      54,
+      37,
+      0,
+      38,
+      1,
+      "NPARRAY"
+    ],
+    [
+      59,
+      33,
+      0,
+      42,
+      0,
+      "STRING"
+    ],
+    [
+      63,
+      2,
+      0,
+      46,
+      0,
+      "NPARRAY"
+    ],
+    [
+      64,
+      46,
+      0,
+      38,
+      2,
+      "NPARRAY"
+    ],
+    [
+      65,
+      46,
+      0,
+      12,
+      2,
+      "NPARRAY"
+    ],
+    [
+      66,
+      2,
+      0,
+      47,
+      0,
+      "NPARRAY"
+    ],
+    [
+      67,
+      47,
+      0,
+      27,
+      1,
+      "NPARRAY"
+    ],
+    [
+      68,
+      47,
+      0,
+      29,
+      1,
+      "NPARRAY"
+    ],
+    [
+      69,
+      38,
+      5,
+      48,
+      0,
+      "BOOLEAN"
+    ],
+    [
+      71,
+      38,
+      0,
+      49,
+      0,
+      "NPARRAY"
+    ],
+    [
+      72,
+      10,
+      2,
+      50,
+      0,
+      "NPARRAY"
+    ],
+    [
+      74,
+      10,
+      0,
+      51,
+      0,
+      "NPARRAY"
+    ],
+    [
+      75,
+      12,
+      2,
+      52,
+      0,
+      "NPARRAY"
+    ],
+    [
+      78,
+      12,
+      0,
+      53,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.3997618238434301,
+      "offset": [
+        -83.9581691033286,
+        -298.5867876416137
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

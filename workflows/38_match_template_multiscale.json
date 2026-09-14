@@ -1,0 +1,277 @@
+{
+  "id": "57e57035-5bd4-4a42-ad65-96cb258af147",
+  "revision": 0,
+  "last_node_id": 8,
+  "last_link_id": 4,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        220
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load Image (scene to search in)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "market_scene.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        13.404237992831582,
+        901.3116759856628
+      ],
+      "size": [
+        352.546875,
+        364
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load Image (template patch, oversized 1.5x)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "market_template_1p5x.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_MatchTemplateMultiScale",
+      "pos": [
+        440,
+        567.2963440860215
+      ],
+      "size": [
+        350,
+        478
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE,LATENT",
+          "link": 1
+        },
+        {
+          "name": "template",
+          "type": "IMAGE,LATENT",
+          "link": 2
+        },
+        {
+          "name": "template_mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "match_crop",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "score",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "best_scale",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "bbox",
+          "type": "BOUNDING_BOX",
+          "links": null
+        }
+      ],
+      "title": "[CV Match Template Multi-Scale]",
+      "properties": {
+        "Node name for S&R": "CV_MatchTemplateMultiScale"
+      },
+      "widgets_values": [
+        "TM_CCOEFF_NORMED",
+        0.25,
+        2,
+        12
+      ]
+    },
+    {
+      "id": 5,
+      "type": "PreviewImage",
+      "pos": [
+        837.0270967741935,
+        567.6919773631225
+      ],
+      "size": [
+        300,
+        304
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (matched crop)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "Note",
+      "pos": [
+        430.2949755620722,
+        207.587513848159
+      ],
+      "size": [
+        723.84375,
+        303.34375
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Template matching across multiple scales\n\ncv2.matchTemplate is not scale-invariant: it only finds the template at exactly its own size. 'CV Match Template Multi-Scale' packs the standard workaround into one node - it resizes the template through a range of scales (geometric spacing between scale_min and scale_max), matches at every scale, and keeps the best hit. Outputs include the winning scale ('best_scale') and the location as JSON - chain bbox into the core 'Draw BBoxes' node to draw the match on the image.\n\nTips: narrow the scale range or lower scale_steps for speed; widen it if the object size is very uncertain. Methods are restricted to normalized variants so scores stay comparable across scales.\n\nHere the template is the unique round red sale tag from the produce shelf, supplied at 1.5x the size it appears in the scene - so the search reports best_scale ~0.67 and still locates it. Try workflow 08 (single scale) for the native-size case."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 7,
+      "type": "Note",
+      "pos": [
+        -30.00224281524936,
+        621.1408435320949
+      ],
+      "size": [
+        394.359375,
+        239.296875
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "market_scene.jpg / market_template_1p5x.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Fruits and vegetables at market\nCreator: Santeri Viinamaki\nLicense: CC BY-SA 4.0 (attribution + share-alike)\n         https://creativecommons.org/licenses/by-sa/4.0/\nSource:  https://commons.wikimedia.org/wiki/File:Fruits_and_vegetables_at_market.jpg\nSize:    market_scene.jpg 1000x750 (downscaled from 4592x3448). The 1.5x template is the unique round red sale tag cropped from the scene, resized 1.5x\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      1,
+      "IMAGE"
+    ],
+    [
+      4,
+      3,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5733501899659207,
+      "offset": [
+        165.55174167873753,
+        153.1366853941166
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

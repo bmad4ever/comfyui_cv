@@ -1,0 +1,3521 @@
+{
+  "id": "c1e8f2a4-36d7-49b5-8c02-5a73e9d4b6f8",
+  "revision": 0,
+  "last_node_id": 62,
+  "last_link_id": 220,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        -1636.3144887356837,
+        -48.927355301091154
+      ],
+      "size": [
+        470.25,
+        960.125
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "Playground: MATCH TWO VIEWS OVER A MASK.\n\nThe blueprint 'CV Exposure Match (Masked Per-Channel)' makes one image\nagree with another, per BGR channel, over the region a mask selects:\n\n    corrected = (x - mean_A) * sigma_B / max(sigma_A, 0.5) + mean_B\n\nmeanStdDev packs its per-channel results into one length-4 vector, and\ncv2 arithmetic broadcasts that AS a per-channel Scalar - so three gains\nand three offsets cost one node each. The 0.5 floor on sigma keeps a\nflat channel from dividing by ~zero. The MASK is the whole idea: it\nsays WHERE the two images must agree, and the fit is then applied\neverywhere.\n\nTHE CASE SHOWN HERE: TILED PROCESSING. Run any statistics-dependent\noperator per tile instead of once over the whole image and the tiles\nstop agreeing - each one measured its own histogram. Nothing in this\ngraph darkens or tints anything; the drift is what the operator does.\nRow 1 runs xphoto white balance ('simple') on the whole page, then on\neach half separately: the halves land on different per-channel gains\n(tile 1 ~0.39/0.57/0.58, tile 2 ~1.03/1.01/1.01) and the reassembled\npage carries a 56-grey-level step down its middle. Matching each tile\nto the WHOLE-IMAGE pass over that tile's own mask removes it: mean\ndeviation from the single-pass result 14.3 -> 0.8, seam step 56 -> 0.4.\nThat is the production idiom - a tiled render is colour-matched against\na cheap global (or low-res) pass, tile by tile.\n\nROW 2 IS THE NEGATIVE, and it uses the identical wiring. CLAHE per tile\ndrifts too, but a per-tile TONE CURVE is not a gain and an offset, so\nthe match has nothing to grab: deviation 7.3 -> 7.4 (i.e. nothing) and\nthe seam does not improve either (13 -> 15). Same node, same masks,\nno result - the fit has to match the SHAPE of the drift.\n\nOTHER JOBS FOR THIS NODE, same 'where must they agree' question:\n  * clean-plate / change detection - mask = the region that must be\n    UNCHANGED, so an AE drift between plate and shot stops reading as\n    foreground (exercise_clean_plate_matting, 18_inpainting)\n  * video exposure flicker - match frame N to frame 0 before background\n    subtraction or flow (28_background_subtract_bgsegm, 29)\n  * colour transfer - this formula in Lab IS Reinhard et al.: grade one\n    shot to another, or a generated element to its plate (10, 11, 56)\n  * stereo pairs - BM/SGBM assume brightness constancy (66, 80, 85)\n\nPANORAMAS: you do NOT need this. 'CV Stitch (Advanced)' runs\ncv2.detail's compensator itself (exposure_compensation = gain_blocks by\ndefault) and plain 'CV Stitch' does it internally. Reach for the\nblueprint when you own the warp yourself (exercise_stitch_two_views,\nexercise_seam_pipeline), where the mask is the warped overlap. Measured\non boat1/boat2 - which really were metered differently - the residual\nin the overlap goes 17.1 raw -> 7.7 detail.GainCompensator -> 7.1\nBlocksGain -> 6.1 with this blueprint: every cv2.detail compensator is\nGAIN-ONLY (its whole API is getMatGains/setMatGains), and that pair's\ndifference is nearly pure OFFSET.\n\nWHEN NOT TO USE IT: HDR brackets (the exposure difference IS the\nsignal), NCC template matching and ECC alignment (already invariant to\ngain+offset), and any mask whose content genuinely differs between the\ntwo images - that bias is real, and it lands in the fit."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        -1120,
+        0
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "text_page_sharp.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_ImageToCV",
+      "pos": [
+        -760,
+        0
+      ],
+      "size": [
+        300,
+        142
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "-> BGR ndarray",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "cv2_resize",
+      "pos": [
+        -400,
+        0
+      ],
+      "size": [
+        300,
+        178
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            9,
+            10,
+            11,
+            12,
+            18,
+            38
+          ]
+        }
+      ],
+      "title": "Working size 512x576",
+      "properties": {
+        "Node name for S&R": "cv2_resize"
+      },
+      "widgets_values": [
+        "(512, 576)",
+        0,
+        0,
+        "INTER_AREA"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_CVPreview",
+      "pos": [
+        -40,
+        0
+      ],
+      "size": [
+        300,
+        346
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "SOURCE page",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 6,
+      "type": "CV_SliceArray",
+      "pos": [
+        -400,
+        480
+      ],
+      "size": [
+        290,
+        212
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            20,
+            40
+          ]
+        }
+      ],
+      "title": "TILE 1 = columns 0..256",
+      "properties": {
+        "Node name for S&R": "CV_SliceArray"
+      },
+      "widgets_values": [
+        1,
+        0,
+        256,
+        1,
+        true
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_SliceArray",
+      "pos": [
+        -400,
+        740
+      ],
+      "size": [
+        290,
+        212
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            21,
+            41
+          ]
+        }
+      ],
+      "title": "TILE 2 = columns 256..end",
+      "properties": {
+        "Node name for S&R": "CV_SliceArray"
+      },
+      "widgets_values": [
+        1,
+        256,
+        0,
+        1,
+        true
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_ConstantLike",
+      "pos": [
+        -40,
+        480
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            13,
+            15
+          ]
+        }
+      ],
+      "title": "Black canvas, page-sized",
+      "properties": {
+        "Node name for S&R": "CV_ConstantLike"
+      },
+      "widgets_values": [
+        0,
+        "grayscale (single channel)"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "cv2_rectangle_0",
+      "pos": [
+        320,
+        420
+      ],
+      "size": [
+        300,
+        302
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "White over TILE 1",
+      "properties": {
+        "Node name for S&R": "cv2_rectangle_0"
+      },
+      "widgets_values": [
+        "(0, 0)",
+        "(255, 575)",
+        "(255, 0, 0, 0)",
+        -1,
+        "LINE_AA",
+        0
+      ]
+    },
+    {
+      "id": 10,
+      "type": "cv2_threshold",
+      "pos": [
+        680,
+        420
+      ],
+      "size": [
+        300,
+        234
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            17,
+            27,
+            47
+          ]
+        }
+      ],
+      "title": "TILE 1 mask, uint8 0/1",
+      "properties": {
+        "Node name for S&R": "cv2_threshold"
+      },
+      "widgets_values": [
+        127,
+        1,
+        "THRESH_BINARY"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "cv2_rectangle_0",
+      "pos": [
+        320,
+        720
+      ],
+      "size": [
+        300,
+        302
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "title": "White over TILE 2",
+      "properties": {
+        "Node name for S&R": "cv2_rectangle_0"
+      },
+      "widgets_values": [
+        "(256, 0)",
+        "(511, 575)",
+        "(255, 0, 0, 0)",
+        -1,
+        "LINE_AA",
+        0
+      ]
+    },
+    {
+      "id": 12,
+      "type": "cv2_threshold",
+      "pos": [
+        680,
+        720
+      ],
+      "size": [
+        300,
+        234
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            32,
+            52
+          ]
+        }
+      ],
+      "title": "TILE 2 mask, uint8 0/1",
+      "properties": {
+        "Node name for S&R": "cv2_threshold"
+      },
+      "widgets_values": [
+        127,
+        1,
+        "THRESH_BINARY"
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_CVPreview",
+      "pos": [
+        1040,
+        420
+      ],
+      "size": [
+        300,
+        346
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "TILE 1 mask - where tile 1 is measured",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "normalize",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_XPhotoWhiteBalance",
+      "pos": [
+        320,
+        1120
+      ],
+      "size": [
+        511.28125,
+        132
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "balanced",
+          "type": "NPARRAY",
+          "links": [
+            19,
+            26,
+            31
+          ]
+        }
+      ],
+      "title": "[CV White Balance (xphoto)] WHOLE-IMAGE pass = the reference",
+      "properties": {
+        "Node name for S&R": "CV_XPhotoWhiteBalance"
+      },
+      "widgets_values": [
+        "simple",
+        2,
+        0.9
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_CVPreview",
+      "pos": [
+        905.1515000516245,
+        1120
+      ],
+      "size": [
+        300,
+        346
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "Reference: white balanced ONCE",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_XPhotoWhiteBalance",
+      "pos": [
+        320,
+        1360
+      ],
+      "size": [
+        441.984375,
+        132
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "balanced",
+          "type": "NPARRAY",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "title": "[CV White Balance (xphoto)] Tile 1, balanced on its own",
+      "properties": {
+        "Node name for S&R": "CV_XPhotoWhiteBalance"
+      },
+      "widgets_values": [
+        "simple",
+        2,
+        0.9
+      ]
+    },
+    {
+      "id": 17,
+      "type": "CV_XPhotoWhiteBalance",
+      "pos": [
+        320,
+        1540
+      ],
+      "size": [
+        444.828125,
+        132
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "balanced",
+          "type": "NPARRAY",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "[CV White Balance (xphoto)] Tile 2, balanced on its own",
+      "properties": {
+        "Node name for S&R": "CV_XPhotoWhiteBalance"
+      },
+      "widgets_values": [
+        "simple",
+        2,
+        0.9
+      ]
+    },
+    {
+      "id": 18,
+      "type": "CV_ConcatArrays",
+      "pos": [
+        908.4216598681556,
+        1513.5785958719507
+      ],
+      "size": [
+        270,
+        176
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "array1",
+          "type": "NPARRAY",
+          "link": 22
+        },
+        {
+          "name": "array2",
+          "type": "NPARRAY",
+          "link": 23
+        },
+        {
+          "name": "array3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "array4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            24,
+            25,
+            30
+          ]
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Reassemble the tiles",
+      "properties": {
+        "Node name for S&R": "CV_ConcatArrays"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 19,
+      "type": "CV_CVPreview",
+      "pos": [
+        1225.1515000516245,
+        1440
+      ],
+      "size": [
+        300,
+        346
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "TILED: each half found its own gains",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 20,
+      "type": "b9d3e7f1-4a26-4c58-8e70-9f15d2a6c3b4",
+      "pos": [
+        1585.1515000516245,
+        1240
+      ],
+      "size": [
+        681.0625,
+        134
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_correct",
+          "type": "NPARRAY",
+          "link": 25
+        },
+        {
+          "name": "image_reference",
+          "type": "NPARRAY",
+          "link": 26
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "corrected",
+          "type": "NPARRAY",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "title": "[CV Exposure Match (Masked Per-Channel)] Match TILE 1 to the reference, measured inside tile 1",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 21,
+      "type": "CV_CastArray",
+      "pos": [
+        2330.285222480643,
+        1240
+      ],
+      "size": [
+        225,
+        130
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "title": "Back to uint8 (saturating)",
+      "properties": {
+        "Node name for S&R": "CV_CastArray"
+      },
+      "widgets_values": [
+        "uint8"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CV_SliceArray",
+      "pos": [
+        2598.228130627992,
+        1240
+      ],
+      "size": [
+        225,
+        211.984375
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "title": "keep tile 1's half",
+      "properties": {
+        "Node name for S&R": "CV_SliceArray"
+      },
+      "widgets_values": [
+        1,
+        0,
+        256,
+        1,
+        true
+      ]
+    },
+    {
+      "id": 23,
+      "type": "b9d3e7f1-4a26-4c58-8e70-9f15d2a6c3b4",
+      "pos": [
+        1585.1515000516245,
+        1580
+      ],
+      "size": [
+        686.75,
+        134
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_correct",
+          "type": "NPARRAY",
+          "link": 30
+        },
+        {
+          "name": "image_reference",
+          "type": "NPARRAY",
+          "link": 31
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "corrected",
+          "type": "NPARRAY",
+          "links": [
+            33
+          ]
+        }
+      ],
+      "title": "[CV Exposure Match (Masked Per-Channel)] Match TILE 2 to the reference, measured inside tile 2",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 24,
+      "type": "CV_CastArray",
+      "pos": [
+        2330.285222480643,
+        1580
+      ],
+      "size": [
+        225,
+        130
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 33
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "title": "Back to uint8 (saturating)",
+      "properties": {
+        "Node name for S&R": "CV_CastArray"
+      },
+      "widgets_values": [
+        "uint8"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "CV_SliceArray",
+      "pos": [
+        2605.1229435010573,
+        1580
+      ],
+      "size": [
+        225,
+        211.984375
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            36
+          ]
+        }
+      ],
+      "title": "keep tile 2's half",
+      "properties": {
+        "Node name for S&R": "CV_SliceArray"
+      },
+      "widgets_values": [
+        1,
+        256,
+        0,
+        1,
+        true
+      ]
+    },
+    {
+      "id": 26,
+      "type": "CV_ConcatArrays",
+      "pos": [
+        2901.0744412668237,
+        1402.7250917538026
+      ],
+      "size": [
+        270,
+        176
+      ],
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "array1",
+          "type": "NPARRAY",
+          "link": 35
+        },
+        {
+          "name": "array2",
+          "type": "NPARRAY",
+          "link": 36
+        },
+        {
+          "name": "array3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "array4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            37
+          ]
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Reassemble the matched tiles",
+      "properties": {
+        "Node name for S&R": "CV_ConcatArrays"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 27,
+      "type": "CV_CVPreview",
+      "pos": [
+        3208.3201768905046,
+        1401.7530886583786
+      ],
+      "size": [
+        253.046875,
+        393.984375
+      ],
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "MATCHED: the tile seam is gone",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 28,
+      "type": "CV_CVToImage",
+      "pos": [
+        325.26662508612156,
+        1913.034809442685
+      ],
+      "size": [
+        300,
+        128
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "alpha",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "-> IMAGE (CLAHE needs one)",
+      "properties": {
+        "Node name for S&R": "CV_CVToImage"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)"
+      ]
+    },
+    {
+      "id": 29,
+      "type": "CV_Contrast",
+      "pos": [
+        685.2666250861215,
+        1913.034809442685
+      ],
+      "size": [
+        549.953125,
+        200
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "[CV Contrast (CLAHE/Equalize)] WHOLE-IMAGE CLAHE = the reference",
+      "properties": {
+        "Node name for S&R": "CV_Contrast"
+      },
+      "widgets_values": [
+        "CLAHE (adaptive)",
+        "luminance only (LAB)",
+        8,
+        8
+      ]
+    },
+    {
+      "id": 30,
+      "type": "CV_ImageToCV",
+      "pos": [
+        1339.4517862792582,
+        1913.034809442685
+      ],
+      "size": [
+        300,
+        142
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            39,
+            46,
+            51
+          ]
+        }
+      ],
+      "title": "-> back to NPARRAY",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 31,
+      "type": "CV_CVPreview",
+      "pos": [
+        1699.4517862792582,
+        1913.034809442685
+      ],
+      "size": [
+        300,
+        346
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 39
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "Reference: CLAHE ONCE",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 32,
+      "type": "CV_CVToImage",
+      "pos": [
+        325.26662508612156,
+        2173.034809442686
+      ],
+      "size": [
+        300,
+        128
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "alpha",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "-> IMAGE (CLAHE needs one)",
+      "properties": {
+        "Node name for S&R": "CV_CVToImage"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)"
+      ]
+    },
+    {
+      "id": 33,
+      "type": "CV_Contrast",
+      "pos": [
+        685.2666250861215,
+        2173.034809442686
+      ],
+      "size": [
+        451.1875,
+        200
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "[CV Contrast (CLAHE/Equalize)] Tile 1, CLAHE on its own",
+      "properties": {
+        "Node name for S&R": "CV_Contrast"
+      },
+      "widgets_values": [
+        "CLAHE (adaptive)",
+        "luminance only (LAB)",
+        8,
+        8
+      ]
+    },
+    {
+      "id": 34,
+      "type": "CV_ImageToCV",
+      "pos": [
+        1339.4517862792582,
+        2173.034809442686
+      ],
+      "size": [
+        300,
+        142
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "title": "-> back to NPARRAY",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 35,
+      "type": "CV_CVToImage",
+      "pos": [
+        325.26662508612156,
+        2433.034809442686
+      ],
+      "size": [
+        300,
+        128
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "alpha",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "title": "-> IMAGE (CLAHE needs one)",
+      "properties": {
+        "Node name for S&R": "CV_CVToImage"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)"
+      ]
+    },
+    {
+      "id": 36,
+      "type": "CV_Contrast",
+      "pos": [
+        685.2666250861215,
+        2433.034809442686
+      ],
+      "size": [
+        454.03125,
+        200
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "title": "[CV Contrast (CLAHE/Equalize)] Tile 2, CLAHE on its own",
+      "properties": {
+        "Node name for S&R": "CV_Contrast"
+      },
+      "widgets_values": [
+        "CLAHE (adaptive)",
+        "luminance only (LAB)",
+        8,
+        8
+      ]
+    },
+    {
+      "id": 37,
+      "type": "CV_ImageToCV",
+      "pos": [
+        1339.4517862792582,
+        2433.034809442686
+      ],
+      "size": [
+        300,
+        142
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "title": "-> back to NPARRAY",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 38,
+      "type": "CV_ConcatArrays",
+      "pos": [
+        1699.4517862792582,
+        2313.034809442686
+      ],
+      "size": [
+        270,
+        176
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "array1",
+          "type": "NPARRAY",
+          "link": 42
+        },
+        {
+          "name": "array2",
+          "type": "NPARRAY",
+          "link": 43
+        },
+        {
+          "name": "array3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "array4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            44,
+            45,
+            50
+          ]
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Reassemble the tiles",
+      "properties": {
+        "Node name for S&R": "CV_ConcatArrays"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 39,
+      "type": "CV_CVPreview",
+      "pos": [
+        1699.4517862792582,
+        2553.034809442686
+      ],
+      "size": [
+        300,
+        346
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "TILED: each half got its own tone curve",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 40,
+      "type": "b9d3e7f1-4a26-4c58-8e70-9f15d2a6c3b4",
+      "pos": [
+        2059.451786279258,
+        2093.034809442686
+      ],
+      "size": [
+        681.46875,
+        134
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_correct",
+          "type": "NPARRAY",
+          "link": 45
+        },
+        {
+          "name": "image_reference",
+          "type": "NPARRAY",
+          "link": 46
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "name": "corrected",
+          "type": "NPARRAY",
+          "links": [
+            48
+          ]
+        }
+      ],
+      "title": "[CV Exposure Match (Masked Per-Channel)] Match TILE 1 to the reference (same node as above)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 41,
+      "type": "CV_CastArray",
+      "pos": [
+        2826.3420514759227,
+        2095.845053127492
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            49
+          ]
+        }
+      ],
+      "title": "Back to uint8 (saturating)",
+      "properties": {
+        "Node name for S&R": "CV_CastArray"
+      },
+      "widgets_values": [
+        "uint8"
+      ]
+    },
+    {
+      "id": 42,
+      "type": "CV_SliceArray",
+      "pos": [
+        3186.3420514759227,
+        2095.845053127492
+      ],
+      "size": [
+        290,
+        212
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 49
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            55
+          ]
+        }
+      ],
+      "title": "keep tile 1's half",
+      "properties": {
+        "Node name for S&R": "CV_SliceArray"
+      },
+      "widgets_values": [
+        1,
+        0,
+        256,
+        1,
+        true
+      ]
+    },
+    {
+      "id": 43,
+      "type": "b9d3e7f1-4a26-4c58-8e70-9f15d2a6c3b4",
+      "pos": [
+        2059.451786279258,
+        2433.034809442686
+      ],
+      "size": [
+        684.3125,
+        134
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_correct",
+          "type": "NPARRAY",
+          "link": 50
+        },
+        {
+          "name": "image_reference",
+          "type": "NPARRAY",
+          "link": 51
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 52
+        }
+      ],
+      "outputs": [
+        {
+          "name": "corrected",
+          "type": "NPARRAY",
+          "links": [
+            53
+          ]
+        }
+      ],
+      "title": "[CV Exposure Match (Masked Per-Channel)] Match TILE 2 to the reference (same node as above)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 44,
+      "type": "CV_CastArray",
+      "pos": [
+        2826.3420514759227,
+        2435.845053127492
+      ],
+      "size": [
+        300,
+        130
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 53
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            54
+          ]
+        }
+      ],
+      "title": "Back to uint8 (saturating)",
+      "properties": {
+        "Node name for S&R": "CV_CastArray"
+      },
+      "widgets_values": [
+        "uint8"
+      ]
+    },
+    {
+      "id": 45,
+      "type": "CV_SliceArray",
+      "pos": [
+        3186.3420514759227,
+        2435.845053127492
+      ],
+      "size": [
+        290,
+        212
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "link": 54
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            56
+          ]
+        }
+      ],
+      "title": "keep tile 2's half",
+      "properties": {
+        "Node name for S&R": "CV_SliceArray"
+      },
+      "widgets_values": [
+        1,
+        256,
+        0,
+        1,
+        true
+      ]
+    },
+    {
+      "id": 46,
+      "type": "CV_ConcatArrays",
+      "pos": [
+        3546.3420514759227,
+        2275.845053127492
+      ],
+      "size": [
+        270,
+        176
+      ],
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "array1",
+          "type": "NPARRAY",
+          "link": 55
+        },
+        {
+          "name": "array2",
+          "type": "NPARRAY",
+          "link": 56
+        },
+        {
+          "name": "array3",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "array4",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            57
+          ]
+        },
+        {
+          "name": "length",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Reassemble the matched tiles",
+      "properties": {
+        "Node name for S&R": "CV_ConcatArrays"
+      },
+      "widgets_values": [
+        1
+      ]
+    },
+    {
+      "id": 47,
+      "type": "CV_CVPreview",
+      "pos": [
+        3857.8014787383577,
+        2275.845053127492
+      ],
+      "size": [
+        400.796875,
+        346
+      ],
+      "flags": {},
+      "order": 47,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 57
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "title": "STILL WRONG: a tone curve is not a gain and an offset",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 48,
+      "type": "Note",
+      "pos": [
+        -1114.5715196020433,
+        400
+      ],
+      "size": [
+        462.984375,
+        222.828125
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "text_page_sharp.jpg",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "Title:   text_page_sharp.jpg\nCreator: generated (this repo) from text_page_shadow.jpg\n         (Pexels photo 16196048 by Aysenaz Bilgin)\nLicense: Pexels License - free to use, modification allowed\n         https://www.pexels.com/license/\nSize:    634x716, resized to 512x576 here\nWhy:     a printed page is the classic tile-enhanced image, and its\n         two halves hold genuinely different ink/paper distributions,\n         so a per-tile white balance really does diverge.\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    }
+  ],
+  "links": [
+    [
+      1,
+      28,
+      0,
+      29,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      29,
+      0,
+      30,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      32,
+      0,
+      33,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      33,
+      0,
+      34,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      35,
+      0,
+      36,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      36,
+      0,
+      37,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      8,
+      3,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      9,
+      4,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      4,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      11,
+      4,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      12,
+      4,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      13,
+      8,
+      0,
+      9,
+      0,
+      "NPARRAY"
+    ],
+    [
+      14,
+      9,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      15,
+      8,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      11,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      17,
+      10,
+      1,
+      13,
+      0,
+      "NPARRAY"
+    ],
+    [
+      18,
+      4,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      14,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      20,
+      6,
+      0,
+      16,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      7,
+      0,
+      17,
+      0,
+      "NPARRAY"
+    ],
+    [
+      22,
+      16,
+      0,
+      18,
+      0,
+      "NPARRAY"
+    ],
+    [
+      23,
+      17,
+      0,
+      18,
+      1,
+      "NPARRAY"
+    ],
+    [
+      24,
+      18,
+      0,
+      19,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      18,
+      0,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      26,
+      14,
+      0,
+      20,
+      1,
+      "NPARRAY"
+    ],
+    [
+      27,
+      10,
+      1,
+      20,
+      2,
+      "NPARRAY"
+    ],
+    [
+      28,
+      20,
+      0,
+      21,
+      0,
+      "NPARRAY"
+    ],
+    [
+      29,
+      21,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      30,
+      18,
+      0,
+      23,
+      0,
+      "NPARRAY"
+    ],
+    [
+      31,
+      14,
+      0,
+      23,
+      1,
+      "NPARRAY"
+    ],
+    [
+      32,
+      12,
+      1,
+      23,
+      2,
+      "NPARRAY"
+    ],
+    [
+      33,
+      23,
+      0,
+      24,
+      0,
+      "NPARRAY"
+    ],
+    [
+      34,
+      24,
+      0,
+      25,
+      0,
+      "NPARRAY"
+    ],
+    [
+      35,
+      22,
+      0,
+      26,
+      0,
+      "NPARRAY"
+    ],
+    [
+      36,
+      25,
+      0,
+      26,
+      1,
+      "NPARRAY"
+    ],
+    [
+      37,
+      26,
+      0,
+      27,
+      0,
+      "NPARRAY"
+    ],
+    [
+      38,
+      4,
+      0,
+      28,
+      0,
+      "NPARRAY"
+    ],
+    [
+      39,
+      30,
+      0,
+      31,
+      0,
+      "NPARRAY"
+    ],
+    [
+      40,
+      6,
+      0,
+      32,
+      0,
+      "NPARRAY"
+    ],
+    [
+      41,
+      7,
+      0,
+      35,
+      0,
+      "NPARRAY"
+    ],
+    [
+      42,
+      34,
+      0,
+      38,
+      0,
+      "NPARRAY"
+    ],
+    [
+      43,
+      37,
+      0,
+      38,
+      1,
+      "NPARRAY"
+    ],
+    [
+      44,
+      38,
+      0,
+      39,
+      0,
+      "NPARRAY"
+    ],
+    [
+      45,
+      38,
+      0,
+      40,
+      0,
+      "NPARRAY"
+    ],
+    [
+      46,
+      30,
+      0,
+      40,
+      1,
+      "NPARRAY"
+    ],
+    [
+      47,
+      10,
+      1,
+      40,
+      2,
+      "NPARRAY"
+    ],
+    [
+      48,
+      40,
+      0,
+      41,
+      0,
+      "NPARRAY"
+    ],
+    [
+      49,
+      41,
+      0,
+      42,
+      0,
+      "NPARRAY"
+    ],
+    [
+      50,
+      38,
+      0,
+      43,
+      0,
+      "NPARRAY"
+    ],
+    [
+      51,
+      30,
+      0,
+      43,
+      1,
+      "NPARRAY"
+    ],
+    [
+      52,
+      12,
+      1,
+      43,
+      2,
+      "NPARRAY"
+    ],
+    [
+      53,
+      43,
+      0,
+      44,
+      0,
+      "NPARRAY"
+    ],
+    [
+      54,
+      44,
+      0,
+      45,
+      0,
+      "NPARRAY"
+    ],
+    [
+      55,
+      42,
+      0,
+      46,
+      0,
+      "NPARRAY"
+    ],
+    [
+      56,
+      45,
+      0,
+      46,
+      1,
+      "NPARRAY"
+    ],
+    [
+      57,
+      46,
+      0,
+      47,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "SOURCE",
+      "bounding": [
+        -1160,
+        -80,
+        1460,
+        480
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "THE TWO TILES, AND A MASK FOR EACH - where every fit is measured",
+      "bounding": [
+        -460,
+        400,
+        1900,
+        631.0665182570458
+      ],
+      "color": "#88A",
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "1. WHITE BALANCE PER TILE - a gain+offset drift, and it IS fixed",
+      "bounding": [
+        280,
+        1040,
+        3208.069197057178,
+        780
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 4,
+      "title": "2. CLAHE PER TILE - a tone-curve drift, and it is NOT fixed (same wiring, same masks)",
+      "bounding": [
+        285.26662508612156,
+        1833.034809442683,
+        4003.4844926827336,
+        1091.7531589795447
+      ],
+      "color": "#a93",
+      "flags": {}
+    }
+  ],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "b9d3e7f1-4a26-4c58-8e70-9f15d2a6c3b4",
+        "version": 1,
+        "state": {
+          "lastGroupId": 4,
+          "lastNodeId": 62,
+          "lastLinkId": 220,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Exposure Match (Masked Per-Channel)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -320,
+            200,
+            143.044921875,
+            108
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            3001.8460851000045,
+            263.6922364000001,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "d21a5c8e-7f39-4b06-a481-2c95e7f03d16",
+            "name": "image_correct",
+            "type": "NPARRAY",
+            "linkIds": [
+              200
+            ],
+            "localized_name": "image_correct",
+            "pos": [
+              -200.955078125,
+              224
+            ]
+          },
+          {
+            "id": "e32b6d9f-804a-4c17-b592-3da6f8014e27",
+            "name": "image_reference",
+            "type": "NPARRAY",
+            "linkIds": [
+              201
+            ],
+            "localized_name": "image_reference",
+            "pos": [
+              -200.955078125,
+              244
+            ]
+          },
+          {
+            "id": "f43c7e0a-915b-4d28-c603-4eb709125f38",
+            "name": "mask",
+            "type": "NPARRAY",
+            "linkIds": [
+              202,
+              203
+            ],
+            "localized_name": "mask",
+            "pos": [
+              -200.955078125,
+              264
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "a54d8f1b-026c-4e39-d714-5fc81a236049",
+            "name": "corrected",
+            "type": "NPARRAY",
+            "linkIds": [
+              220
+            ],
+            "localized_name": "corrected",
+            "pos": [
+              3025.8460851000045,
+              287.6922364000001
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 49,
+            "type": "CV_CastArray",
+            "pos": [
+              40,
+              40
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 200
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  204,
+                  214
+                ]
+              }
+            ],
+            "title": "Image to correct as float32",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ]
+          },
+          {
+            "id": 50,
+            "type": "CV_CastArray",
+            "pos": [
+              40,
+              210
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 201
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  205
+                ]
+              }
+            ],
+            "title": "Reference as float32",
+            "properties": {
+              "Node name for S&R": "CV_CastArray"
+            },
+            "widgets_values": [
+              "float32"
+            ]
+          },
+          {
+            "id": 51,
+            "type": "cv2_meanStdDev",
+            "pos": [
+              400,
+              40
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 204
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 202
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "mean",
+                "name": "mean",
+                "type": "NPARRAY",
+                "links": [
+                  208
+                ]
+              },
+              {
+                "localized_name": "stddev",
+                "name": "stddev",
+                "type": "NPARRAY",
+                "links": [
+                  206
+                ]
+              }
+            ],
+            "title": "stats of CORRECT (inside mask)",
+            "properties": {
+              "Node name for S&R": "cv2_meanStdDev"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 52,
+            "type": "cv2_meanStdDev",
+            "pos": [
+              400,
+              210
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 205
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 203
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "mean",
+                "name": "mean",
+                "type": "NPARRAY",
+                "links": [
+                  209
+                ]
+              },
+              {
+                "localized_name": "stddev",
+                "name": "stddev",
+                "type": "NPARRAY",
+                "links": [
+                  207
+                ]
+              }
+            ],
+            "title": "stats of REFERENCE (inside mask)",
+            "properties": {
+              "Node name for S&R": "cv2_meanStdDev"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 53,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              760,
+              40
+            ],
+            "size": [
+              312.3326171875,
+              138
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 206
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  210
+                ]
+              }
+            ],
+            "title": "sigma of CORRECT -> (1 row, 3 channels)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 54,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              743.5414856713328,
+              393.1428044656079
+            ],
+            "size": [
+              326.421484375,
+              138
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 207
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  212
+                ]
+              }
+            ],
+            "title": "sigma of REFERENCE -> (1 row, 3 channels)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 55,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              759.2015875496487,
+              214.38729960281006
+            ],
+            "size": [
+              309.53671875,
+              138
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 208
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  215
+                ]
+              }
+            ],
+            "title": "mean of CORRECT -> (1 row, 3 channels)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 56,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              743.7391043468594,
+              570.5499484390273
+            ],
+            "size": [
+              323.6255859375,
+              138
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 209
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  219
+                ]
+              }
+            ],
+            "title": "mean of REFERENCE -> (1 row, 3 channels)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              1,
+              3,
+              0
+            ]
+          },
+          {
+            "id": 57,
+            "type": "CV_ScalarArray",
+            "pos": [
+              766.7430732209814,
+              749.5737616837584
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  211
+                ]
+              }
+            ],
+            "title": "std floor per channel",
+            "properties": {
+              "Node name for S&R": "CV_ScalarArray"
+            },
+            "widgets_values": [
+              "0.5, 0.5, 0.5",
+              "float64 (cv2 Scalar default)"
+            ]
+          },
+          {
+            "id": 58,
+            "type": "cv2_max",
+            "pos": [
+              1157.0256249,
+              40
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 210
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 211
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  213
+                ]
+              }
+            ],
+            "title": "floor sigma of CORRECT",
+            "properties": {
+              "Node name for S&R": "cv2_max"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 59,
+            "type": "cv2_divide_0",
+            "pos": [
+              1517.0256249,
+              40
+            ],
+            "size": [
+              361.3052734375,
+              130
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 212
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 213
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  217
+                ]
+              }
+            ],
+            "title": "per-channel gain = sigma REF / sigma CORRECT",
+            "properties": {
+              "Node name for S&R": "cv2_divide_0"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          },
+          {
+            "id": 60,
+            "type": "cv2_subtract",
+            "pos": [
+              1912.1025327,
+              116.10256579999998
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 214
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 215
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  216
+                ]
+              }
+            ],
+            "title": "center on CORRECT means",
+            "properties": {
+              "Node name for S&R": "cv2_subtract"
+            },
+            "widgets_values": [
+              "same as input"
+            ]
+          },
+          {
+            "id": 61,
+            "type": "cv2_multiply",
+            "pos": [
+              2272.1025326999998,
+              196.10256579999998
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 216
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 217
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  218
+                ]
+              }
+            ],
+            "title": "apply per-channel gain",
+            "properties": {
+              "Node name for S&R": "cv2_multiply"
+            },
+            "widgets_values": [
+              1,
+              "same as input"
+            ]
+          },
+          {
+            "id": 62,
+            "type": "cv2_add",
+            "pos": [
+              2632.1025326999998,
+              276.1025658
+            ],
+            "size": [
+              300,
+              130
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 218
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 219
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  220
+                ]
+              }
+            ],
+            "title": "+ REFERENCE means -> corrected",
+            "properties": {
+              "Node name for S&R": "cv2_add"
+            },
+            "widgets_values": [
+              "same as input"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 200,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 49,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 201,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 50,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 202,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 51,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 203,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 52,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 204,
+            "origin_id": 49,
+            "origin_slot": 0,
+            "target_id": 51,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 205,
+            "origin_id": 50,
+            "origin_slot": 0,
+            "target_id": 52,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 206,
+            "origin_id": 51,
+            "origin_slot": 1,
+            "target_id": 53,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 207,
+            "origin_id": 52,
+            "origin_slot": 1,
+            "target_id": 54,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 208,
+            "origin_id": 51,
+            "origin_slot": 0,
+            "target_id": 55,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 209,
+            "origin_id": 52,
+            "origin_slot": 0,
+            "target_id": 56,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 210,
+            "origin_id": 53,
+            "origin_slot": 0,
+            "target_id": 58,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 211,
+            "origin_id": 57,
+            "origin_slot": 0,
+            "target_id": 58,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 212,
+            "origin_id": 54,
+            "origin_slot": 0,
+            "target_id": 59,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 213,
+            "origin_id": 58,
+            "origin_slot": 0,
+            "target_id": 59,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 214,
+            "origin_id": 49,
+            "origin_slot": 0,
+            "target_id": 60,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 215,
+            "origin_id": 55,
+            "origin_slot": 0,
+            "target_id": 60,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 216,
+            "origin_id": 60,
+            "origin_slot": 0,
+            "target_id": 61,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 217,
+            "origin_id": 59,
+            "origin_slot": 0,
+            "target_id": 61,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 218,
+            "origin_id": 61,
+            "origin_slot": 0,
+            "target_id": 62,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 219,
+            "origin_id": 56,
+            "origin_slot": 0,
+            "target_id": 62,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 220,
+            "origin_id": 62,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.1660024654559021,
+      "offset": [
+        2032.333727309223,
+        1502.5296160703554
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

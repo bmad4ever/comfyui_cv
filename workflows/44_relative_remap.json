@@ -1,0 +1,858 @@
+{
+  "id": "dda8f875-8f75-4bbd-a579-9901d0f8f72a",
+  "revision": 0,
+  "last_node_id": 19,
+  "last_link_id": 28,
+  "nodes": [
+    {
+      "id": 0,
+      "type": "Note",
+      "pos": [
+        -23.765439038061352,
+        -281.6546886614001
+      ],
+      "size": [
+        558.125,
+        155.015625
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "WARP_RELATIVE_MAP demo\n\nSobel branch (top): gradient drives displacement.\nNormal map branch (bottom): normal-map drives displacement.\nBoth use RelativeIdentityMap + VectorDisplacementMap + WARP_RELATIVE_MAP."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        0,
+        -84.67325824461625
+      ],
+      "size": [
+        269.25,
+        364
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            4,
+            9,
+            14,
+            18,
+            26
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_RelativeIdentityMap",
+      "pos": [
+        389.5752465427109,
+        -83.69483308703782
+      ],
+      "size": [
+        286.6875,
+        96
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_RelativeIdentityMap"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "CV_VectorDisplacementMap",
+      "pos": [
+        860.2260599592515,
+        -88.14980110604422
+      ],
+      "size": [
+        269.75,
+        232
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 5
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 6
+        },
+        {
+          "name": "vector_field",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        },
+        {
+          "name": "dx",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 27
+        },
+        {
+          "name": "dy",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            10
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_VectorDisplacementMap"
+      },
+      "widgets_values": [
+        2153.5,
+        827
+      ]
+    },
+    {
+      "id": 7,
+      "type": "cv2_remap",
+      "pos": [
+        1269.9548017354628,
+        -98.52420004398682
+      ],
+      "size": [
+        437.890625,
+        280
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 9
+        },
+        {
+          "name": "map1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 10
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 11
+        },
+        {
+          "name": "interpolation",
+          "type": "STRING",
+          "widget": {
+            "name": "interpolation"
+          },
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "cv2_remap"
+      },
+      "widgets_values": [
+        "INTER_LINEAR | WARP_RELATIVE_MAP",
+        "BORDER_CONSTANT",
+        "0",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "LoadImage",
+      "pos": [
+        -57.22354894811818,
+        418.84573664532013
+      ],
+      "size": [
+        335.640625,
+        384.1875
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "brick_wall_nor_gl_1k.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "CV_ImageToCV",
+      "pos": [
+        315.4962646744932,
+        418.3351120597651
+      ],
+      "size": [
+        225,
+        168
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "RGB",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_RelativeIdentityMap",
+      "pos": [
+        582.4012806830311,
+        438.0576307363927
+      ],
+      "size": [
+        237.78125,
+        96
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            15
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_RelativeIdentityMap"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 12,
+      "type": "CV_VectorDisplacementMap",
+      "pos": [
+        847.8975453575245,
+        415.5176093916756
+      ],
+      "size": [
+        269.75,
+        232
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "link": 16
+        },
+        {
+          "name": "vector_field",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 17
+        },
+        {
+          "name": "dx",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "dy",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "map_x",
+          "type": "NPARRAY",
+          "links": [
+            19
+          ]
+        },
+        {
+          "name": "map_y",
+          "type": "NPARRAY",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CV_VectorDisplacementMap"
+      },
+      "widgets_values": [
+        158.5,
+        190
+      ]
+    },
+    {
+      "id": 13,
+      "type": "cv2_remap",
+      "pos": [
+        1283.6436909284942,
+        425.6162010672361
+      ],
+      "size": [
+        440.921875,
+        280
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "showAdvanced": true,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 18
+        },
+        {
+          "name": "map1",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 19
+        },
+        {
+          "name": "map2",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 20
+        },
+        {
+          "name": "interpolation",
+          "type": "STRING",
+          "widget": {
+            "name": "interpolation"
+          },
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "cv2_remap"
+      },
+      "widgets_values": [
+        "INTER_LINEAR | WARP_RELATIVE_MAP",
+        "BORDER_DEFAULT",
+        "",
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "PreviewImage",
+      "pos": [
+        1737.3851184250025,
+        -98.91493638005333
+      ],
+      "size": [
+        225,
+        304
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 16,
+      "type": "PreviewImage",
+      "pos": [
+        1754.1091996951309,
+        425.04191216951307
+      ],
+      "size": [
+        225,
+        304
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CV_WarpFlags",
+      "pos": [
+        795.3930517512373,
+        290.42399654603537
+      ],
+      "size": [
+        379.625,
+        8
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "flags",
+          "type": "STRING",
+          "links": [
+            24,
+            25
+          ]
+        },
+        {
+          "name": "value",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "Shared warp flags (set once, feeds both remaps)",
+      "properties": {
+        "Node name for S&R": "CV_WarpFlags"
+      },
+      "widgets_values": [
+        "INTER_LINEAR | WARP_RELATIVE_MAP"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "Note",
+      "pos": [
+        283.63017728340606,
+        625.7583002076618
+      ],
+      "size": [
+        531.4375,
+        174.515625
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "brick_wall_nor_gl_1k.jpg",
+      "properties": {
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "Title:   brick_wall_001 (brick_wall_nor_gl_1k.jpg)\nCreator: Poly Haven (Dimitrios Savva, Rob Tuytel)\nLicense: CC0 - https://creativecommons.org/publicdomain/zero/1.0/\nSource:  https://polyhaven.com/a/brick_wall_001\nSize:    1k jpg (brick_wall_001_nor_gl_1k.jpg)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 19,
+      "type": "cv2_spatialGradient",
+      "pos": [
+        447.69695192132247,
+        65.11404210003207
+      ],
+      "size": [
+        225,
+        8
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "dx",
+          "type": "NPARRAY",
+          "links": [
+            27
+          ]
+        },
+        {
+          "name": "dy",
+          "type": "NPARRAY",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "cv2_spatialGradient"
+      },
+      "widgets_values": [
+        3,
+        "BORDER_DEFAULT"
+      ]
+    }
+  ],
+  "links": [
+    [
+      4,
+      1,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      5,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      5,
+      1,
+      6,
+      1,
+      "NPARRAY"
+    ],
+    [
+      9,
+      1,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      6,
+      0,
+      7,
+      1,
+      "NPARRAY"
+    ],
+    [
+      11,
+      6,
+      1,
+      7,
+      2,
+      "NPARRAY"
+    ],
+    [
+      13,
+      9,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      1,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      11,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      16,
+      11,
+      1,
+      12,
+      1,
+      "NPARRAY"
+    ],
+    [
+      17,
+      10,
+      0,
+      12,
+      2,
+      "NPARRAY"
+    ],
+    [
+      18,
+      1,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      19,
+      12,
+      0,
+      13,
+      1,
+      "NPARRAY"
+    ],
+    [
+      20,
+      12,
+      1,
+      13,
+      2,
+      "NPARRAY"
+    ],
+    [
+      22,
+      7,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      23,
+      13,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      24,
+      17,
+      0,
+      7,
+      3,
+      "STRING"
+    ],
+    [
+      25,
+      17,
+      0,
+      13,
+      3,
+      "STRING"
+    ],
+    [
+      26,
+      1,
+      0,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      27,
+      19,
+      0,
+      6,
+      3,
+      "NPARRAY"
+    ],
+    [
+      28,
+      19,
+      1,
+      6,
+      4,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5333196730642352,
+      "offset": [
+        245.65818199296922,
+        497.06231487650865
+      ]
+    },
+    "frontendVersion": "1.45.20"
+  },
+  "version": 0.4
+}

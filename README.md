@@ -1,210 +1,297 @@
-# OpenCV-ComfyUI
+# ComfyUI CV
 
-Custom nodes for ComfyUI that implement all top-level standalone functions of OpenCV Python cv2, auto-generated from their type definitions.
+Computer-vision nodes for ComfyUI. The pack exposes the functions of the
+**OpenCV** library (`cv2`) as nodes — ~470 auto-generated raw `cv2.*` wrappers
+plus curated high-level nodes — but it is **not limited to** plain cv2 calls:
+a few nodes implement their own algorithm, and not all of cv2 is reachable.
+See the disclaimers below for both caveats.
 
-## Quickstart
+   **This project is an independent, personal endeavor and is not affiliated with, endorsed by, or part of the official OpenCV project. It does not reflect the official roadmap or the views of the OpenCV maintainers. It is provided 'as is', without any express or implied warranties.**
 
-![cv2 basic workflow](workflows/cv2_basic_workflow.png)
+   **"OpenCV" is a registered trademark of the Open Source Vision Foundation — the name as much as the logo. This pack is therefore named *ComfyUI CV*, not after the library, and names OpenCV only to describe what it wraps.**
 
-1. Install OpenCV:
-   ```sh
-   pip install opencv-python-contrib
-   ```
-2. Convert between Comfy image and OpenCV nparray using:
-   - `Image2Nparray`
-   - `Nparrays2Image`
-3. Avoid the optional out-parameters (usually called `dst`).
-4. Convert color channels with `cvtColor`. Use:
-   - `6` for `BGR2GRAY`
-   - `8` for `GRAY2BGR`
-5. Use literal strings for composite parameters (e.g., `[3, 3]` for `ksize`).
 
-These nodes are auto-generated from source and so they are ugly and complex to use. **Expect dragons!**
+<details>
+<summary> <b>Disclaimers</b> (that you should read) ⬅ click to expand </summary>
 
-**Please leave some feedback!** If I see the project being used I will develop it further.
+<br>
 
-## Documentation
+1. **Created with heavy use of Generative AI (LLMs).**
+The following models were used: opencode's "*Big Pickle*" stealth models; DeepSeek V4 family; Dots3-Note Preview; Fable 5; Kimi K3; Ling-3.0-flash; Opus family. 
 
-For function references, see the official [OpenCV documentation](https://docs.opencv.org/4.11.0/index.html), start with [Image processing filters](https://docs.opencv.org/4.11.0/d4/d86/group__imgproc__filter.html).
+   Besides potential ethical concerns, it also entails the following practical risks:
 
-### Installation
+   - Test‑driven overfitting:
+During development, some workflows were developed via a test‑driven approach with sample inputs and outputs. In some cases, the agent generating the code appears to have over‑fitted to the provided examples at the expense of broader correctness. For instance, the 5th and 6th Hu Moments were initially dropped because they were not represented in the test suite. While this specific error was later corrected, it is possible that similar undetected mistakes exist elsewhere in the codebase.
 
-You probably already have OpenCV already installed via some other custom node, otherwise install with:
+   - Exhaustive input handling:
+The "smart" behavior for input types and processing is implemented via exhaustive lists in lowlevel.py. This does not directly affect end‑users, but it may present a maintenance burden for future contributors or for anyone extending the library.
 
-```sh
-pip install opencv-python-contrib
+   - Production readiness:
+Given the points above, it is not recommended to use this library in production without a thorough, independent review of the used source code. You should verify that all logic aligns with your own requirements, validate with your own test cases, and consider adding additional safeguards.
+
+2. **Updates not planned; may happen at any time.** Do not expect prompt support regarding potential issues/fixes.
+3. **Not all OpenCV functionality is exposed.** Despite ~470 auto-generated raw
+   `cv2.*` wrappers plus curated nodes, only a subset of cv2 is reachable: the
+   generator parses top-level *functions* only, so class-based APIs (`create*`
+   factories, detectors, matchers) and complex multi-return functions are absent
+   unless a curated node bridges them (see [docs/custom_nodes.md](docs/custom_nodes.md)).
+4. **Some low-level nodes cannot run on a given OpenCV distribution.** The node
+   registry is generated from whatever the installed build exposes, which can
+   include entries whose implementation the build lacks. On the pinned
+   reference build, for instance, `ximgproc.fastBilateralSolverFilter` is
+   exposed but always raises `(-213) needs to be compiled with EIGEN` when
+   executed; another build could surface more or fewer such entries. 
+   
+   > [!NOTE]  
+   > NONFREE entries are not something to go hunting for:
+   stock `opencv-contrib-python(-headless)` wheels are built with `OPENCV_ENABLE_NONFREE=OFF`.
+   > 
+   > **NO shipped workflow uses NONFREE functions.**
+
+5. **DNN support is limited, and ComfyUI often already does
+   it better.** Everything here goes through `cv2.dnn` on principle — that is
+   the point of the pack — even where ComfyUI has a first-class node for the
+   same job. Frame interpolation is the clearest example: core ships
+   **"Run Frame Interpolation Model"** (`FrameInterpolate`) plus its loader,
+   which run **RIFE and FILM natively in PyTorch**, on the GPU, in fp16, with model
+   offloading and a 2–16× multiplier applied across a whole batch. The example workflow for RIFE does it the *heretic* way instead: an ONNX export, driven through the generic
+   `cv2.dnn` nodes, **on the CPU, one frame pair per execution**, with the input padded
+   to a multiple of 32 by hand. If you actually want to interpolate a video,
+   use the core node. Use this one to see how the pieces fit together or to reach
+   a model core does not support.
+
+   The same caveat applies to the DNN examples generally. Models that run fine
+   in PyTorch had to be converted to ONNX, because that is the format OpenCV's
+   DNN module supports — and conversion is sometimes not sufficient: a perfectly valid
+   export can still be unloadable here. Support for modern architectures is limited by both the DNN implementation and the pinned OpenCV version.
+6. **Models are not bundled.** DNN/LLM workflows need
+   external model downloads (`models/onnx`), and some might require conversion into `.onnx` (`.tflite` may also work, I did not test). 
+
+   Model source URLs in the workflow notes.
+
+7. **Raw low-level wrappers are auto-generated and uncurated** — expect to
+    handle conversions and edge cases yourself.
+8. **The workflows are not production-grade.** They exist mainly to showcase,
+    plan and test the functionalities; several pipelines/heuristics are
+    overfitted to specific datasets (e.g. the sky mask and stereo settings tuned
+    to StereoGeo-CARLA) or may be lacking, so they are not usable in actual
+    production contexts. Individual nodes may still be genuinely useful in real
+    workflows.
+9. **Most nodes are direct `cv2.*` wrappers or high-level compositions of cv2
+    calls, but a few are genuine exceptions that reimplement an algorithm
+    instead.** `CV Photometric Align (Gain/Bias)` fits a robust per-channel
+    gain/bias via trimmed numpy least squares, and `CV Local Linear Fit`
+    runs a windowed regression around every pixel; the crop/paste geometry
+    (`boxpolicy`/`polytype`) is pure Python + numpy with no cv2 at all. They are
+    curated like everything else, but they are not OpenCV functions in the
+    wrapper sense (see [docs/custom_nodes.md](docs/custom_nodes.md)).
+
+</details>
+
+
+<details>
+<summary> <b>Gallery</b> ⬅ click to expand </summary>
+
+<br>
+
+<table>
+  <tr>
+    <td><img src="docs/gifs/annotate_grabcut_gm_optimized.gif" alt="Annotate grabcut"></td>
+    <td><img src="docs/gifs/quad_warp_extract_gm_optimized.gif" alt="Quad warp extract"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/gifs/quad_warp_fill_gm_optimized.gif" alt="Quad warp fill"></td>
+    <td><img src="docs/gifs/thin_plate_warp.gif" alt="Thin plate warp"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/gifs/thin_plate_warp_over_bg.gif" alt="Thin plate warp over background"></td>
+    <td><img src="docs/imgs/clean_plate_matte.jpg" alt="Clean plate matte"></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/imgs/kmeans_masks.jpg" alt="K-means masks"></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/imgs/lightglue.jpg" alt="Lightglue"></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/imgs/neural_style_transfer_mosaic.jpg" alt="Neural style transfer mosaic"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/imgs/panorama_stitching.jpg" alt="Panorama stitching"></td>
+    <td><img src="docs/imgs/scene_depth.jpg" alt="Scene depth"></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/imgs/relative_remap.jpg" alt="Relative remap"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/imgs/yunet_face_detection.jpg" alt="YuNet face detection"></td>
+    <td><img src="docs/imgs/qr_code_encode.jpg" alt="QR code encode"></td>
+  </tr>
+</table>
+
+</details>
+
+
+<details>
+<summary> <b>Installation and Troubleshooting</b> ⬅ click to expand </summary>
+
+<br>
+
+Requires **Python ≥ 3.12** and a recent ComfyUI built on the **V3 node API**.
+
+The only required python dependency can be installed via the pyproject.toml/requirements or with the following command:
+
+```
+pip install "opencv-contrib-python-headless~=5.0.0.93"
 ```
 
-If you get:
-```sh
-Cannot import name 'guidedFilter' from 'cv2.ximgproc'
-```
+**Behavior is curated against [5.0.0.93](https://pypi.org/project/opencv-contrib-python-headless/5.0.0.93/)**; other versions may behave differently.
 
-you likely have conflicting packages. It's a known source of problems, see [solution](https://github.com/chflame163/ComfyUI_LayerStyle/issues/5).
+The *headless* wheel is the declared dependency because nothing in the pack uses highgui (no `imshow`/`waitKey`/trackbars — the registry generator blacklists them outright). The GUI `opencv-contrib-python` build is equally usable if something else already installed it.
 
-### Image Representation
+What does matter is **contrib**: installing a non-contrib wheel (`opencv-python` / `opencv-python-headless`) over a contrib one silently empties the contrib submodules and contrib nodes disappear — all four distributions share one `site-packages/cv2`. `tools/repair_opencv_contrib.py` diagnoses (`--check`) and repairs (`--apply`) that, but there is no install-time guard.
 
-| Feature          | ComfyUI `IMAGE`                         | OpenCV images                         |
-|------------------|-----------------------------------------|---------------------------------------|
-| **Type**         | torch tensor                            | numpy ndarray                         |
-| **Shape**        | `(batch, height, width, channels)`      | `(height, width, channels)`           |
-| **Color Format** | Always RGB, never RGBA                  | Mostly BGR or grayscale               |
-| **Value Range**  | 0.0..1.0                                | 0..255                                |
-| **Data Type**    | `np.float32`                            | `np.uint8`                            |
 
-You have to use `cvtColor` to convert between them. Common enums for color conversion:
+Some **workflows and subgraphs** are dependent on other custom node packages, namely:
+- Dr.Lt.Data's [ComfyUI-Inspire-Pack](https://github.com/ltdrdata/ComfyUI-Inspire-Pack)
+- pythongosssss's [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts)
+- StableLlama's [Basic Data Handling](https://github.com/StableLlama/ComfyUI-basic_data_handling)
 
-```python
-BGR2BGRA  =  0
-RGB2RGBA  =  0
-BGRA2BGR  =  1
-RGBA2RGB  =  1
-BGR2RGBA  =  2
-RGB2BGRA  =  2
-RGBA2BGR  =  3
-BGRA2RGB  =  3
-BGR2RGB   =  4
-RGB2BGR   =  4
-BGRA2RGBA =  5
-RGBA2BGRA =  5
-BGR2GRAY  =  6
-RGB2GRAY  =  7
-GRAY2BGR  =  8
-GRAY2RGB  =  8
-GRAY2BGRA =  9
-GRAY2RGBA =  9
-BGRA2GRAY = 10
-RGBA2GRAY = 11
-```
+</details>
 
-*(we should use `COMBO` for them, I know)*
 
-### Troubleshooting
+<details>
+<summary> <b>Get Started</b> ⬅ click to expand </summary>
 
-```invalid syntax (<unknown>, line 0)```
+<br>
 
-- Some of the input parameters require composite types and they are implemented using `ast.parse()` to convert from Python literal strings to objects, but the syntax you used is wrong (e.g. for `Size` use `(30, 40)`).
+### Install the example inputs
 
-```
-Image2Nparray
-Only images with batch_size==1 are supported! batch_size=2
-```
+The example workflows load their photos, videos and the `MilkTruck.glb` model
+from this pack's `example_inputs/` folder. ComfyUI's **Load Image** / **Load
+Video** / **Load 3D** nodes are dropdowns, though: they can only offer what is
+already inside `ComfyUI/input`, so on a fresh install those nodes open red.
 
-- Use the `ImageFromBatch` node (`length=1`) to select your image and create a image with `batch_size=1`.
+Run **`workflows/01_install_example_inputs.json`** once and the copy is done for
+you — it is a single node, **CV Install Example Inputs** (`image/CV`), with
+nothing to wire up:
 
-```error: (-215:Assertion failed) img.type() == CV_8UC1 in function```
+1. Load the workflow and press **Run**.
+2. **Reload the ComfyUI page.** The `Load*` dropdowns are built when the node
+   definitions are fetched, so files copied during a session only appear after a
+   refresh.
 
-- The function requires a grayscale image. Convert it with `cvtColor` (`code=6`) first.
+Details worth knowing:
 
-```
-Nparrays2Image
-'NoneType' object has no attribute 'shape'
-```
+- **Nothing is overwritten by default.** `existing_files` starts on *keep the
+  file already there*, so a name that already exists in your input folder wins
+  and a second run is a no-op (everything comes back as `skipped`). Switch it to
+  *overwrite it with the packaged copy* only to repair a sample you edited in
+  place.
+- **Look before you leap.** Setting `mode` to *list what would be copied (dry
+  run)* reports exactly what a real run would do and writes nothing — worth doing
+  if your input folder holds work of your own.
+- **3D models go to `ComfyUI/input/3d`**, which is the only folder core's Load 3D
+  nodes list. Everything else — images, video, and the calibration
+  `.json`/`.yaml`/`.csv`/`.txt` sidecars — lands in `ComfyUI/input` itself.
+- **Nothing outside `input` is touched, and nothing is ever deleted.** The node
+  is failure tolerant: a missing source folder or an unwritable file leaves
+  `ok=false` and names the problem in `report` instead of halting the run.
 
-- Not every return type of `nparray` is actually an image. Some are just a 1-dimensional array of floats, but you are using it as an image. Check the OpenCV documentation. Please also note that the OpenCV nodes were auto-generated and not every function is useful within ComfyUI without further processing.
+Copying by hand works just as well — `example_inputs/` is ~33 MB of ordinary
+files, and `example_inputs/sources.txt` records where each one came from and
+under which license.
 
-## Development
+> [!NOTE]
+> The `.onnx` / cascade / LLM / VLM **models** are a separate matter: they are
+> not in this repo and not part of `example_inputs`. See `model_sources.txt` at
+> the repo root for where to get them.
+>
+> Two *inputs* do not ship, because of size: the 48 MB driving clip for
+> `exercise_visual_odometry_video.json` (its ground-truth poses *do* ship, under
+> a non-commercial licence) and the flash / no-flash photo pair in
+> `10_ximgproc_edge_aware_filters.json`. Each of those workflows carries a note
+> on the canvas explaining where to get them. Everything else a workflow loads is in
+> `example_inputs/`, and the development test suite fails if that stops being
+> true.
 
-### Image batches
+More reading and reference material: [Documentation](#documentation) below.
 
-Comfy `IMAGE` is actually a batch of images, usually with just one, but we have to handle the case with multiple images:
-1. We could iterate over the batch and call the OpenCV function for each image, but then we have to collect the output in lists as well. This works as long as the output is just a image, not a tuple. If it is tuple (e.g. `(nparray, int)`) either the user has to select the list index everytime or we treat all inputs as lists too.
-2. We could always use batch index 0 but this may be surprising behaviour for the user.
-3. We could just support batch_size=1. I settled with this for now because it's easier.
+</details>
 
-### Image versus nparray
 
-For handling Comfy image versus OpenCV nparray we have the following choices:
+<details>
+<summary> <b>Documentation</b> ⬅ click to expand </summary>
 
-1. **Always use Comfy `IMAGE` for input and output**
-	- fails for functions requiring grayscale images (like `Canny`), because we always convert from RGB to BGR to RGB.
-	- we could convert to the required type automatically, but I don't have annotations telling me which function requires which type.
-	- type conversions in OpenCV is supposed to be more intentional and there can be multiple correct types.
-2. **Provide both `IMAGE` and `nparray` as input and output**
-	- the automatic conversion issue above partely applies here and usage would become surprising (`IMAGE` is always RGB, `nparray` is whatever the function outputs)
-	- providing both inputs is ambigious *(Maybe Comfy supports multiple types for one parameters, I don't know)*
-3. **Provide conversion nodes and only use `nparray`**
-   	- I settled with this because it more closly matches the OpenCV style were `cvtColor` conversions are intentional anyway.
+<br>
 
-### Parsing OpenCV
+| Link | What it is | Open it when |
+| --- | --- | --- |
+| [Custom nodes](docs/custom_nodes.md) | Catalog of every hand-written node with usage notes and limits | wiring a graph and want a node's intended use |
+| [Subgraph blueprints](docs/subgraphs.md) | 65 reusable compositions, each a one-node workflow to open and build around | a step you keep rebuilding — a blueprint may already exist |
+| [OpenCV 5.0 documentation](https://docs.opencv.org/5.0/) | Official upstream API reference | using a low-level `cv2.*` wrapper and want the exact signature/edge cases |
+| [Model sources](model_sources.txt) | External DNN/LLM models: download URLs, target folders, license record | a model-backed workflow opens red |
+| [Example input sources](example_inputs/sources.txt) | Provenance and licenses of the bundled sample media | planning to redistribute outputs or audit assets |
 
-Function definitions were extracted using `ast.parse()` on `venv/lib/python3.11/site-packages/cv2/__init__.pyi`. This includes **only top-level standalone functions** - not classes or anything hidden in sub-modules.
+</details>
 
-Attemps to use `inspect.signature(cv2.MedianBlur)` or `inspect.getmembers(cv2.MedianBlur)` failed due to missing type annotations (`ValueError: no signature found for builtin <built-in function MedianBlur>`). OpenCV functions are implemented as C++ extensions, and they do not have Python type annotations (`__annotations__`). Unlike pure Python functions, built-in functions and extension functions do not store signature metadata in a way that Python's reflection tools can access directly.
 
-Most functions are overloaded and they were numbered.
+## Credits 
 
-### Types
+Gerold Meisinger, the maintainer of [opencv-comfyui](https://github.com/geroldmeisinger/opencv-comfyui) from which this project was forked.
 
-I then analyzed how many different types and paramter names are used (see `analyze_functions`) to filter out complicated or unsupported functions for now. You can find the infos in [cv2.tsv](docs/cv2.tsv).
+Abhishek Gola, the maintainer of [opencv_contribution](https://huggingface.co/opencv/opencv_contribution) which contains many of the .onnx models showcased in this project and example scripts on how to run them.
 
-* **776 functions in total**.
-* Parameters use:
-  - simple types: `int, float, str, bool`,
-  - composite types (exhaustivly: `Moments, Point, Point2d, Point2f, Rect, Rect2d, RotatedRect, Scalar, Size, TermCriteria`),
-  - and images
-* Images are represented with the following types:
-  - `UMat`
-  - `cv2.typing.MatLike`
-  - `cv2.typing.MatLike | None` and `UMat | None` usually used for `dst`, but some `dst` are not `None`. used as src only in `reprojectImageTo3D`.
-  - `cv2.cuda.GpuMat` but only used in `imshow`
-  - `numpy.ndarray` but only used as return type in all variants of `imencode`
-* Return types include:
-  - Simple types
-  - Composite types (`Size, Rect` etc.)
-  - many tuples with all types above
-  - `_typing.Sequence` which is not supported yet
-  - `_typing.Callable` which is not supported yet
-  - many class types (like `Tonemap` etc.), which are not supported yet
 
-After filtering out all unsupported types there were **635 functions left**.
+## License and provenance
 
-For the composite types we could:
-* provide extra widgets to construct them (todo),
-* split them up in their simple types so `Rect` would become `Rect_0_int_0, Rect_0_int_1, Rect_0_int_2, Rect_0_3` (ugly)
-* or use `STRING` and parse them with `ast.literal_eval()`. This is what I used.
+Copyright (C) 2026 bmad4ever. Licensed under [GPL-3.0-only](LICENSE) — every
+first-party source file carries an `SPDX-License-Identifier: GPL-3.0-only`
+header.
 
-### Out parameters
+The GPL is *inherited*, not picked: this pack is a fork of
+[opencv-comfyui](https://github.com/geroldmeisinger/opencv-comfyui) (GPL-3.0),
+which is also where the pack's name, the idea of generating raw `cv2.*` node
+wrappers from the type stubs, and the `NPARRAY` socket come from. What ships
+today is a rewrite on ComfyUI's V3 node API; the handful of files whose lineage
+still runs back upstream — `__init__.py`, `opencv_nodes/convert.py`,
+`opencv_nodes/lowlevel.py`, the generated `opencv_nodes/registry*.py`, and
+`generator/generator.py` — say so in their own header.
 
-OpenCV often modifies input images in-place with call-by-reference out-parameters, but this does not align with ComfyUI's paradigm. Example:
+### Bundled third-party code
 
-```python
-def medianBlur(src: cv2.typing.MatLike, ksize: int, dst: cv2.typing.MatLike | None = ...) -> cv2.typing.MatLike: ...
-```
+Not covered by the notice above; each keeps its own license.
 
-Most of them are defined as `cv2.typing.MatLike | None` or `UMat | None` but that's no always the case. Some are not `None`:
+| Where | What | License |
+|---|---|---|
+| `web/lib/` | three.js, plus `GLTFLoader` / `OrbitControls` / `TransformControls` / `BufferGeometryUtils` | MIT — `web/lib/LICENSE.three.txt` |
+| `web/lib/` | Apache ECharts | Apache-2.0 — `web/lib/LICENSE.echarts.txt`, `web/lib/NOTICE.echarts.txt` |
+| `web/lib/` | KaTeX and its fonts | MIT — `web/lib/LICENSE.katex.txt` |
+| `workers/dnn_tasks.py` | the `_MPPalmDet` / `_MPHandPose` classes, ported from the [OpenCV Zoo](https://github.com/opencv/opencv_zoo) `handpose_estimation_mediapipe` reference (upstream models: Google MediaPipe Hands) | Apache-2.0 |
+| `workers/stitch_advanced_worker.py` | stage order and parameter set follow OpenCV's own `samples/python/stitching_detailed.py` | Apache-2.0 |
+| `opencv_nodes/param_docs.py`, `opencv_nodes/return_docs.py` | per-parameter tooltip text extracted from the OpenCV documentation | Apache-2.0, OpenCV contributors |
 
-```python
-def normalize(src: cv2.typing.MatLike, dst: cv2.typing.MatLike, alpha: float = ..., beta: float = ..., norm_type: int = ..., dtype: int = ..., mask: cv2.typing.MatLike | None = ...) -> cv2.typing.MatLike: ...
-```
+OpenCV itself is a **runtime dependency, not bundled**: `cv2` comes from the
+`opencv-contrib-python-headless` wheel you install (Apache-2.0), and no OpenCV
+binaries ship here.
 
-I considered some alternative approaches:
-* We could assume the first image is always the input image but we cannot assume the second parameter is always an out-parameter because some functions use multiple input images.
-* We cannot derive the out-parameter from the return type (assuming the out-parameter is always used as a return), because return types are sometimes tuples with multiple images.
-* The position of the out-parameter is inconsistent, sometimes followed by another input image.
-* We cannot derive the out-parameter from the parameter name alone. There are 167 unique parameters names (skipping the first one) and the naming is inconsistent.
-* I don't know of any strictly typed OpenCV definition file which would of course be the best choise. We can of course parse the [original sources](https://github.com/opencv), [headers](https://github.com/opencv/opencv/blob/4.x/modules/imgproc/include/opencv2/imgproc.hpp) or [C++](https://github.com/opencv/opencv/blob/4.x/modules/imgproc/src/median_blur.dispatch.cpp) [sources](https://github.com/opencv/opencv/blob/4.x/modules/imgproc/src/median_blur.simd.hpp) and derive: out-parameters, value ranges, allowed channel types etc. and construct this definition file, but that's another story.
+Image and video assets are recorded in
+[`example_inputs/sources.txt`](example_inputs/sources.txt), and the screenshots
+and GIFs in this README — with the inputs each one derives from — in
+[`docs/sources.txt`](docs/sources.txt). The `.onnx`,
+cascade, LLM and VLM **models** are not in this repo at all; their provenance
+and licenses are in [`model_sources.txt`](model_sources.txt). Read that file
+before redistributing anything you download through it: a few of those models
+carry terms stricter than this pack's (notably `yolo26n-seg.onnx`, AGPL-3.0
+with a network clause).
 
-I just included them as optional inputs for now if the type includes `None`.
+**One asset is not under the GPL grant.**
+`example_inputs/kitti_2011_09_26_drive_0009_poses.txt` is the KITTI
+ground-truth pose track, **CC BY-NC-SA 3.0 — non-commercial**, inherited from
+the KITTI benchmark. It is the only non-commercial file in the repository,
+included for the visual-odometry example only; the GPL-3.0 grant above does not
+extend to it. Remove that one file if you need a uniformly commercial-safe tree.
 
-### Classes
-
-Ignored for now. Classes don't really fit the ComfyUI style but they would be possible if we pass around chained instances for every method call.
-
-![proposal on how to use classes in ComfyUI](docs/classes_proposal.png)
-
-## Todo
-
-* Widgets for composite types instead of literals
-* More convenience functions like enums for `cvtColor`, `Preview Nparray` node etc.
-* Support image batches with batch_size > 1
-* Parse doxygen docs and include them as help-strings
-* Automatic conversion between channels
-* Provide utility nodes for common patterns (like convert Hough lines to image)
-* Parse C++ code for value ranges and detect out-parameters
-* Better handling of out-parameters (or removal)
-* Blacklist functions which don't make sense in ComfyUI (like return type None)
-* Categorize nodes and keep the namespace clean
-* Generate custom nodes for classes too
-
-I'm happy to take any contributions! :)
+OpenCV is a registered trademark of the Open Source Vision Foundation. This
+pack is an independent, unofficial wrapper, as stated at the top.

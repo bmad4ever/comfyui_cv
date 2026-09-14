@@ -1,0 +1,310 @@
+{
+  "id": "7969bfee-d208-499e-8b70-7794355401bc",
+  "revision": 0,
+  "last_node_id": 9,
+  "last_link_id": 4,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        -182.4216416716783
+      ],
+      "size": [
+        760,
+        325.171875
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "LLM chat/completion with OpenCV 5's native LLM support - no Python ML framework, just cv2.dnn's new graph engine (KV-cache: the net's present.* outputs are routed back into its past_key_values.* inputs) + its built-in BPE/SentencePiece tokenizer.\n\n'CV LLM Generate' is ONE generic node: model folder, chat template and decode mode are dropdowns, so the same node covers Qwen2.5 / Gemma3 / GPT-2 family ONNX exports (e.g. optimum-cli export onnx --task causal-lm-with-past, or a merged transformers.js decoder - the node feeds the merged export's use_cache_branch for you). The two nodes below run the SAME model with and without a chat template: 'chatml (Qwen2.5)' wraps the prompt in the instruct format and gets an answer, 'none (raw prompt)' feeds it verbatim and gets a continuation.\n\nPick a model FOLDER, not a file: models/llm/opencv/qwen2.5-0.5b-instruct. The node finds the .onnx and the tokenizer inside it - the folder holds an OpenCV-format config.json + the family's tokenizer.json (from opencv_extra/testdata/dnn/llm/). The advanced 'lm_file' / 'tokenizer' dropdowns override that for unusual layouts. Every path is relative to the model root, so this workflow is portable - nothing points at one machine's disk.\n\nCPU decoding: a 0.5B fp32 model gives a few tokens/second - keep max_new_tokens small.\n\nAs of time of writing (01/08/2026) NOT EVERY MODEL RUNS (e.g. failed to run gpt-2)"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "CV_LLMGenerate",
+      "pos": [
+        53,
+        199.26087268640063
+      ],
+      "size": [
+        490,
+        377.34375
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "response",
+          "type": "STRING",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "full_text",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "new_tokens",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "title": "[CV LLM Generate] Qwen2.5-0.5B-Instruct (chatml, KV-cache)",
+      "properties": {
+        "Node name for S&R": "CV_LLMGenerate"
+      },
+      "widgets_values": [
+        "opencv/qwen2.5-0.5b-instruct",
+        "chatml (Qwen2.5)",
+        "What is OpenCV? Answer in one sentence.",
+        32,
+        "kv-cache (with-past export)",
+        "auto (from model folder)",
+        "auto (from model folder)",
+        "",
+        -1,
+        "auto (default engine)"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 3,
+      "type": "PreviewAny",
+      "pos": [
+        580.1132376395534,
+        196.30738597533352
+      ],
+      "size": [
+        653.390625,
+        232.484375
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Qwen2.5 answer",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 6,
+      "type": "CV_DnnTokenizer",
+      "pos": [
+        57,
+        721.5383060707118
+      ],
+      "size": [
+        392.640625,
+        212
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "token_ids",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "token_ids",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "[CV DNN Tokenizer] Tokenize that same prompt",
+      "properties": {
+        "Node name for S&R": "CV_DnnTokenizer"
+      },
+      "widgets_values": [
+        "encode (text -> ids)",
+        "opencv/qwen2.5-0.5b-instruct",
+        "Hello, I'm a language model,"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 7,
+      "type": "PreviewAny",
+      "pos": [
+        590,
+        725.6124214185033
+      ],
+      "size": [
+        591.859375,
+        187.296875
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Token ids (Qwen2.5 BPE)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "PreviewAny",
+      "pos": [
+        589,
+        957.8641570116127
+      ],
+      "size": [
+        290,
+        162
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Token count",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "MarkdownNote",
+      "pos": [
+        557,
+        468.06244260789714
+      ],
+      "size": [
+        681.453125,
+        102
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Model: opencv/qwen2.5-0.5b-instruct",
+      "properties": {},
+      "widgets_values": [
+        "qwen2.5-0.5b-instruct at\nhttps://huggingface.co/onnx-community/Qwen2.5-0.5B-Instruct\n(file onnx/model.onnx, fp32 with-past, ~2 GB)\n\nOpenCV-format config.json + the family's tokenizer.json at\nhttps://github.com/opencv/opencv_extra (testdata/dnn/llm/)\n\nBoth parts of a folder matter. Download into models/llm/opencv/<folder> (the 'LLM' model category)."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "STRING"
+    ],
+    [
+      3,
+      6,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      6,
+      2,
+      8,
+      0,
+      "INT"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5532352941176475,
+      "offset": [
+        240.17658597978624,
+        30.335860333881275
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

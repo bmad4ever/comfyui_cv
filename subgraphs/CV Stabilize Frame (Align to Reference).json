@@ -1,0 +1,1532 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "8d51c7ae-6f02-4b39-a84c-27e0b5d91634",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        320,
+        204
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frame",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "reference",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "method",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "motion_type",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "min_correlation",
+          "type": "FLOAT",
+          "link": null
+        },
+        {
+          "name": "detector",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "aligned",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "matrix",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": null
+        },
+        {
+          "name": "score",
+          "type": "FLOAT",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Stabilize Frame (Align to Reference)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "8d51c7ae-6f02-4b39-a84c-27e0b5d91634",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 17,
+          "lastLinkId": 142,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Stabilize Frame (Align to Reference)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "ba4d0c8f-526f-5896-8294-3373dfdc5ea0",
+            "name": "frame",
+            "type": "IMAGE",
+            "linkIds": [
+              106,
+              109,
+              111,
+              121,
+              136
+            ],
+            "localized_name": "frame",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "3039a709-7203-51d5-897b-2937d14d0832",
+            "name": "reference",
+            "type": "IMAGE",
+            "linkIds": [
+              105,
+              113
+            ],
+            "localized_name": "reference",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "a9c27f03-9add-5b80-af2c-8f48ef7cb981",
+            "name": "method",
+            "type": "COMBO",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "method",
+            "pos": [
+              140,
+              260
+            ]
+          },
+          {
+            "id": "7bfcee67-22de-50d2-bf2e-0b4812d52674",
+            "name": "motion_type",
+            "type": "COMBO",
+            "linkIds": [
+              103
+            ],
+            "localized_name": "motion_type",
+            "pos": [
+              140,
+              280
+            ]
+          },
+          {
+            "id": "7ae89360-cfba-5ff0-addb-072c5b5e1165",
+            "name": "min_correlation",
+            "type": "FLOAT",
+            "linkIds": [
+              108
+            ],
+            "localized_name": "min_correlation",
+            "pos": [
+              140,
+              300
+            ]
+          },
+          {
+            "id": "4030c198-20b9-5964-8f7b-3e567f8a6754",
+            "name": "detector",
+            "type": "COMBO",
+            "linkIds": [
+              112,
+              114
+            ],
+            "localized_name": "detector",
+            "pos": [
+              140,
+              320
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "aabd4789-a850-551b-8d63-de38da7475d8",
+            "name": "aligned",
+            "type": "IMAGE",
+            "linkIds": [
+              139
+            ],
+            "localized_name": "aligned",
+            "pos": [
+              2100,
+              220
+            ]
+          },
+          {
+            "id": "0ee81346-7b82-523c-a9ee-b800ca19ffc5",
+            "name": "matrix",
+            "type": "NPARRAY",
+            "linkIds": [
+              140
+            ],
+            "localized_name": "matrix",
+            "pos": [
+              2100,
+              240
+            ]
+          },
+          {
+            "id": "27d916aa-0d5c-5f6f-9713-7fbaa520388b",
+            "name": "found",
+            "type": "BOOLEAN",
+            "linkIds": [
+              141
+            ],
+            "localized_name": "found",
+            "pos": [
+              2100,
+              260
+            ]
+          },
+          {
+            "id": "7e591a97-e52c-50e5-84aa-27e2efe3c662",
+            "name": "score",
+            "type": "FLOAT",
+            "linkIds": [
+              142
+            ],
+            "localized_name": "score",
+            "pos": [
+              2100,
+              280
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CustomCombo",
+            "pos": [
+              40,
+              840
+            ],
+            "size": [
+              290,
+              234
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "choice",
+                "type": "COMBO",
+                "widget": {
+                  "name": "choice"
+                },
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "name": "STRING",
+                "type": "STRING",
+                "links": [
+                  102
+                ]
+              },
+              {
+                "name": "INDEX",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CustomCombo"
+            },
+            "widgets_values": [
+              "ECC (photometric, subpixel)",
+              0,
+              "ECC (photometric, subpixel)",
+              "features (SIFT/ORB + RANSAC)",
+              ""
+            ],
+            "title": "method"
+          },
+          {
+            "id": 2,
+            "type": "StringCompare",
+            "pos": [
+              390,
+              840
+            ],
+            "size": [
+              290,
+              186
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "string_a",
+                "type": "STRING",
+                "widget": {
+                  "name": "string_a"
+                },
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": [
+                  126,
+                  129,
+                  132,
+                  135
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "StringCompare"
+            },
+            "widgets_values": [
+              "",
+              "features",
+              "Starts With",
+              true
+            ],
+            "title": "chose features?"
+          },
+          {
+            "id": 3,
+            "type": "CustomCombo",
+            "pos": [
+              40,
+              1040
+            ],
+            "size": [
+              290,
+              260
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "choice",
+                "type": "COMBO",
+                "widget": {
+                  "name": "choice"
+                },
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "name": "STRING",
+                "type": "STRING",
+                "links": [
+                  104
+                ]
+              },
+              {
+                "name": "INDEX",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CustomCombo"
+            },
+            "widgets_values": [
+              "MOTION_EUCLIDEAN",
+              1,
+              "MOTION_TRANSLATION",
+              "MOTION_EUCLIDEAN",
+              "MOTION_AFFINE",
+              ""
+            ],
+            "title": "motion_type (no HOMOGRAPHY: warpAffine rejects a 3x3)"
+          },
+          {
+            "id": 4,
+            "type": "ReroutePrimitive|pysssss",
+            "pos": [
+              390,
+              1040
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "*",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "name": "*",
+                "type": "*",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ReroutePrimitive|pysssss"
+            },
+            "widgets_values": [],
+            "title": "STRING -> COMBO"
+          },
+          {
+            "id": 5,
+            "type": "CV_FindTransformECC",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              300
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "template",
+                "type": "NPARRAY",
+                "link": 105
+              },
+              {
+                "name": "image",
+                "type": "NPARRAY",
+                "link": 106
+              },
+              {
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "name": "motion_type",
+                "type": "COMBO",
+                "widget": {
+                  "name": "motion_type"
+                },
+                "link": 107
+              },
+              {
+                "name": "min_correlation",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "min_correlation"
+                },
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "name": "warp_matrix",
+                "type": "NPARRAY",
+                "links": [
+                  110,
+                  127
+                ]
+              },
+              {
+                "name": "correlation",
+                "type": "FLOAT",
+                "links": [
+                  133
+                ]
+              },
+              {
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": [
+                  130
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_FindTransformECC"
+            },
+            "widgets_values": [
+              "MOTION_EUCLIDEAN",
+              200,
+              1e-06,
+              5,
+              0.6
+            ],
+            "title": "ECC (direct photometric fit)"
+          },
+          {
+            "id": 6,
+            "type": "cv2_warpAffine",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              312
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 109
+              },
+              {
+                "name": "M",
+                "type": "NPARRAY",
+                "link": 110
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  124
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_warpAffine"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              "INTER_LINEAR | WARP_INVERSE_MAP",
+              "BORDER_REPLICATE",
+              "(0, 0, 0, 0)",
+              "ALGO_HINT_DEFAULT"
+            ],
+            "title": "Resample onto the reference (ECC)"
+          },
+          {
+            "id": 7,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              390,
+              240
+            ],
+            "size": [
+              290,
+              204
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "NPARRAY",
+                "link": 111
+              },
+              {
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "name": "detector",
+                "type": "COMBO",
+                "widget": {
+                  "name": "detector"
+                },
+                "link": 112
+              }
+            ],
+            "outputs": [
+              {
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  115
+                ]
+              },
+              {
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  116
+                ]
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "SIFT",
+              2000,
+              false
+            ],
+            "title": "Features (frame)"
+          },
+          {
+            "id": 8,
+            "type": "CV_DetectFeatures",
+            "pos": [
+              390,
+              440
+            ],
+            "size": [
+              290,
+              204
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "NPARRAY",
+                "link": 113
+              },
+              {
+                "name": "mask",
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "name": "detector",
+                "type": "COMBO",
+                "widget": {
+                  "name": "detector"
+                },
+                "link": 114
+              }
+            ],
+            "outputs": [
+              {
+                "name": "keypoints",
+                "type": "CV_KEYPOINTS",
+                "links": [
+                  117
+                ]
+              },
+              {
+                "name": "descriptors",
+                "type": "NPARRAY",
+                "links": [
+                  118
+                ]
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DetectFeatures"
+            },
+            "widgets_values": [
+              "SIFT",
+              2000,
+              false
+            ],
+            "title": "Features (reference)"
+          },
+          {
+            "id": 9,
+            "type": "CV_MatchFeatures",
+            "pos": [
+              740,
+              240
+            ],
+            "size": [
+              290,
+              460
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "keypoints_a",
+                "type": "CV_KEYPOINTS",
+                "link": 115
+              },
+              {
+                "name": "descriptors_a",
+                "type": "NPARRAY",
+                "link": 116
+              },
+              {
+                "name": "keypoints_b",
+                "type": "CV_KEYPOINTS",
+                "link": 117
+              },
+              {
+                "name": "descriptors_b",
+                "type": "NPARRAY",
+                "link": 118
+              }
+            ],
+            "outputs": [
+              {
+                "name": "matches",
+                "type": "CV_MATCHES",
+                "links": null
+              },
+              {
+                "name": "points_a",
+                "type": "NPARRAY",
+                "links": [
+                  119
+                ]
+              },
+              {
+                "name": "points_b",
+                "type": "NPARRAY",
+                "links": [
+                  120
+                ]
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_MatchFeatures"
+            },
+            "widgets_values": [
+              "BFMatcher",
+              "auto",
+              "ratio test (Lowe)",
+              0.75,
+              2,
+              0.0,
+              "auto",
+              5,
+              50,
+              6,
+              12,
+              1
+            ],
+            "title": "Match (Lowe ratio)"
+          },
+          {
+            "id": 10,
+            "type": "CV_FindHomography",
+            "pos": [
+              1090,
+              240
+            ],
+            "size": [
+              290,
+              226
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "points_a",
+                "type": "NPARRAY",
+                "link": 119
+              },
+              {
+                "name": "points_b",
+                "type": "NPARRAY",
+                "link": 120
+              }
+            ],
+            "outputs": [
+              {
+                "name": "homography",
+                "type": "NPARRAY",
+                "links": [
+                  122,
+                  128
+                ]
+              },
+              {
+                "name": "inlier_mask",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "name": "inlier_count",
+                "type": "INT",
+                "links": [
+                  123
+                ]
+              },
+              {
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": [
+                  131
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_FindHomography"
+            },
+            "widgets_values": [
+              "RANSAC",
+              3.0,
+              10
+            ],
+            "title": "Homography (RANSAC)"
+          },
+          {
+            "id": 11,
+            "type": "cv2_warpPerspective",
+            "pos": [
+              1440,
+              240
+            ],
+            "size": [
+              290,
+              312
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 121
+              },
+              {
+                "name": "M",
+                "type": "NPARRAY",
+                "link": 122
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  125
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_warpPerspective"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              "INTER_LINEAR",
+              "BORDER_REPLICATE",
+              "(0, 0, 0, 0)",
+              "ALGO_HINT_DEFAULT"
+            ],
+            "title": "Resample onto the reference (homography)"
+          },
+          {
+            "id": 12,
+            "type": "Basic data handling: CastToFloat",
+            "pos": [
+              1440,
+              440
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "input",
+                "type": "*",
+                "link": 123
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  134
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "Basic data handling: CastToFloat"
+            },
+            "widgets_values": [],
+            "title": "inlier count -> FLOAT"
+          },
+          {
+            "id": 13,
+            "type": "ComfySwitchNode",
+            "pos": [
+              1790,
+              40
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "on_false",
+                "type": "*",
+                "link": 124
+              },
+              {
+                "name": "on_true",
+                "type": "*",
+                "link": 125
+              },
+              {
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 126
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "*",
+                "links": [
+                  137
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ],
+            "title": "method: ECC / features"
+          },
+          {
+            "id": 14,
+            "type": "ComfySwitchNode",
+            "pos": [
+              1790,
+              240
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "on_false",
+                "type": "*",
+                "link": 127
+              },
+              {
+                "name": "on_true",
+                "type": "*",
+                "link": 128
+              },
+              {
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 129
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "*",
+                "links": [
+                  140
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ],
+            "title": "matrix: 2x3 / 3x3"
+          },
+          {
+            "id": 15,
+            "type": "ComfySwitchNode",
+            "pos": [
+              1790,
+              440
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "on_false",
+                "type": "*",
+                "link": 130
+              },
+              {
+                "name": "on_true",
+                "type": "*",
+                "link": 131
+              },
+              {
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 132
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "*",
+                "links": [
+                  138,
+                  141
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ],
+            "title": "found"
+          },
+          {
+            "id": 16,
+            "type": "ComfySwitchNode",
+            "pos": [
+              1790,
+              640
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "on_false",
+                "type": "*",
+                "link": 133
+              },
+              {
+                "name": "on_true",
+                "type": "*",
+                "link": 134
+              },
+              {
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 135
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "*",
+                "links": [
+                  142
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ],
+            "title": "score: correlation / inliers"
+          },
+          {
+            "id": 17,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2140,
+              40
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "on_false",
+                "type": "*",
+                "link": 136
+              },
+              {
+                "name": "on_true",
+                "type": "*",
+                "link": 137
+              },
+              {
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 138
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "*",
+                "links": [
+                  139
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ],
+            "title": "found ? aligned : the frame untouched"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 102,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 104,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 105,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 106,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 1,
+            "type": "IMAGE"
+          },
+          {
+            "id": 107,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 3,
+            "type": "*"
+          },
+          {
+            "id": 108,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 5,
+            "target_slot": 4,
+            "type": "FLOAT"
+          },
+          {
+            "id": 109,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 110,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 112,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 7,
+            "target_slot": 2,
+            "type": "COMBO"
+          },
+          {
+            "id": 113,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 114,
+            "origin_id": -10,
+            "origin_slot": 5,
+            "target_id": 8,
+            "target_slot": 2,
+            "type": "COMBO"
+          },
+          {
+            "id": 115,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 116,
+            "origin_id": 7,
+            "origin_slot": 1,
+            "target_id": 9,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 117,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 2,
+            "type": "CV_KEYPOINTS"
+          },
+          {
+            "id": 118,
+            "origin_id": 8,
+            "origin_slot": 1,
+            "target_id": 9,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": 9,
+            "origin_slot": 1,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 9,
+            "origin_slot": 2,
+            "target_id": 10,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 122,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 123,
+            "origin_id": 10,
+            "origin_slot": 2,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 124,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 125,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 126,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 127,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 128,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 129,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 14,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 130,
+            "origin_id": 5,
+            "origin_slot": 2,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 131,
+            "origin_id": 10,
+            "origin_slot": 3,
+            "target_id": 15,
+            "target_slot": 1,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 132,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 133,
+            "origin_id": 5,
+            "origin_slot": 1,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 134,
+            "origin_id": 12,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 135,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 136,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 137,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 1,
+            "type": "*"
+          },
+          {
+            "id": 138,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 2,
+            "type": "*"
+          },
+          {
+            "id": 139,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 140,
+            "origin_id": 14,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "*"
+          },
+          {
+            "id": 141,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "*"
+          },
+          {
+            "id": 142,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "*"
+          }
+        ]
+      }
+    ]
+  }
+}

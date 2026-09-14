@@ -1,0 +1,7399 @@
+{
+  "id": "c7d94f12-8b36-4e51-a290-6d15e8b4a7c3",
+  "revision": 0,
+  "last_node_id": 142,
+  "last_link_id": 140,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        725,
+        -276.46600233849165
+      ],
+      "size": [
+        1046.59375,
+        302.796875
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Exercise: reading the time from an analog clock (skeleton + k-means, fully composable)\n\nThe 'Clock Dial' subgraph finds the dial: Canny edges -> longest contour -> 'CV Enclosing Circle' (center + radius). The 'Clock Hands (skeleton + k-means)' subgraph is built entirely from generic point/shape utilities: an Otsu inverse threshold turns everything dark into a mask; 'CV Select Component At Point' keeps only the blob connected to the dial center (numerals, ticks and the rim are separate components and vanish); 'CV Skeletonize' thins the blob to 1-px centerlines, so each hand contributes pixels in proportion to its LENGTH - a numeral that touches a hand collapses to a short compact stroke instead of a cloud of corners and can no longer outvote the hand; cv2.findNonZero turns the skeleton into a point set; 'CV Filter Points By Distance' keeps the outer ones (0.25r-1.05r); 'CV Points To Polar' turns them into unit direction vectors, which the 'CV K-Means Points' subgraph clusters for k=2 AND k=3 - if the k=2 clustering is loose (mean_sq_distance > 0.05, checked with 'GreaterThan'), the clock has 3 hands and if/else picks the k=3 labels. 'CV Reduce Values By Label' (mode = densest value, circular period 360) finds each cluster's hand angle as the SPIKE of its angle distribution: the hand's collinear pixels all share one bearing while a fused numeral smears over 10-25 degrees, so it shifts the cluster mean and even the median but never the mode. 'CV Reduce Points By Label' (farthest from origin) gives each cluster's tip + hand length; 'CV Pick Value' selects the shortest hand's angle (hour) and the longest / 2nd-longest one's (minute; with 3 hands the longest is the second hand). The 'Clock Angles to Time' subgraph converts angles with MathExpression: minute = round(a / 6) % 60, hour = ((round((a - b * 0.5) / 30) - 1) % 12) + 1.\n\nInspect the detection visually on TWO previews. The evidence preview ('CV Draw Points') marks the skeleton points colored by cluster with the per-cluster tip points as big white dots - raw evidence, so the tip dot may sit on a fused numeral. The FINAL-reading preview shows the actual decision: 'CV Polar To Points' turns each cluster's mode angle + reach back into image coordinates, 'CV Draw Rays' draws the detected hands from the dial center, and 'CV Draw Text' prints the time (composed with Basic data handling's to-STRING / zfill / concat) - what you see there is exactly what the workflow decided. The tips array, n_hands and the found flag are also inspectable. Failure tolerance: every point node treats empty/None as a valid result, so an image without a clock yields found=false and both previews show the unmodified photo.\n\nTips: works on frontal photos with hands darker than the dial; for light hands on a dark dial switch the threshold to THRESH_BINARY | THRESH_OTSU. A second hand is assumed to be the longest - on clocks where it is not, swap the Pick Value ranks."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        791,
+        62.17895329335801
+      ],
+      "size": [
+        320,
+        346
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load clock photo",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "clock_wall_red.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_ImageToCV",
+      "pos": [
+        1497,
+        80
+      ],
+      "size": [
+        310,
+        173.3125
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 58
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            2,
+            14,
+            20,
+            30,
+            43
+          ]
+        }
+      ],
+      "title": "Photo to CV array",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "BGR (OpenCV default)",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "cv2_cvtColor",
+      "pos": [
+        1857,
+        290
+      ],
+      "size": [
+        310,
+        134.65625
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "title": "To grayscale",
+      "properties": {
+        "Node name for S&R": "cv2_cvtColor"
+      },
+      "widgets_values": [
+        "COLOR_BGR2GRAY",
+        0,
+        "ALGO_HINT_DEFAULT"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "cv2_bilateralFilter",
+      "pos": [
+        2224,
+        979.9960907507842
+      ],
+      "size": [
+        498.625,
+        196
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "title": "[cv2.bilateralFilter] Edge-preserving smooth (kill texture, keep hands)",
+      "properties": {
+        "Node name for S&R": "cv2_bilateralFilter"
+      },
+      "widgets_values": [
+        15,
+        150,
+        150,
+        "BORDER_DEFAULT"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "cv2_threshold",
+      "pos": [
+        3121,
+        200.94760275203416
+      ],
+      "size": [
+        320,
+        234
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 74
+        }
+      ],
+      "outputs": [
+        {
+          "name": "float",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            24,
+            59,
+            63
+          ]
+        }
+      ],
+      "title": "Hands mask (black-hat + Otsu)",
+      "properties": {
+        "Node name for S&R": "cv2_threshold"
+      },
+      "widgets_values": [
+        0,
+        255,
+        "THRESH_BINARY | THRESH_OTSU"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f17",
+      "pos": [
+        4184,
+        80
+      ],
+      "size": [
+        340,
+        308
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "link": 65
+        },
+        {
+          "name": "center_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "center_x"
+          },
+          "link": 6
+        },
+        {
+          "name": "center_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "center_y"
+          },
+          "link": 7
+        },
+        {
+          "name": "radius",
+          "type": "FLOAT",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "hour_angle",
+          "type": "FLOAT",
+          "links": [
+            10
+          ]
+        },
+        {
+          "name": "minute_angle",
+          "type": "FLOAT",
+          "links": [
+            11
+          ]
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "tips",
+          "type": "NPARRAY",
+          "links": [
+            15,
+            26
+          ]
+        },
+        {
+          "name": "n_hands",
+          "type": "INT",
+          "links": [
+            27
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": [
+            18,
+            28,
+            41
+          ]
+        },
+        {
+          "name": "hand_points",
+          "type": "NPARRAY",
+          "links": [
+            29
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "previewExposures": []
+      },
+      "widgets_values": [
+        0,
+        0
+      ],
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 9,
+      "type": "9d2c4b7e-1f63-45a8-b3d9-7e0a5c8f2b16",
+      "pos": [
+        4645.302727899067,
+        85.0148805368859
+      ],
+      "size": [
+        320,
+        102
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "hour_angle",
+          "type": "FLOAT",
+          "link": 10
+        },
+        {
+          "name": "minute_angle",
+          "type": "FLOAT",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "hour",
+          "type": "INT",
+          "links": [
+            21,
+            35
+          ]
+        },
+        {
+          "name": "minute",
+          "type": "INT",
+          "links": [
+            22,
+            36
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 10,
+      "type": "CV_DrawPoints",
+      "pos": [
+        4622.302727899067,
+        846.0526626163903
+      ],
+      "size": [
+        320,
+        190
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 14
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 12
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 13
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "title": "Draw skeleton points (colored by cluster)",
+      "properties": {
+        "Node name for S&R": "CV_DrawPoints"
+      },
+      "widgets_values": [
+        3,
+        "(0, 255, 0)",
+        "filled circle"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_DrawPoints",
+      "pos": [
+        4996.302727899067,
+        1175
+      ],
+      "size": [
+        320,
+        190
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 16
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 15
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "title": "Draw hand tips (big white dots)",
+      "properties": {
+        "Node name for S&R": "CV_DrawPoints"
+      },
+      "widgets_values": [
+        9,
+        "(255, 255, 255)",
+        "filled circle"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "ComfySwitchNode",
+      "pos": [
+        5536.302727899067,
+        674.4830336576806
+      ],
+      "size": [
+        280,
+        124
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "on_false",
+          "type": "NPARRAY",
+          "link": 20
+        },
+        {
+          "name": "on_true",
+          "type": "NPARRAY",
+          "link": 17
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "NPARRAY",
+          "links": [
+            19
+          ]
+        }
+      ],
+      "title": "if hands found: overlay, else: photo",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
+      "id": 13,
+      "type": "CV_CVPreview",
+      "pos": [
+        5900.302727899067,
+        417.1880344455521
+      ],
+      "size": [
+        360,
+        380
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (skeleton points by cluster + hand tips)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 14,
+      "type": "CV_CVPreview",
+      "pos": [
+        2228,
+        80
+      ],
+      "size": [
+        360,
+        366.65625
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (dial edge map)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_CVPreview",
+      "pos": [
+        3485,
+        261.3888350035894
+      ],
+      "size": [
+        320,
+        366.65625
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (dark mask)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 16,
+      "type": "CV_CVInspect",
+      "pos": [
+        5016.302727899067,
+        80
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            45
+          ]
+        }
+      ],
+      "title": "Inspect (hour 1-12)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "CV_CVInspect",
+      "pos": [
+        5016.302727899067,
+        250
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            46
+          ]
+        }
+      ],
+      "title": "Inspect (minute 0-59)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 18,
+      "type": "CV_CVInspect",
+      "pos": [
+        4627.302727899067,
+        494.6079542765241
+      ],
+      "size": [
+        346.09375,
+        85.9375
+      ],
+      "flags": {},
+      "order": 27,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 27
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            47
+          ]
+        }
+      ],
+      "title": "Inspect (n_hands: 3 = second hand seen)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 19,
+      "type": "CV_CVInspect",
+      "pos": [
+        4608.302727899067,
+        633.2333720928673
+      ],
+      "size": [
+        357.296875,
+        75.125
+      ],
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 28
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            48
+          ]
+        }
+      ],
+      "title": "Inspect (hands found? time valid only if true)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 20,
+      "type": "CV_CVInspect",
+      "pos": [
+        4635.302727899067,
+        356.98253646018145
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 26,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 26
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            49
+          ]
+        }
+      ],
+      "title": "Inspect (cluster tip points, Kx1x2)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "CV_CVInspect",
+      "pos": [
+        3144,
+        673.088075816314
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "summary",
+          "type": "STRING",
+          "links": [
+            50
+          ]
+        }
+      ],
+      "title": "Inspect (dial radius px)",
+      "properties": {
+        "Node name for S&R": "CV_CVInspect"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 22,
+      "type": "CV_DrawRays",
+      "pos": [
+        4649.302727899067,
+        -300.2851305507074
+      ],
+      "size": [
+        320,
+        252
+      ],
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 30
+        },
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "link": 29
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "origin_x",
+          "type": "FLOAT",
+          "widget": {
+            "name": "origin_x"
+          },
+          "link": 31
+        },
+        {
+          "name": "origin_y",
+          "type": "FLOAT",
+          "widget": {
+            "name": "origin_y"
+          },
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            33
+          ]
+        }
+      ],
+      "title": "Draw detected hands (final bearings)",
+      "properties": {
+        "Node name for S&R": "CV_DrawRays"
+      },
+      "widgets_values": [
+        0,
+        0,
+        3,
+        "(0, 255, 255)"
+      ]
+    },
+    {
+      "id": 23,
+      "type": "Basic data handling: CastToString",
+      "pos": [
+        6033.302727899067,
+        80
+      ],
+      "size": [
+        225,
+        72
+      ],
+      "flags": {},
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "*",
+          "link": 35
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            39
+          ]
+        }
+      ],
+      "title": "hour to text",
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: CastToString"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 24,
+      "type": "Basic data handling: CastToString",
+      "pos": [
+        5096.302727899067,
+        421
+      ],
+      "size": [
+        225,
+        72
+      ],
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "*",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            37
+          ]
+        }
+      ],
+      "title": "minute to text",
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: CastToString"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 25,
+      "type": "Basic data handling: StringZfill",
+      "pos": [
+        5590.302727899067,
+        481
+      ],
+      "size": [
+        225,
+        140
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "string",
+          "type": "STRING",
+          "widget": {
+            "name": "string"
+          },
+          "link": 37
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            38
+          ]
+        }
+      ],
+      "title": "2-digit minute",
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: StringZfill"
+      },
+      "widgets_values": [
+        "",
+        2
+      ]
+    },
+    {
+      "id": 26,
+      "type": "Basic data handling: StringConcat",
+      "pos": [
+        6033.302727899067,
+        220
+      ],
+      "size": [
+        225,
+        144
+      ],
+      "flags": {},
+      "order": 42,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "string_b",
+          "type": "STRING",
+          "widget": {
+            "name": "string_b"
+          },
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            40
+          ]
+        }
+      ],
+      "title": "':' + minute",
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: StringConcat"
+      },
+      "widgets_values": [
+        ":",
+        ""
+      ]
+    },
+    {
+      "id": 27,
+      "type": "Basic data handling: StringConcat",
+      "pos": [
+        6364.302727899067,
+        230.13006430438085
+      ],
+      "size": [
+        225,
+        144
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "string_a",
+          "type": "STRING",
+          "widget": {
+            "name": "string_a"
+          },
+          "link": 39
+        },
+        {
+          "name": "string_b",
+          "type": "STRING",
+          "widget": {
+            "name": "string_b"
+          },
+          "link": 40
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            34
+          ]
+        }
+      ],
+      "title": "time text (h:mm)",
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "1.5.1",
+        "Node name for S&R": "Basic data handling: StringConcat"
+      },
+      "widgets_values": [
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 28,
+      "type": "CV_DrawText",
+      "pos": [
+        6673.302727899067,
+        80
+      ],
+      "size": [
+        320,
+        300
+      ],
+      "flags": {},
+      "order": 45,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 33
+        },
+        {
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 34
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "title": "Print the time onto the image",
+      "properties": {
+        "Node name for S&R": "CV_DrawText"
+      },
+      "widgets_values": [
+        "",
+        12,
+        42,
+        1.4,
+        "(0, 255, 255)",
+        3,
+        true
+      ]
+    },
+    {
+      "id": 29,
+      "type": "ComfySwitchNode",
+      "pos": [
+        7034.302727899067,
+        85.38185971352205
+      ],
+      "size": [
+        280,
+        124
+      ],
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "on_false",
+          "type": "NPARRAY",
+          "link": 43
+        },
+        {
+          "name": "on_true",
+          "type": "NPARRAY",
+          "link": 42
+        },
+        {
+          "name": "switch",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "switch"
+          },
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "NPARRAY",
+          "links": [
+            44
+          ]
+        }
+      ],
+      "title": "if hands found: reading, else: photo",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "ComfySwitchNode"
+      },
+      "widgets_values": [
+        true
+      ]
+    },
+    {
+      "id": 30,
+      "type": "CV_CVPreview",
+      "pos": [
+        7036.302727899067,
+        258.75188873550553
+      ],
+      "size": [
+        360,
+        380
+      ],
+      "flags": {},
+      "order": 47,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (FINAL reading: hands + time)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false,
+        "KEEP_ALL",
+        "COLORMAP_VIRIDIS",
+        "per frame (auto)",
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "id": 31,
+      "type": "PreviewAny",
+      "pos": [
+        5590.302727899067,
+        80
+      ],
+      "size": [
+        280,
+        162
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 45
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (hour 1-12)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 32,
+      "type": "PreviewAny",
+      "pos": [
+        5590.302727899067,
+        280
+      ],
+      "size": [
+        300,
+        162
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 46
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (minute 0-59)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 33,
+      "type": "PreviewAny",
+      "pos": [
+        5096.302727899067,
+        766
+      ],
+      "size": [
+        430,
+        162
+      ],
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (n_hands: 3 = second hand seen)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 34,
+      "type": "PreviewAny",
+      "pos": [
+        5096.302727899067,
+        970
+      ],
+      "size": [
+        446.203125,
+        162
+      ],
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (hands found? time valid only if true)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 35,
+      "type": "PreviewAny",
+      "pos": [
+        5096.302727899067,
+        563
+      ],
+      "size": [
+        372.828125,
+        162
+      ],
+      "flags": {},
+      "order": 35,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 49
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (cluster tip points, Kx1x2)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 36,
+      "type": "PreviewAny",
+      "pos": [
+        3490,
+        680.5202572175215
+      ],
+      "size": [
+        302.25,
+        162
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 50
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: Inspect (dial radius px)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 61,
+      "type": "ResizeImageMaskNode",
+      "pos": [
+        1141,
+        77.43961192547947
+      ],
+      "size": [
+        300,
+        142
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "input",
+          "type": "IMAGE,MASK",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "resized",
+          "type": "IMAGE",
+          "links": [
+            58,
+            72
+          ]
+        }
+      ],
+      "title": "Normalize size (longer edge = 640)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "ResizeImageMaskNode"
+      },
+      "widgets_values": [
+        "scale longer dimension",
+        640,
+        "lanczos"
+      ]
+    },
+    {
+      "id": 62,
+      "type": "Note",
+      "pos": [
+        380.7193118918475,
+        193.42368740056912
+      ],
+      "size": [
+        395.875,
+        208.078125
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "clock_wall_red.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Modern functual kept battery driven wall clock\nCreator: Islander61\nLicense: CC BY-SA 4.0 (attribution + share-alike)\n         https://creativecommons.org/licenses/by-sa/4.0/\nSource:  https://commons.wikimedia.org/wiki/File:Modern_functual_kept_battery_driven_wall_clock.jpg\nSize:    1920x1279 (downscaled from original 5089x3391)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 63,
+      "type": "c1a5d0e6-3b7f-4e29-8a14-2d9c6f0b5e73",
+      "pos": [
+        3503,
+        62.8875238645232
+      ],
+      "size": [
+        300,
+        148
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "canvas_src",
+          "type": "NPARRAY",
+          "link": 59
+        },
+        {
+          "name": "center_x",
+          "type": "FLOAT",
+          "link": 60
+        },
+        {
+          "name": "center_y",
+          "type": "FLOAT",
+          "link": 61
+        },
+        {
+          "name": "radius",
+          "type": "FLOAT",
+          "link": 62
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            64
+          ]
+        }
+      ],
+      "title": "[Dial ROI Mask (filled circle)]",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "proxyWidgets": [],
+        "previewExposures": []
+      },
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 64,
+      "type": "cv2_bitwise_and",
+      "pos": [
+        3854,
+        80
+      ],
+      "size": [
+        280,
+        120
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 63
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 64
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            65
+          ]
+        }
+      ],
+      "title": "Gate dark mask to dial ROI",
+      "properties": {
+        "Node name for S&R": "cv2_bitwise_and"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 65,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        830,
+        454.4739322443293
+      ],
+      "size": [
+        280,
+        130.65625
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            66
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            67
+          ]
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": []
+        }
+      ],
+      "title": "Load SAM3 checkpoint",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "sam3.1_multiplex_fp16.safetensors"
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 66,
+      "type": "CLIPTextEncode",
+      "pos": [
+        1157,
+        272.4605532347135
+      ],
+      "size": [
+        280,
+        130
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 67
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            68
+          ]
+        }
+      ],
+      "title": "Prompt: 'clock'",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "clock dial"
+      ]
+    },
+    {
+      "id": 67,
+      "type": "SAM3_Detect",
+      "pos": [
+        1527,
+        290
+      ],
+      "size": [
+        280,
+        242
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 66
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 72
+        },
+        {
+          "name": "conditioning",
+          "shape": 7,
+          "type": "CONDITIONING",
+          "link": 68
+        },
+        {
+          "name": "bboxes",
+          "shape": 7,
+          "type": "BOUNDING_BOX",
+          "link": null
+        },
+        {
+          "name": "positive_coords",
+          "shape": 7,
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "negative_coords",
+          "shape": 7,
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "masks",
+          "type": "MASK",
+          "links": [
+            69
+          ]
+        },
+        {
+          "name": "bboxes",
+          "type": "BOUNDING_BOX",
+          "links": []
+        }
+      ],
+      "title": "SAM3 Detect (segment the clock)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "SAM3_Detect"
+      },
+      "widgets_values": [
+        0.5,
+        3,
+        false
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    },
+    {
+      "id": 68,
+      "type": "CV_MaskToCV",
+      "pos": [
+        1887,
+        80
+      ],
+      "size": [
+        280,
+        130
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mask",
+          "type": "MASK",
+          "link": 69
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            70,
+            23
+          ]
+        }
+      ],
+      "title": "Clock mask -> CV array",
+      "properties": {
+        "Node name for S&R": "CV_MaskToCV"
+      },
+      "widgets_values": [
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 69,
+      "type": "CV_FindContours",
+      "pos": [
+        2308,
+        490
+      ],
+      "size": [
+        280,
+        197.3125
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 70
+        }
+      ],
+      "outputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "links": [
+            71
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Contour of the clock mask",
+      "properties": {
+        "Node name for S&R": "CV_FindContours"
+      },
+      "widgets_values": [
+        "RETR_EXTERNAL",
+        "CHAIN_APPROX_SIMPLE",
+        0
+      ]
+    },
+    {
+      "id": 70,
+      "type": "CV_EnclosingCircle",
+      "pos": [
+        2681,
+        80
+      ],
+      "size": [
+        432.71875,
+        178.65625
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "contours",
+          "type": "CV_CONTOURS",
+          "link": 71
+        }
+      ],
+      "outputs": [
+        {
+          "name": "center_x",
+          "type": "FLOAT",
+          "links": [
+            6,
+            31,
+            60
+          ]
+        },
+        {
+          "name": "center_y",
+          "type": "FLOAT",
+          "links": [
+            7,
+            32,
+            61
+          ]
+        },
+        {
+          "name": "radius",
+          "type": "FLOAT",
+          "links": [
+            8,
+            25,
+            62
+          ]
+        },
+        {
+          "name": "found",
+          "type": "BOOLEAN",
+          "links": []
+        },
+        {
+          "name": "center",
+          "type": "CV_TUPLE",
+          "links": null
+        }
+      ],
+      "title": "[CV Enclosing Circle] Dial center + radius (from mask)",
+      "properties": {
+        "Node name for S&R": "CV_EnclosingCircle"
+      },
+      "widgets_values": [
+        "largest contour (area)"
+      ]
+    },
+    {
+      "id": 71,
+      "type": "cv2_getStructuringElement",
+      "pos": [
+        2300,
+        732.939953129154
+      ],
+      "size": [
+        290,
+        202
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            73
+          ]
+        }
+      ],
+      "title": "Kernel (ellipse 31) - wider than a hand",
+      "properties": {
+        "Node name for S&R": "cv2_getStructuringElement"
+      },
+      "widgets_values": [
+        "MORPH_ELLIPSE",
+        "(31, 31)",
+        "(-1, -1)"
+      ]
+    },
+    {
+      "id": 72,
+      "type": "cv2_morphologyEx",
+      "pos": [
+        2639,
+        303.3779265221725
+      ],
+      "size": [
+        323.703125,
+        270
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 5
+        },
+        {
+          "name": "kernel",
+          "type": "NPARRAY",
+          "link": 73
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            74
+          ]
+        }
+      ],
+      "title": "Black-hat: dark strokes on any background",
+      "properties": {
+        "Node name for S&R": "cv2_morphologyEx"
+      },
+      "widgets_values": [
+        "MORPH_BLACKHAT",
+        "(-1, -1)",
+        1,
+        "BORDER_DEFAULT",
+        "(0, 0, 0, 0)"
+      ]
+    },
+    {
+      "id": 142,
+      "type": "MarkdownNote",
+      "pos": [
+        1516.0810012495435,
+        574.4739322443293
+      ],
+      "size": [
+        301.359375,
+        102
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Model: sam3.1_multiplex_fp16.safetensors",
+      "properties": {},
+      "widgets_values": [
+        "sam3.1_multiplex_fp16.safetensors at\nhttps://huggingface.co/Comfy-Org/sam3.1 (checkpoints/)\n\nPut it in ComfyUI/models/checkpoints."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      61,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      5,
+      0,
+      72,
+      0,
+      "NPARRAY"
+    ],
+    [
+      6,
+      70,
+      0,
+      8,
+      1,
+      "FLOAT"
+    ],
+    [
+      7,
+      70,
+      1,
+      8,
+      2,
+      "FLOAT"
+    ],
+    [
+      8,
+      70,
+      2,
+      8,
+      3,
+      "FLOAT"
+    ],
+    [
+      10,
+      8,
+      0,
+      9,
+      0,
+      "FLOAT"
+    ],
+    [
+      11,
+      8,
+      1,
+      9,
+      1,
+      "FLOAT"
+    ],
+    [
+      12,
+      8,
+      2,
+      10,
+      1,
+      "NPARRAY"
+    ],
+    [
+      13,
+      8,
+      3,
+      10,
+      2,
+      "NPARRAY"
+    ],
+    [
+      14,
+      3,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      15,
+      8,
+      4,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      16,
+      10,
+      0,
+      11,
+      0,
+      "NPARRAY"
+    ],
+    [
+      17,
+      11,
+      0,
+      12,
+      1,
+      "NPARRAY"
+    ],
+    [
+      18,
+      8,
+      6,
+      12,
+      2,
+      "BOOLEAN"
+    ],
+    [
+      19,
+      12,
+      0,
+      13,
+      0,
+      "*"
+    ],
+    [
+      20,
+      3,
+      0,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      21,
+      9,
+      0,
+      16,
+      0,
+      "INT"
+    ],
+    [
+      22,
+      9,
+      1,
+      17,
+      0,
+      "INT"
+    ],
+    [
+      23,
+      68,
+      0,
+      14,
+      0,
+      "NPARRAY"
+    ],
+    [
+      24,
+      7,
+      1,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      25,
+      70,
+      2,
+      21,
+      0,
+      "FLOAT"
+    ],
+    [
+      26,
+      8,
+      4,
+      20,
+      0,
+      "NPARRAY"
+    ],
+    [
+      27,
+      8,
+      5,
+      18,
+      0,
+      "INT"
+    ],
+    [
+      28,
+      8,
+      6,
+      19,
+      0,
+      "BOOLEAN"
+    ],
+    [
+      29,
+      8,
+      7,
+      22,
+      1,
+      "NPARRAY"
+    ],
+    [
+      30,
+      3,
+      0,
+      22,
+      0,
+      "NPARRAY"
+    ],
+    [
+      31,
+      70,
+      0,
+      22,
+      3,
+      "FLOAT"
+    ],
+    [
+      32,
+      70,
+      1,
+      22,
+      4,
+      "FLOAT"
+    ],
+    [
+      33,
+      22,
+      0,
+      28,
+      0,
+      "NPARRAY"
+    ],
+    [
+      34,
+      27,
+      0,
+      28,
+      1,
+      "STRING"
+    ],
+    [
+      35,
+      9,
+      0,
+      23,
+      0,
+      "INT"
+    ],
+    [
+      36,
+      9,
+      1,
+      24,
+      0,
+      "INT"
+    ],
+    [
+      37,
+      24,
+      0,
+      25,
+      0,
+      "STRING"
+    ],
+    [
+      38,
+      25,
+      0,
+      26,
+      0,
+      "STRING"
+    ],
+    [
+      39,
+      23,
+      0,
+      27,
+      0,
+      "STRING"
+    ],
+    [
+      40,
+      26,
+      0,
+      27,
+      1,
+      "STRING"
+    ],
+    [
+      41,
+      8,
+      6,
+      29,
+      2,
+      "BOOLEAN"
+    ],
+    [
+      42,
+      28,
+      0,
+      29,
+      1,
+      "NPARRAY"
+    ],
+    [
+      43,
+      3,
+      0,
+      29,
+      0,
+      "NPARRAY"
+    ],
+    [
+      44,
+      29,
+      0,
+      30,
+      0,
+      "NPARRAY"
+    ],
+    [
+      45,
+      16,
+      0,
+      31,
+      0,
+      "STRING"
+    ],
+    [
+      46,
+      17,
+      0,
+      32,
+      0,
+      "STRING"
+    ],
+    [
+      47,
+      18,
+      0,
+      33,
+      0,
+      "STRING"
+    ],
+    [
+      48,
+      19,
+      0,
+      34,
+      0,
+      "STRING"
+    ],
+    [
+      49,
+      20,
+      0,
+      35,
+      0,
+      "STRING"
+    ],
+    [
+      50,
+      21,
+      0,
+      36,
+      0,
+      "STRING"
+    ],
+    [
+      58,
+      61,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      59,
+      7,
+      1,
+      63,
+      0,
+      "NPARRAY"
+    ],
+    [
+      60,
+      70,
+      0,
+      63,
+      1,
+      "FLOAT"
+    ],
+    [
+      61,
+      70,
+      1,
+      63,
+      2,
+      "FLOAT"
+    ],
+    [
+      62,
+      70,
+      2,
+      63,
+      3,
+      "FLOAT"
+    ],
+    [
+      63,
+      7,
+      1,
+      64,
+      0,
+      "NPARRAY"
+    ],
+    [
+      64,
+      63,
+      0,
+      64,
+      1,
+      "NPARRAY"
+    ],
+    [
+      65,
+      64,
+      0,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      66,
+      65,
+      0,
+      67,
+      0,
+      "MODEL"
+    ],
+    [
+      67,
+      65,
+      1,
+      66,
+      0,
+      "CLIP"
+    ],
+    [
+      68,
+      66,
+      0,
+      67,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      69,
+      67,
+      0,
+      68,
+      0,
+      "MASK"
+    ],
+    [
+      70,
+      68,
+      0,
+      69,
+      0,
+      "NPARRAY"
+    ],
+    [
+      71,
+      69,
+      0,
+      70,
+      0,
+      "CV_CONTOURS"
+    ],
+    [
+      72,
+      61,
+      0,
+      67,
+      1,
+      "IMAGE"
+    ],
+    [
+      73,
+      71,
+      0,
+      72,
+      1,
+      "NPARRAY"
+    ],
+    [
+      74,
+      72,
+      0,
+      7,
+      0,
+      "NPARRAY"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f17",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 142,
+          "lastLinkId": 140,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Clock Hands (skeleton + k-means)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -1100,
+            320,
+            128,
+            128
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2500,
+            320,
+            128,
+            208
+          ]
+        },
+        "inputs": [
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f01",
+            "name": "mask",
+            "type": "NPARRAY",
+            "linkIds": [
+              3
+            ],
+            "localized_name": "mask",
+            "pos": [
+              -996,
+              344
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f02",
+            "name": "center_x",
+            "type": "FLOAT",
+            "linkIds": [
+              4,
+              12,
+              15,
+              27,
+              55
+            ],
+            "localized_name": "center_x",
+            "pos": [
+              -996,
+              364
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f03",
+            "name": "center_y",
+            "type": "FLOAT",
+            "linkIds": [
+              5,
+              13,
+              16,
+              28,
+              56
+            ],
+            "localized_name": "center_y",
+            "pos": [
+              -996,
+              384
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f04",
+            "name": "radius",
+            "type": "FLOAT",
+            "linkIds": [
+              111,
+              113,
+              115
+            ],
+            "localized_name": "radius",
+            "pos": [
+              -996,
+              404
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f05",
+            "name": "hour_angle",
+            "type": "FLOAT",
+            "linkIds": [
+              41
+            ],
+            "localized_name": "hour_angle",
+            "pos": [
+              2524,
+              344
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f06",
+            "name": "minute_angle",
+            "type": "FLOAT",
+            "linkIds": [
+              42
+            ],
+            "localized_name": "minute_angle",
+            "pos": [
+              2524,
+              364
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f07",
+            "name": "points",
+            "type": "NPARRAY",
+            "linkIds": [
+              43
+            ],
+            "localized_name": "points",
+            "pos": [
+              2524,
+              384
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f08",
+            "name": "labels",
+            "type": "NPARRAY",
+            "linkIds": [
+              44
+            ],
+            "localized_name": "labels",
+            "pos": [
+              2524,
+              404
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f09",
+            "name": "tips",
+            "type": "NPARRAY",
+            "linkIds": [
+              45
+            ],
+            "localized_name": "tips",
+            "pos": [
+              2524,
+              424
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f10",
+            "name": "n_hands",
+            "type": "INT",
+            "linkIds": [
+              46
+            ],
+            "localized_name": "n_hands",
+            "pos": [
+              2524,
+              444
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f11",
+            "name": "found",
+            "type": "BOOLEAN",
+            "linkIds": [
+              47
+            ],
+            "localized_name": "found",
+            "pos": [
+              2524,
+              464
+            ]
+          },
+          {
+            "id": "5e7a1c93-2d48-4f6b-9a05-8c3e6b2d4f12",
+            "name": "hand_points",
+            "type": "NPARRAY",
+            "linkIds": [
+              57
+            ],
+            "localized_name": "hand_points",
+            "pos": [
+              2524,
+              484
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 41,
+            "type": "CV_SelectComponentAtPoint",
+            "pos": [
+              -600,
+              300
+            ],
+            "size": [
+              325.6900390625,
+              170
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 3
+              },
+              {
+                "localized_name": "x",
+                "name": "x",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "x"
+                },
+                "link": 4
+              },
+              {
+                "localized_name": "y",
+                "name": "y",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "y"
+                },
+                "link": 5
+              },
+              {
+                "localized_name": "search_radius",
+                "name": "search_radius",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "search_radius"
+                },
+                "link": 116
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "NPARRAY",
+                "links": [
+                  6
+                ]
+              },
+              {
+                "localized_name": "found",
+                "name": "found",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "Keep the blob at the dial center (the hands)",
+            "properties": {
+              "Node name for S&R": "CV_SelectComponentAtPoint"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "id": 42,
+            "type": "CV_Skeletonize",
+            "pos": [
+              -220,
+              300
+            ],
+            "size": [
+              320,
+              110
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "image",
+                "name": "image",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 6
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "skeleton",
+                "name": "skeleton",
+                "type": "NPARRAY",
+                "links": [
+                  48
+                ]
+              }
+            ],
+            "title": "Hand centerlines (1px skeleton)",
+            "properties": {
+              "Node name for S&R": "CV_Skeletonize"
+            },
+            "widgets_values": [
+              "thinning (Zhang-Suen)"
+            ]
+          },
+          {
+            "id": 43,
+            "type": "cv2_findNonZero",
+            "pos": [
+              -220,
+              470
+            ],
+            "size": [
+              320,
+              80
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 48
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  7
+                ]
+              }
+            ],
+            "title": "Skeleton pixels as a point set",
+            "properties": {
+              "Node name for S&R": "cv2_findNonZero"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 46,
+            "type": "CV_FilterPointsByDistance",
+            "pos": [
+              160,
+              300
+            ],
+            "size": [
+              326.421484375,
+              190
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 7
+              },
+              {
+                "localized_name": "origin_x",
+                "name": "origin_x",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_x"
+                },
+                "link": 12
+              },
+              {
+                "localized_name": "origin_y",
+                "name": "origin_y",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_y"
+                },
+                "link": 13
+              },
+              {
+                "localized_name": "min_dist",
+                "name": "min_dist",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "min_dist"
+                },
+                "link": 112
+              },
+              {
+                "localized_name": "max_dist",
+                "name": "max_dist",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "max_dist"
+                },
+                "link": 114
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  14,
+                  25,
+                  43
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Outer skeleton points (the hand tips region)",
+            "properties": {
+              "Node name for S&R": "CV_FilterPointsByDistance"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              1000000
+            ]
+          },
+          {
+            "id": 50,
+            "type": "Basic data handling: GreaterThan",
+            "pos": [
+              920,
+              660
+            ],
+            "size": [
+              300,
+              100
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value1",
+                "name": "value1",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "value1"
+                },
+                "link": 20
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "BOOLEAN",
+                "links": [
+                  22
+                ]
+              }
+            ],
+            "title": "k=2 too loose? then 3 hands",
+            "properties": {
+              "cnr_id": "basic_data_handling",
+              "ver": "1.5.1",
+              "Node name for S&R": "Basic data handling: GreaterThan"
+            },
+            "widgets_values": [
+              0,
+              0.05
+            ]
+          },
+          {
+            "id": 51,
+            "type": "ComfySwitchNode",
+            "pos": [
+              1300,
+              300
+            ],
+            "size": [
+              280,
+              100
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 19
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 139
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 22
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  23,
+                  44,
+                  50
+                ]
+              }
+            ],
+            "title": "labels for the better k",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              true
+            ]
+          },
+          {
+            "id": 52,
+            "type": "CV_ReducePointsByLabel",
+            "pos": [
+              1680,
+              220
+            ],
+            "size": [
+              320,
+              170
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 25
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "NPARRAY",
+                "link": 23
+              },
+              {
+                "localized_name": "origin_x",
+                "name": "origin_x",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_x"
+                },
+                "link": 27
+              },
+              {
+                "localized_name": "origin_y",
+                "name": "origin_y",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_y"
+                },
+                "link": 28
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  45
+                ]
+              },
+              {
+                "localized_name": "distances",
+                "name": "distances",
+                "type": "NPARRAY",
+                "links": [
+                  35,
+                  37,
+                  53
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": [
+                  40,
+                  46,
+                  117
+                ]
+              }
+            ],
+            "title": "Tip of each hand (farthest point)",
+            "properties": {
+              "Node name for S&R": "CV_ReducePointsByLabel"
+            },
+            "widgets_values": [
+              "farthest from origin",
+              0,
+              0
+            ]
+          },
+          {
+            "id": 53,
+            "type": "CV_ReduceValuesByLabel",
+            "pos": [
+              1680,
+              460
+            ],
+            "size": [
+              320,
+              170
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "link": 49
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "NPARRAY",
+                "link": 50
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  51,
+                  52,
+                  54
+                ]
+              },
+              {
+                "localized_name": "support",
+                "name": "support",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Hand angle = densest bearing per cluster",
+            "properties": {
+              "Node name for S&R": "CV_ReduceValuesByLabel"
+            },
+            "widgets_values": [
+              "mode (densest value)",
+              2,
+              360
+            ]
+          },
+          {
+            "id": 54,
+            "type": "CV_PolarToPoints",
+            "pos": [
+              2060,
+              460
+            ],
+            "size": [
+              380.49375,
+              170
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "radius",
+                "name": "radius",
+                "type": "NPARRAY",
+                "link": 53
+              },
+              {
+                "localized_name": "angle",
+                "name": "angle",
+                "type": "NPARRAY",
+                "link": 54
+              },
+              {
+                "localized_name": "origin_x",
+                "name": "origin_x",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_x"
+                },
+                "link": 55
+              },
+              {
+                "localized_name": "origin_y",
+                "name": "origin_y",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_y"
+                },
+                "link": 56
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  57
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Hand vector endpoints (final bearings at real reach)",
+            "properties": {
+              "Node name for S&R": "CV_PolarToPoints"
+            },
+            "widgets_values": [
+              0,
+              0,
+              "clockwise from 12 o'clock (clock)"
+            ]
+          },
+          {
+            "id": 55,
+            "type": "CV_PickValue",
+            "pos": [
+              2060,
+              220
+            ],
+            "size": [
+              320,
+              150
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "link": 51
+              },
+              {
+                "localized_name": "key",
+                "name": "key",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 35
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "FLOAT",
+                "links": [
+                  41
+                ]
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "hour = angle of the shortest hand",
+            "properties": {
+              "Node name for S&R": "CV_PickValue"
+            },
+            "widgets_values": [
+              "smallest first",
+              1
+            ]
+          },
+          {
+            "id": 57,
+            "type": "CV_PickValue",
+            "pos": [
+              2060,
+              700
+            ],
+            "size": [
+              374.9908203125,
+              150
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "link": 52
+              },
+              {
+                "localized_name": "key",
+                "name": "key",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": 37
+              },
+              {
+                "localized_name": "rank",
+                "name": "rank",
+                "type": "INT",
+                "widget": {
+                  "name": "rank"
+                },
+                "link": 118
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "FLOAT",
+                "links": [
+                  42
+                ]
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "minute = angle of the longest (2nd if second hand)",
+            "properties": {
+              "Node name for S&R": "CV_PickValue"
+            },
+            "widgets_values": [
+              "largest first",
+              1
+            ]
+          },
+          {
+            "id": 58,
+            "type": "Basic data handling: GreaterThanOrEqual",
+            "pos": [
+              1300,
+              700
+            ],
+            "size": [
+              300,
+              100
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value1",
+                "name": "value1",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "value1"
+                },
+                "link": 40
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "BOOLEAN",
+                "links": [
+                  47
+                ]
+              }
+            ],
+            "title": "found = at least 1 hand cluster",
+            "properties": {
+              "cnr_id": "basic_data_handling",
+              "ver": "1.5.1",
+              "Node name for S&R": "Basic data handling: GreaterThanOrEqual"
+            },
+            "widgets_values": [
+              0,
+              1
+            ]
+          },
+          {
+            "id": 78,
+            "type": "ComfyMathExpression",
+            "pos": [
+              -115.30882940007042,
+              615.7493308905032
+            ],
+            "size": [
+              210,
+              128
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 111
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  112
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "inner cutoff = 0.25 r",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a * 0.25"
+            ]
+          },
+          {
+            "id": 79,
+            "type": "ComfyMathExpression",
+            "pos": [
+              -113.032506837456,
+              789.7703106746573
+            ],
+            "size": [
+              210,
+              128
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 113
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  114
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "outer cutoff = 1.05 r",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a * 1.05"
+            ]
+          },
+          {
+            "id": 80,
+            "type": "ComfyMathExpression",
+            "pos": [
+              -901.649710959783,
+              569.6810623135439
+            ],
+            "size": [
+              210,
+              128
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 115
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  116
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "hub radius = 0.1 r",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a * 0.1"
+            ]
+          },
+          {
+            "id": 81,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1685.317264758891,
+              747.8978443637035
+            ],
+            "size": [
+              317.606583818256,
+              128
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 117
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  118
+                ]
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "minute rank: 2nd longest if 3 hands",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "max(a - 1, 1)"
+            ]
+          },
+          {
+            "id": 48,
+            "type": "511cc625-2e7f-57cb-82dc-90e6163c2728",
+            "pos": [
+              917.5849896907216,
+              181.963587628866
+            ],
+            "size": [
+              331.57578125,
+              166
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 17
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "NPARRAY",
+                "links": [
+                  19
+                ]
+              },
+              {
+                "localized_name": "centers",
+                "name": "centers",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "mean_sq_distance",
+                "name": "mean_sq_distance",
+                "type": "FLOAT",
+                "links": [
+                  20
+                ]
+              },
+              {
+                "localized_name": "success",
+                "name": "success",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "[CV K-Means Points] Cluster bearings, k = 2",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "proxyWidgets": [],
+              "previewExposures": []
+            },
+            "widgets_values": [
+              2,
+              8,
+              0
+            ],
+            "color": "#333a40",
+            "bgcolor": "#3d454b"
+          },
+          {
+            "id": 47,
+            "type": "CV_PointsToPolar",
+            "pos": [
+              540,
+              300
+            ],
+            "size": [
+              320,
+              170
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 14
+              },
+              {
+                "localized_name": "origin_x",
+                "name": "origin_x",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_x"
+                },
+                "link": 15
+              },
+              {
+                "localized_name": "origin_y",
+                "name": "origin_y",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "origin_y"
+                },
+                "link": 16
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "radius",
+                "name": "radius",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "angle",
+                "name": "angle",
+                "type": "NPARRAY",
+                "links": [
+                  49
+                ]
+              },
+              {
+                "localized_name": "directions",
+                "name": "directions",
+                "type": "NPARRAY",
+                "links": [
+                  17,
+                  137
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Point bearings (unit vectors)",
+            "properties": {
+              "Node name for S&R": "CV_PointsToPolar"
+            },
+            "widgets_values": [
+              0,
+              0,
+              "clockwise from 12 o'clock (clock)"
+            ]
+          },
+          {
+            "id": 113,
+            "type": "bc3729fc-660d-4a0f-a07a-050c5499f715",
+            "pos": [
+              920.0098023659914,
+              397.73357457116634
+            ],
+            "size": [
+              320,
+              166
+            ],
+            "flags": {},
+            "order": 18,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 137
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "NPARRAY",
+                "links": [
+                  139
+                ]
+              },
+              {
+                "localized_name": "centers",
+                "name": "centers",
+                "type": "NPARRAY",
+                "links": null
+              },
+              {
+                "localized_name": "mean_sq_distance",
+                "name": "mean_sq_distance",
+                "type": "FLOAT",
+                "links": []
+              },
+              {
+                "localized_name": "success",
+                "name": "success",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "proxyWidgets": [],
+              "previewExposures": []
+            },
+            "widgets_values": [
+              3,
+              8,
+              0
+            ],
+            "color": "#333a40",
+            "bgcolor": "#3d454b"
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 3,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 41,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 4,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 41,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 5,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 41,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 6,
+            "origin_id": 41,
+            "origin_slot": 0,
+            "target_id": 42,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 48,
+            "origin_id": 42,
+            "origin_slot": 0,
+            "target_id": 43,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 7,
+            "origin_id": 43,
+            "origin_slot": 0,
+            "target_id": 46,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 12,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 46,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 13,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 46,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 14,
+            "origin_id": 46,
+            "origin_slot": 0,
+            "target_id": 47,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 15,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 47,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 16,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 47,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 17,
+            "origin_id": 47,
+            "origin_slot": 2,
+            "target_id": 48,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 19,
+            "origin_id": 48,
+            "origin_slot": 0,
+            "target_id": 51,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 20,
+            "origin_id": 48,
+            "origin_slot": 2,
+            "target_id": 50,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 22,
+            "origin_id": 50,
+            "origin_slot": 0,
+            "target_id": 51,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 23,
+            "origin_id": 51,
+            "origin_slot": 0,
+            "target_id": 52,
+            "target_slot": 1,
+            "type": "*"
+          },
+          {
+            "id": 25,
+            "origin_id": 46,
+            "origin_slot": 0,
+            "target_id": 52,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 27,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 52,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 28,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 52,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 49,
+            "origin_id": 47,
+            "origin_slot": 1,
+            "target_id": 53,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 50,
+            "origin_id": 51,
+            "origin_slot": 0,
+            "target_id": 53,
+            "target_slot": 1,
+            "type": "*"
+          },
+          {
+            "id": 51,
+            "origin_id": 53,
+            "origin_slot": 0,
+            "target_id": 55,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 35,
+            "origin_id": 52,
+            "origin_slot": 1,
+            "target_id": 55,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 52,
+            "origin_id": 53,
+            "origin_slot": 0,
+            "target_id": 57,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 37,
+            "origin_id": 52,
+            "origin_slot": 1,
+            "target_id": 57,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 40,
+            "origin_id": 52,
+            "origin_slot": 2,
+            "target_id": 58,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 41,
+            "origin_id": 55,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 42,
+            "origin_id": 57,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 43,
+            "origin_id": 46,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 44,
+            "origin_id": 51,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "*"
+          },
+          {
+            "id": 45,
+            "origin_id": 52,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 4,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 46,
+            "origin_id": 52,
+            "origin_slot": 2,
+            "target_id": -20,
+            "target_slot": 5,
+            "type": "INT"
+          },
+          {
+            "id": 47,
+            "origin_id": 58,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 6,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 53,
+            "origin_id": 52,
+            "origin_slot": 1,
+            "target_id": 54,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 54,
+            "origin_id": 53,
+            "origin_slot": 0,
+            "target_id": 54,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 55,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 54,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 56,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 54,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 57,
+            "origin_id": 54,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 7,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 111,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 78,
+            "target_slot": 0,
+            "type": "FLOAT,INT,BOOLEAN"
+          },
+          {
+            "id": 112,
+            "origin_id": 78,
+            "origin_slot": 0,
+            "target_id": 46,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 113,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 79,
+            "target_slot": 0,
+            "type": "FLOAT,INT,BOOLEAN"
+          },
+          {
+            "id": 114,
+            "origin_id": 79,
+            "origin_slot": 0,
+            "target_id": 46,
+            "target_slot": 4,
+            "type": "FLOAT"
+          },
+          {
+            "id": 115,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 80,
+            "target_slot": 0,
+            "type": "FLOAT,INT,BOOLEAN"
+          },
+          {
+            "id": 116,
+            "origin_id": 80,
+            "origin_slot": 0,
+            "target_id": 41,
+            "target_slot": 3,
+            "type": "FLOAT"
+          },
+          {
+            "id": 117,
+            "origin_id": 52,
+            "origin_slot": 2,
+            "target_id": 81,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 118,
+            "origin_id": 81,
+            "origin_slot": 1,
+            "target_id": 57,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 137,
+            "origin_id": 47,
+            "origin_slot": 2,
+            "target_id": 113,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 139,
+            "origin_id": 113,
+            "origin_slot": 0,
+            "target_id": 51,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "9d2c4b7e-1f63-45a8-b3d9-7e0a5c8f2b16",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 142,
+          "lastLinkId": 140,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Clock Angles to Time",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -620,
+            320,
+            128,
+            88
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            600,
+            320,
+            128,
+            88
+          ]
+        },
+        "inputs": [
+          {
+            "id": "9d2c4b7e-1f63-45a8-b3d9-7e0a5c8f2b01",
+            "name": "hour_angle",
+            "type": "FLOAT",
+            "linkIds": [
+              122
+            ],
+            "localized_name": "hour_angle",
+            "pos": [
+              -516,
+              344
+            ]
+          },
+          {
+            "id": "9d2c4b7e-1f63-45a8-b3d9-7e0a5c8f2b02",
+            "name": "minute_angle",
+            "type": "FLOAT",
+            "linkIds": [
+              119
+            ],
+            "localized_name": "minute_angle",
+            "pos": [
+              -516,
+              364
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "9d2c4b7e-1f63-45a8-b3d9-7e0a5c8f2b03",
+            "name": "hour",
+            "type": "INT",
+            "linkIds": [
+              123
+            ],
+            "localized_name": "hour",
+            "pos": [
+              624,
+              344
+            ]
+          },
+          {
+            "id": "9d2c4b7e-1f63-45a8-b3d9-7e0a5c8f2b04",
+            "name": "minute",
+            "type": "INT",
+            "linkIds": [
+              120
+            ],
+            "localized_name": "minute",
+            "pos": [
+              624,
+              364
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 83,
+            "type": "ComfyMathExpression",
+            "pos": [
+              25.012111889007706,
+              212.6024389967983
+            ],
+            "size": [
+              317.4153847598719,
+              148
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 122
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 121
+              },
+              {
+                "label": "c",
+                "localized_name": "values.c",
+                "name": "values.c",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  123
+                ]
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "hour from angle (minus minute drift)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "((round((a - b * 0.5) / 30) - 1) % 12) + 1"
+            ]
+          },
+          {
+            "id": 82,
+            "type": "ComfyMathExpression",
+            "pos": [
+              -342.68605596584786,
+              399.8925485592314
+            ],
+            "size": [
+              295.7860807684099,
+              128
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 119
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  120,
+                  121
+                ]
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "minute = round(angle / 6) % 60",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "round(a / 6) % 60"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 119,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 82,
+            "target_slot": 0,
+            "type": "FLOAT,INT,BOOLEAN"
+          },
+          {
+            "id": 120,
+            "origin_id": 82,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 121,
+            "origin_id": 82,
+            "origin_slot": 1,
+            "target_id": 83,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 122,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 83,
+            "target_slot": 0,
+            "type": "FLOAT,INT,BOOLEAN"
+          },
+          {
+            "id": 123,
+            "origin_id": 83,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "INT"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "c1a5d0e6-3b7f-4e29-8a14-2d9c6f0b5e73",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 142,
+          "lastLinkId": 140,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Dial ROI Mask (filled circle)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -594.506305376344,
+            386.1218495770607,
+            128,
+            128
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            606.3093124782139,
+            294.7550695868493,
+            128,
+            68
+          ]
+        },
+        "inputs": [
+          {
+            "id": "98a749d0-6581-5c8f-8120-0106e2b78506",
+            "name": "canvas_src",
+            "type": "NPARRAY",
+            "linkIds": [
+              101,
+              102
+            ],
+            "localized_name": "canvas_src",
+            "pos": [
+              -490.506305376344,
+              410.1218495770607
+            ]
+          },
+          {
+            "id": "ffc0511f-36fb-54dd-9e02-5500379f8a6b",
+            "name": "center_x",
+            "type": "FLOAT",
+            "linkIds": [
+              103
+            ],
+            "localized_name": "center_x",
+            "pos": [
+              -490.506305376344,
+              430.1218495770607
+            ]
+          },
+          {
+            "id": "48089a93-02e7-574f-a997-2e29472001f4",
+            "name": "center_y",
+            "type": "FLOAT",
+            "linkIds": [
+              104
+            ],
+            "localized_name": "center_y",
+            "pos": [
+              -490.506305376344,
+              450.1218495770607
+            ]
+          },
+          {
+            "id": "191acb89-e7fe-546f-af99-088afc7ace9f",
+            "name": "radius",
+            "type": "FLOAT",
+            "linkIds": [
+              105
+            ],
+            "localized_name": "radius",
+            "pos": [
+              -490.506305376344,
+              470.1218495770607
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "15422ff5-b777-533d-9396-a6b2d55df60c",
+            "name": "mask",
+            "type": "NPARRAY",
+            "linkIds": [
+              110
+            ],
+            "localized_name": "mask",
+            "pos": [
+              630.3093124782139,
+              318.7550695868493
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 77,
+            "type": "Basic data handling: CastToInt",
+            "pos": [
+              -200,
+              420
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "input",
+                "name": "input",
+                "type": "*",
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "title": "center_x -> int",
+            "properties": {
+              "cnr_id": "basic_data_handling",
+              "ver": "1.5.1",
+              "Node name for S&R": "Basic data handling: CastToInt"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 74,
+            "type": "Basic data handling: CastToInt",
+            "pos": [
+              -190.1471745880144,
+              697.6452065917714
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "input",
+                "name": "input",
+                "type": "*",
+                "link": 105
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "title": "radius -> int",
+            "properties": {
+              "cnr_id": "basic_data_handling",
+              "ver": "1.5.1",
+              "Node name for S&R": "Basic data handling: CastToInt"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 73,
+            "type": "Basic data handling: CastToInt",
+            "pos": [
+              -200,
+              551.7848708587526
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "input",
+                "name": "input",
+                "type": "*",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  108
+                ]
+              }
+            ],
+            "title": "center_y -> int",
+            "properties": {
+              "cnr_id": "basic_data_handling",
+              "ver": "1.5.1",
+              "Node name for S&R": "Basic data handling: CastToInt"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 76,
+            "type": "cv2_bitwise_xor",
+            "pos": [
+              -204.22263946227957,
+              228.21512914124725
+            ],
+            "size": [
+              290,
+              126
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src1",
+                "name": "src1",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 101
+              },
+              {
+                "localized_name": "src2",
+                "name": "src2",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 102
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  106
+                ]
+              }
+            ],
+            "title": "Black canvas (src XOR src = 0)",
+            "properties": {
+              "Node name for S&R": "cv2_bitwise_xor"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 75,
+            "type": "cv2_circle",
+            "pos": [
+              220,
+              300
+            ],
+            "size": [
+              311.7529911693191,
+              274
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "source",
+                "name": "source",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 106
+              },
+              {
+                "localized_name": "center",
+                "name": "center",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "center"
+                },
+                "link": 140
+              },
+              {
+                "localized_name": "radius",
+                "name": "radius",
+                "type": "INT",
+                "widget": {
+                  "name": "radius"
+                },
+                "link": 109
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  110
+                ]
+              }
+            ],
+            "title": "Filled dial disk (thickness -1 = filled)",
+            "properties": {
+              "Node name for S&R": "cv2_circle"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              0,
+              "(255, 255, 255, 255)",
+              -1,
+              "LINE_8",
+              0
+            ]
+          },
+          {
+            "id": 114,
+            "type": "CV_Tuple",
+            "pos": [
+              -20,
+              340
+            ],
+            "size": [
+              210,
+              170
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "a",
+                "name": "a",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "a"
+                },
+                "link": 107
+              },
+              {
+                "localized_name": "b",
+                "name": "b",
+                "type": "FLOAT,INT",
+                "widget": {
+                  "name": "b"
+                },
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "tuple",
+                "name": "tuple",
+                "type": "CV_TUPLE",
+                "links": [
+                  140
+                ]
+              },
+              {
+                "localized_name": "array",
+                "name": "array",
+                "type": "NPARRAY",
+                "links": []
+              },
+              {
+                "localized_name": "literal",
+                "name": "literal",
+                "type": "STRING",
+                "links": []
+              }
+            ],
+            "title": "center (joined)",
+            "properties": {
+              "Node name for S&R": "CV_Tuple"
+            },
+            "widgets_values": [
+              2,
+              "int",
+              0,
+              0,
+              0,
+              0
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 76,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 76,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 77,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 104,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 73,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 105,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 74,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 106,
+            "origin_id": 76,
+            "origin_slot": 0,
+            "target_id": 75,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 77,
+            "origin_slot": 0,
+            "target_id": 114,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 108,
+            "origin_id": 73,
+            "origin_slot": 0,
+            "target_id": 114,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 109,
+            "origin_id": 74,
+            "origin_slot": 0,
+            "target_id": 75,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 110,
+            "origin_id": 75,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 140,
+            "origin_id": 114,
+            "origin_slot": 0,
+            "target_id": 75,
+            "target_slot": 1,
+            "type": "CV_TUPLE"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "511cc625-2e7f-57cb-82dc-90e6163c2728",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 142,
+          "lastLinkId": 140,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV K-Means Points",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -436.7819240365154,
+            473.4749149190582,
+            128,
+            127.99999999999994
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2752.912015814422,
+            468.8780175005179,
+            152.33203125,
+            128
+          ]
+        },
+        "inputs": [
+          {
+            "id": "768d66da-ca4a-54f1-9673-e582bd89dc86",
+            "name": "points",
+            "type": "NPARRAY",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "points",
+            "pos": [
+              -332.7819240365154,
+              497.4749149190582
+            ]
+          },
+          {
+            "id": "1227ebb3-ae16-51f7-a8a8-883f9066f308",
+            "name": "k",
+            "type": "INT",
+            "linkIds": [
+              108
+            ],
+            "localized_name": "k",
+            "pos": [
+              -332.7819240365154,
+              517.4749149190582
+            ]
+          },
+          {
+            "id": "84f009a6-747d-5588-9b3a-cc6f1fab46ee",
+            "name": "attempts",
+            "type": "INT",
+            "linkIds": [
+              113
+            ],
+            "localized_name": "attempts",
+            "pos": [
+              -332.7819240365154,
+              537.4749149190582
+            ]
+          },
+          {
+            "id": "b205b8a5-f9c8-5c14-836b-59e42eb0b38c",
+            "name": "seed",
+            "type": "INT",
+            "linkIds": [
+              128
+            ],
+            "localized_name": "seed",
+            "pos": [
+              -332.7819240365154,
+              557.4749149190582
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "4e28f906-3824-50fb-bb55-052585fb0255",
+            "name": "labels",
+            "type": "NPARRAY",
+            "linkIds": [
+              132
+            ],
+            "localized_name": "labels",
+            "pos": [
+              2776.912015814422,
+              492.8780175005179
+            ]
+          },
+          {
+            "id": "42d0e485-a88b-56e5-b4cb-5ba0399c1f74",
+            "name": "centers",
+            "type": "NPARRAY",
+            "linkIds": [
+              136
+            ],
+            "localized_name": "centers",
+            "pos": [
+              2776.912015814422,
+              512.8780175005179
+            ]
+          },
+          {
+            "id": "05bb552f-2814-59db-955e-f5379960f71b",
+            "name": "mean_sq_distance",
+            "type": "FLOAT",
+            "linkIds": [
+              125
+            ],
+            "localized_name": "mean_sq_distance",
+            "pos": [
+              2776.912015814422,
+              532.8780175005179
+            ]
+          },
+          {
+            "id": "19d94531-0987-5ed4-a68b-bb5b005f192b",
+            "name": "success",
+            "type": "BOOLEAN",
+            "linkIds": [
+              126
+            ],
+            "localized_name": "success",
+            "pos": [
+              2776.912015814422,
+              552.8780175005179
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 86,
+            "type": "CV_FilterPointsByMask",
+            "pos": [
+              40,
+              440
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 101
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  103,
+                  130,
+                  134
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": [
+                  102,
+                  110,
+                  122
+                ]
+              }
+            ],
+            "title": "Normalize (Nx1x2 float32) + count",
+            "properties": {
+              "Node name for S&R": "CV_FilterPointsByMask"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 89,
+            "type": "ComfySwitchNode",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 104
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 105
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  106
+                ]
+              }
+            ],
+            "title": "Empty? feed the dummy instead",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              true
+            ]
+          },
+          {
+            "id": 90,
+            "type": "PrimitiveInt",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "INT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "title": "clusters (k)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "PrimitiveInt"
+            },
+            "widgets_values": [
+              2,
+              "fixed"
+            ]
+          },
+          {
+            "id": 93,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              1790,
+              40
+            ],
+            "size": [
+              290.327734375,
+              160
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 114
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  135
+                ]
+              }
+            ],
+            "title": "(K,2) -> Kx1x2 (the point-array layout)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 91,
+            "type": "ComfyMathExpression",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 109
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 110
+              },
+              {
+                "label": "c",
+                "localized_name": "values.c",
+                "name": "values.c",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  112
+                ]
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "k, clamped to the point count",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "max(1, min(a, b))"
+            ]
+          },
+          {
+            "id": 92,
+            "type": "cv2_kmeans",
+            "pos": [
+              1440,
+              440
+            ],
+            "size": [
+              290,
+              304
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "data",
+                "name": "data",
+                "type": "NPARRAY",
+                "link": 111
+              },
+              {
+                "localized_name": "bestLabels",
+                "name": "bestLabels",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "localized_name": "K",
+                "name": "K",
+                "type": "INT",
+                "widget": {
+                  "name": "K"
+                },
+                "link": 112
+              },
+              {
+                "localized_name": "attempts",
+                "name": "attempts",
+                "type": "INT",
+                "widget": {
+                  "name": "attempts"
+                },
+                "link": 113
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "retval",
+                "name": "retval",
+                "type": "FLOAT",
+                "links": [
+                  121
+                ]
+              },
+              {
+                "localized_name": "bestLabels",
+                "name": "bestLabels",
+                "type": "NPARRAY",
+                "links": [
+                  129
+                ]
+              },
+              {
+                "localized_name": "centers",
+                "name": "centers",
+                "type": "NPARRAY",
+                "links": [
+                  114
+                ]
+              }
+            ],
+            "title": "K-Means on the points",
+            "properties": {
+              "Node name for S&R": "cv2_kmeans"
+            },
+            "widgets_values": [
+              2,
+              "max count or epsilon (whichever first)",
+              50,
+              0.001,
+              8,
+              "KMEANS_PP_CENTERS"
+            ]
+          },
+          {
+            "id": 6,
+            "type": "CV_SetRNGSeed",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "*",
+                "link": 106
+              },
+              {
+                "localized_name": "seed",
+                "name": "seed",
+                "type": "INT",
+                "widget": {
+                  "name": "seed"
+                },
+                "link": 128
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "*",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "title": "Seed cv2's RNG (repeatable clusters)",
+            "properties": {
+              "Node name for S&R": "CV_SetRNGSeed"
+            },
+            "widgets_values": [
+              0,
+              "fixed"
+            ]
+          },
+          {
+            "id": 85,
+            "type": "Note",
+            "pos": [
+              274.0889647278176,
+              -193.51423878460128
+            ],
+            "size": [
+              745.3956687477089,
+              166.0192108517832
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [],
+            "properties": {},
+            "widgets_values": [
+              "CV K-Means Points\n\nClusters a point set into k groups (cv2.kmeans), the point-array sibling of the 'CV K-Means Colors' and 'CV K-Means Mask Clusters' blueprints.\n\nk is clamped to the number of points. 'mean_sq_distance' (the average squared distance of the points to their cluster center) measures how well k fits: run this twice with different k and compare, e.g. with 'Basic data handling: GreaterThan' + if/else, to choose the cluster count - that is how the clock exercise decides between two and three hands.\n\nZero points are valid: 'success' is false, 'labels' and 'centers' come back empty and nothing raises. cv2.kmeans itself asserts on an empty sample set, so the data path swaps in a one-point dummy and the result path throws it away."
+            ],
+            "color": "#432",
+            "bgcolor": "#653"
+          },
+          {
+            "id": 88,
+            "type": "CV_PointsLiteral",
+            "pos": [
+              -46.511895264836916,
+              623.720261837909
+            ],
+            "size": [
+              376.5494140625,
+              156
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "1-point dummy (cv2.kmeans asserts on 0 samples)",
+            "properties": {
+              "Node name for S&R": "CV_PointsLiteral"
+            },
+            "widgets_values": [
+              "[[0, 0]]",
+              "float32"
+            ]
+          },
+          {
+            "id": 87,
+            "type": "ComfyMathExpression",
+            "pos": [
+              427.97184039323116,
+              746.8522491324633
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 102
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": [
+                  105,
+                  126,
+                  131,
+                  133
+                ]
+              }
+            ],
+            "title": "success = any points?",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a > 0"
+            ]
+          },
+          {
+            "id": 99,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2114.8289271507183,
+              205.78948933054988
+            ],
+            "size": [
+              270,
+              78
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 134
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 135
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 133
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  136
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ]
+          },
+          {
+            "id": 98,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2110.4681040557143,
+              371.8984242054794
+            ],
+            "size": [
+              270,
+              78
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 130
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 129
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 131
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  132
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ]
+          },
+          {
+            "id": 96,
+            "type": "ComfyMathExpression",
+            "pos": [
+              2100.418104419611,
+              526.9431895005541
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 121
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 122
+              },
+              {
+                "label": "c",
+                "localized_name": "values.c",
+                "name": "values.c",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  125
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "mean squared distance to the center",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / max(b, 1)"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 86,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": 86,
+            "origin_slot": 1,
+            "target_id": 87,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 103,
+            "origin_id": 86,
+            "origin_slot": 0,
+            "target_id": 89,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 88,
+            "origin_slot": 0,
+            "target_id": 89,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 87,
+            "origin_slot": 2,
+            "target_id": 89,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 106,
+            "origin_id": 89,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 108,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 90,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 109,
+            "origin_id": 90,
+            "origin_slot": 0,
+            "target_id": 91,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 110,
+            "origin_id": 86,
+            "origin_slot": 1,
+            "target_id": 91,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 111,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 92,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 112,
+            "origin_id": 91,
+            "origin_slot": 1,
+            "target_id": 92,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 113,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 92,
+            "target_slot": 3,
+            "type": "INT"
+          },
+          {
+            "id": 114,
+            "origin_id": 92,
+            "origin_slot": 2,
+            "target_id": 93,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 92,
+            "origin_slot": 0,
+            "target_id": 96,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 122,
+            "origin_id": 86,
+            "origin_slot": 1,
+            "target_id": 96,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 125,
+            "origin_id": 96,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 126,
+            "origin_id": 87,
+            "origin_slot": 2,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 128,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 6,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 129,
+            "origin_id": 92,
+            "origin_slot": 1,
+            "target_id": 98,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 130,
+            "origin_id": 86,
+            "origin_slot": 0,
+            "target_id": 98,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 131,
+            "origin_id": 87,
+            "origin_slot": 2,
+            "target_id": 98,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 132,
+            "origin_id": 98,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 133,
+            "origin_id": 87,
+            "origin_slot": 2,
+            "target_id": 99,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 134,
+            "origin_id": 86,
+            "origin_slot": 0,
+            "target_id": 99,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 135,
+            "origin_id": 93,
+            "origin_slot": 0,
+            "target_id": 99,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 136,
+            "origin_id": 99,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      },
+      {
+        "id": "bc3729fc-660d-4a0f-a07a-050c5499f715",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 142,
+          "lastLinkId": 140,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "Cluster bearings, k = 3",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -436.7819240365154,
+            473.4749149190582,
+            128,
+            127.99999999999994
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2752.912015814422,
+            468.8780175005179,
+            152.33203125,
+            128
+          ]
+        },
+        "inputs": [
+          {
+            "id": "768d66da-ca4a-54f1-9673-e582bd89dc86",
+            "name": "points",
+            "type": "NPARRAY",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "points",
+            "pos": [
+              -332.7819240365154,
+              497.4749149190582
+            ]
+          },
+          {
+            "id": "1227ebb3-ae16-51f7-a8a8-883f9066f308",
+            "name": "k",
+            "type": "INT",
+            "linkIds": [
+              108
+            ],
+            "localized_name": "k",
+            "pos": [
+              -332.7819240365154,
+              517.4749149190582
+            ]
+          },
+          {
+            "id": "84f009a6-747d-5588-9b3a-cc6f1fab46ee",
+            "name": "attempts",
+            "type": "INT",
+            "linkIds": [
+              113
+            ],
+            "localized_name": "attempts",
+            "pos": [
+              -332.7819240365154,
+              537.4749149190582
+            ]
+          },
+          {
+            "id": "b205b8a5-f9c8-5c14-836b-59e42eb0b38c",
+            "name": "seed",
+            "type": "INT",
+            "linkIds": [
+              128
+            ],
+            "localized_name": "seed",
+            "pos": [
+              -332.7819240365154,
+              557.4749149190582
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "4e28f906-3824-50fb-bb55-052585fb0255",
+            "name": "labels",
+            "type": "NPARRAY",
+            "linkIds": [
+              132
+            ],
+            "localized_name": "labels",
+            "pos": [
+              2776.912015814422,
+              492.8780175005179
+            ]
+          },
+          {
+            "id": "42d0e485-a88b-56e5-b4cb-5ba0399c1f74",
+            "name": "centers",
+            "type": "NPARRAY",
+            "linkIds": [
+              136
+            ],
+            "localized_name": "centers",
+            "pos": [
+              2776.912015814422,
+              512.8780175005179
+            ]
+          },
+          {
+            "id": "05bb552f-2814-59db-955e-f5379960f71b",
+            "name": "mean_sq_distance",
+            "type": "FLOAT",
+            "linkIds": [
+              125
+            ],
+            "localized_name": "mean_sq_distance",
+            "pos": [
+              2776.912015814422,
+              532.8780175005179
+            ]
+          },
+          {
+            "id": "19d94531-0987-5ed4-a68b-bb5b005f192b",
+            "name": "success",
+            "type": "BOOLEAN",
+            "linkIds": [
+              126
+            ],
+            "localized_name": "success",
+            "pos": [
+              2776.912015814422,
+              552.8780175005179
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 100,
+            "type": "CV_FilterPointsByMask",
+            "pos": [
+              40,
+              440
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "link": 101
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  103,
+                  130,
+                  134
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": [
+                  102,
+                  110,
+                  122
+                ]
+              }
+            ],
+            "title": "Normalize (Nx1x2 float32) + count",
+            "properties": {
+              "Node name for S&R": "CV_FilterPointsByMask"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 101,
+            "type": "ComfySwitchNode",
+            "pos": [
+              740,
+              440
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 104
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 105
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  106
+                ]
+              }
+            ],
+            "title": "Empty? feed the dummy instead",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              true
+            ]
+          },
+          {
+            "id": 102,
+            "type": "PrimitiveInt",
+            "pos": [
+              390,
+              40
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "INT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "title": "clusters (k)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "PrimitiveInt"
+            },
+            "widgets_values": [
+              2,
+              "fixed"
+            ]
+          },
+          {
+            "id": 103,
+            "type": "CV_ReshapeArray",
+            "pos": [
+              1790,
+              40
+            ],
+            "size": [
+              290.327734375,
+              160
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 114
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  135
+                ]
+              }
+            ],
+            "title": "(K,2) -> Kx1x2 (the point-array layout)",
+            "properties": {
+              "Node name for S&R": "CV_ReshapeArray"
+            },
+            "widgets_values": [
+              0,
+              1,
+              2
+            ]
+          },
+          {
+            "id": 104,
+            "type": "ComfyMathExpression",
+            "pos": [
+              740,
+              40
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 109
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 110
+              },
+              {
+                "label": "c",
+                "localized_name": "values.c",
+                "name": "values.c",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  112
+                ]
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "k, clamped to the point count",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "max(1, min(a, b))"
+            ]
+          },
+          {
+            "id": 105,
+            "type": "cv2_kmeans",
+            "pos": [
+              1440,
+              440
+            ],
+            "size": [
+              290,
+              304
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "data",
+                "name": "data",
+                "type": "NPARRAY",
+                "link": 111
+              },
+              {
+                "localized_name": "bestLabels",
+                "name": "bestLabels",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "localized_name": "K",
+                "name": "K",
+                "type": "INT",
+                "widget": {
+                  "name": "K"
+                },
+                "link": 112
+              },
+              {
+                "localized_name": "attempts",
+                "name": "attempts",
+                "type": "INT",
+                "widget": {
+                  "name": "attempts"
+                },
+                "link": 113
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "retval",
+                "name": "retval",
+                "type": "FLOAT",
+                "links": [
+                  121
+                ]
+              },
+              {
+                "localized_name": "bestLabels",
+                "name": "bestLabels",
+                "type": "NPARRAY",
+                "links": [
+                  129
+                ]
+              },
+              {
+                "localized_name": "centers",
+                "name": "centers",
+                "type": "NPARRAY",
+                "links": [
+                  114
+                ]
+              }
+            ],
+            "title": "K-Means on the points",
+            "properties": {
+              "Node name for S&R": "cv2_kmeans"
+            },
+            "widgets_values": [
+              2,
+              "max count or epsilon (whichever first)",
+              50,
+              0.001,
+              8,
+              "KMEANS_PP_CENTERS"
+            ]
+          },
+          {
+            "id": 106,
+            "type": "CV_SetRNGSeed",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "*",
+                "link": 106
+              },
+              {
+                "localized_name": "seed",
+                "name": "seed",
+                "type": "INT",
+                "widget": {
+                  "name": "seed"
+                },
+                "link": 128
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "value",
+                "name": "value",
+                "type": "*",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "title": "Seed cv2's RNG (repeatable clusters)",
+            "properties": {
+              "Node name for S&R": "CV_SetRNGSeed"
+            },
+            "widgets_values": [
+              0,
+              "fixed"
+            ]
+          },
+          {
+            "id": 107,
+            "type": "Note",
+            "pos": [
+              274.0889647278176,
+              -193.51423878460128
+            ],
+            "size": [
+              745.3956687477089,
+              166.0192108517832
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [],
+            "properties": {},
+            "widgets_values": [
+              "CV K-Means Points\n\nClusters a point set into k groups (cv2.kmeans), the point-array sibling of the 'CV K-Means Colors' and 'CV K-Means Mask Clusters' blueprints.\n\nk is clamped to the number of points. 'mean_sq_distance' (the average squared distance of the points to their cluster center) measures how well k fits: run this twice with different k and compare, e.g. with 'Basic data handling: GreaterThan' + if/else, to choose the cluster count - that is how the clock exercise decides between two and three hands.\n\nZero points are valid: 'success' is false, 'labels' and 'centers' come back empty and nothing raises. cv2.kmeans itself asserts on an empty sample set, so the data path swaps in a one-point dummy and the result path throws it away."
+            ],
+            "color": "#432",
+            "bgcolor": "#653"
+          },
+          {
+            "id": 108,
+            "type": "CV_PointsLiteral",
+            "pos": [
+              -46.511895264836916,
+              623.720261837909
+            ],
+            "size": [
+              376.5494140625,
+              156
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+              {
+                "localized_name": "points",
+                "name": "points",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "1-point dummy (cv2.kmeans asserts on 0 samples)",
+            "properties": {
+              "Node name for S&R": "CV_PointsLiteral"
+            },
+            "widgets_values": [
+              "[[0, 0]]",
+              "float32"
+            ]
+          },
+          {
+            "id": 109,
+            "type": "ComfyMathExpression",
+            "pos": [
+              427.97184039323116,
+              746.8522491324633
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 102
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": [
+                  105,
+                  126,
+                  131,
+                  133
+                ]
+              }
+            ],
+            "title": "success = any points?",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a > 0"
+            ]
+          },
+          {
+            "id": 110,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2114.8289271507183,
+              205.78948933054988
+            ],
+            "size": [
+              270,
+              78
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 134
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 135
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 133
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  136
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ]
+          },
+          {
+            "id": 111,
+            "type": "ComfySwitchNode",
+            "pos": [
+              2110.4681040557143,
+              371.8984242054794
+            ],
+            "size": [
+              270,
+              78
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "on_false",
+                "name": "on_false",
+                "type": "NPARRAY",
+                "link": 130
+              },
+              {
+                "localized_name": "on_true",
+                "name": "on_true",
+                "type": "NPARRAY",
+                "link": 129
+              },
+              {
+                "localized_name": "switch",
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 131
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "output",
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  132
+                ]
+              }
+            ],
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ]
+          },
+          {
+            "id": 112,
+            "type": "ComfyMathExpression",
+            "pos": [
+              2100.418104419611,
+              526.9431895005541
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 121
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 122
+              },
+              {
+                "label": "c",
+                "localized_name": "values.c",
+                "name": "values.c",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  125
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "mean squared distance to the center",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.33.1",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / max(b, 1)"
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 100,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 102,
+            "origin_id": 100,
+            "origin_slot": 1,
+            "target_id": 109,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 103,
+            "origin_id": 100,
+            "origin_slot": 0,
+            "target_id": 101,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 108,
+            "origin_slot": 0,
+            "target_id": 101,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 109,
+            "origin_slot": 2,
+            "target_id": 101,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 106,
+            "origin_id": 101,
+            "origin_slot": 0,
+            "target_id": 106,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 108,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 102,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 109,
+            "origin_id": 102,
+            "origin_slot": 0,
+            "target_id": 104,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 110,
+            "origin_id": 100,
+            "origin_slot": 1,
+            "target_id": 104,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 111,
+            "origin_id": 106,
+            "origin_slot": 0,
+            "target_id": 105,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 112,
+            "origin_id": 104,
+            "origin_slot": 1,
+            "target_id": 105,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 113,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 105,
+            "target_slot": 3,
+            "type": "INT"
+          },
+          {
+            "id": 114,
+            "origin_id": 105,
+            "origin_slot": 2,
+            "target_id": 103,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 105,
+            "origin_slot": 0,
+            "target_id": 112,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 122,
+            "origin_id": 100,
+            "origin_slot": 1,
+            "target_id": 112,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 125,
+            "origin_id": 112,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "FLOAT"
+          },
+          {
+            "id": 126,
+            "origin_id": 109,
+            "origin_slot": 2,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 128,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 106,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 129,
+            "origin_id": 105,
+            "origin_slot": 1,
+            "target_id": 111,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 130,
+            "origin_id": 100,
+            "origin_slot": 0,
+            "target_id": 111,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 131,
+            "origin_id": 109,
+            "origin_slot": 2,
+            "target_id": 111,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 132,
+            "origin_id": 111,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 133,
+            "origin_id": 109,
+            "origin_slot": 2,
+            "target_id": 110,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 134,
+            "origin_id": 100,
+            "origin_slot": 0,
+            "target_id": 110,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 135,
+            "origin_id": 103,
+            "origin_slot": 0,
+            "target_id": 110,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 136,
+            "origin_id": 110,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "frontendVersion": "1.48.7",
+    "ds": {
+      "scale": 0.14641000000000046,
+      "offset": [
+        441.90894553468996,
+        2333.1258309446007
+      ]
+    }
+  },
+  "version": 0.4
+}

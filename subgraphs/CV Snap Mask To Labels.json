@@ -1,0 +1,1051 @@
+{
+  "revision": 0,
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "d5b81e6a-2c47-4f39-9a06-7be3418cf25d",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        330,
+        190
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "localized_name": "labels",
+          "name": "labels",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "localized_name": "num_labels",
+          "name": "num_labels",
+          "type": "INT",
+          "widget": {
+            "name": "num_labels"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "coverage_percent",
+          "name": "coverage_percent",
+          "type": "FLOAT",
+          "widget": {
+            "name": "coverage_percent"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "mask_threshold",
+          "name": "mask_threshold",
+          "type": "FLOAT",
+          "widget": {
+            "name": "mask_threshold"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "coverage",
+          "name": "coverage",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "table",
+          "name": "table",
+          "type": "NPARRAY",
+          "links": null
+        },
+        {
+          "localized_name": "counts",
+          "name": "counts",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {
+        "proxyWidgets": [
+          [
+            "5",
+            "num_labels"
+          ],
+          [
+            "6",
+            "value"
+          ],
+          [
+            "2",
+            "thresh"
+          ]
+        ],
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0"
+      },
+      "widgets_values": [],
+      "title": "CV Snap Mask To Labels",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "d5b81e6a-2c47-4f39-9a06-7be3418cf25d",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 13,
+          "lastLinkId": 122,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Snap Mask To Labels.json",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -240.0,
+            120.0,
+            130.0,
+            148.0
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2680.0,
+            120.0,
+            128.0,
+            128.0
+          ]
+        },
+        "inputs": [
+          {
+            "id": "10d5012e-e734-5229-b2a0-7de5f9319d7e",
+            "name": "mask",
+            "type": "MASK",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "mask",
+            "pos": [
+              -136.0,
+              150.0
+            ]
+          },
+          {
+            "id": "646fa176-b58a-570b-8aaf-49469bcf9c86",
+            "name": "labels",
+            "type": "NPARRAY",
+            "linkIds": [
+              104,
+              108,
+              115,
+              119
+            ],
+            "localized_name": "labels",
+            "pos": [
+              -136.0,
+              170.0
+            ]
+          },
+          {
+            "id": "1c8adbc1-9666-5e5b-a00a-402e4c23311d",
+            "name": "num_labels",
+            "type": "INT",
+            "linkIds": [
+              109
+            ],
+            "localized_name": "num_labels",
+            "pos": [
+              -136.0,
+              190.0
+            ]
+          },
+          {
+            "id": "0a466cf4-edf6-5218-88c2-8161c57dab26",
+            "name": "coverage_percent",
+            "type": "FLOAT",
+            "linkIds": [
+              110
+            ],
+            "localized_name": "coverage_percent",
+            "pos": [
+              -136.0,
+              210.0
+            ]
+          },
+          {
+            "id": "705416e4-caaa-5016-8833-2241b613099e",
+            "name": "mask_threshold",
+            "type": "FLOAT",
+            "linkIds": [
+              103
+            ],
+            "localized_name": "mask_threshold",
+            "pos": [
+              -136.0,
+              230.0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "10d5012e-e734-5229-b2a0-7de5f9319d7e",
+            "name": "mask",
+            "type": "MASK",
+            "linkIds": [
+              117
+            ],
+            "localized_name": "mask",
+            "pos": [
+              2704.0,
+              150.0
+            ]
+          },
+          {
+            "id": "7e177786-4068-562e-8208-9ff9c93de8d7",
+            "name": "coverage",
+            "type": "NPARRAY",
+            "linkIds": [
+              120
+            ],
+            "localized_name": "coverage",
+            "pos": [
+              2704.0,
+              170.0
+            ]
+          },
+          {
+            "id": "4c5a9fe3-c46d-5657-9912-64c8e51de9fd",
+            "name": "table",
+            "type": "NPARRAY",
+            "linkIds": [
+              121
+            ],
+            "localized_name": "table",
+            "pos": [
+              2704.0,
+              190.0
+            ]
+          },
+          {
+            "id": "6ba396b1-9f5a-58d4-8a98-332c6dd2e03b",
+            "name": "counts",
+            "type": "NPARRAY",
+            "linkIds": [
+              122
+            ],
+            "localized_name": "counts",
+            "pos": [
+              2704.0,
+              210.0
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_MaskToCV",
+            "pos": [
+              80,
+              120
+            ],
+            "size": [
+              290,
+              106
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "MASK",
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  102
+                ]
+              }
+            ],
+            "title": "Mask -> CV Array (float32 0-1)",
+            "properties": {
+              "Node name for S&R": "CV_MaskToCV"
+            },
+            "widgets_values": [
+              "float32 (0-1)",
+              0
+            ]
+          },
+          {
+            "id": 2,
+            "type": "cv2_threshold",
+            "pos": [
+              430,
+              120
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 102
+              },
+              {
+                "localized_name": "thresh",
+                "name": "thresh",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "thresh"
+                },
+                "link": 103
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  105
+                ]
+              }
+            ],
+            "title": "Binarize the rough mask",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0.5,
+              1.0,
+              "THRESH_BINARY"
+            ]
+          },
+          {
+            "id": 3,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              430,
+              430
+            ],
+            "size": [
+              250,
+              144
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "height",
+                "name": "height",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "width",
+                "name": "width",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "channels",
+                "name": "channels",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "localized_name": "size",
+                "name": "size",
+                "type": "CV_TUPLE",
+                "links": [
+                  106
+                ]
+              }
+            ],
+            "title": "Label grid size",
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 4,
+            "type": "cv2_resize",
+            "pos": [
+              790,
+              120
+            ],
+            "size": [
+              300,
+              164
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK,LATENT",
+                "link": 105
+              },
+              {
+                "localized_name": "dsize",
+                "name": "dsize",
+                "type": "CV_TUPLE",
+                "widget": {
+                  "name": "dsize"
+                },
+                "link": 106
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "title": "Fit the mask to the label grid (area = coverage)",
+            "properties": {
+              "Node name for S&R": "cv2_resize"
+            },
+            "widgets_values": [
+              "(0, 0)",
+              0.0,
+              0.0,
+              "INTER_AREA"
+            ]
+          },
+          {
+            "id": 5,
+            "type": "CV_ReduceArrayByLabel",
+            "pos": [
+              1160,
+              120
+            ],
+            "size": [
+              290,
+              190
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "link": 107
+              },
+              {
+                "localized_name": "labels",
+                "name": "labels",
+                "type": "NPARRAY",
+                "link": 108
+              },
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "shape": 7,
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "localized_name": "num_labels",
+                "name": "num_labels",
+                "shape": 7,
+                "type": "INT",
+                "widget": {
+                  "name": "num_labels"
+                },
+                "link": 109
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "links": [
+                  112,
+                  118,
+                  121
+                ]
+              },
+              {
+                "localized_name": "counts",
+                "name": "counts",
+                "type": "NPARRAY",
+                "links": [
+                  122
+                ]
+              },
+              {
+                "localized_name": "count",
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "title": "Coverage fraction per region",
+            "properties": {
+              "Node name for S&R": "CV_ReduceArrayByLabel"
+            },
+            "widgets_values": [
+              "mean",
+              0,
+              0
+            ]
+          },
+          {
+            "id": 6,
+            "type": "PrimitiveFloat",
+            "pos": [
+              1160,
+              470
+            ],
+            "size": [
+              270,
+              58
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "coverage_percent",
+                "localized_name": "value",
+                "name": "value",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 110
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "title": "Coverage % of the region area",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "min": 0,
+              "max": 100,
+              "precision": 1,
+              "step": 1,
+              "Node name for S&R": "PrimitiveFloat"
+            },
+            "widgets_values": [
+              50
+            ]
+          },
+          {
+            "id": 7,
+            "type": "ComfyMathExpression",
+            "pos": [
+              1470,
+              470
+            ],
+            "size": [
+              400,
+              160
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "label": "a",
+                "localized_name": "values.a",
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 111
+              },
+              {
+                "label": "b",
+                "localized_name": "values.b",
+                "name": "values.b",
+                "shape": 7,
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "FLOAT",
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  113
+                ]
+              },
+              {
+                "localized_name": "INT",
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "localized_name": "BOOL",
+                "name": "BOOL",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "title": "percent -> fraction (inclusive)",
+            "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.27.0",
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / 100 - 0.000001"
+            ]
+          },
+          {
+            "id": 8,
+            "type": "cv2_threshold",
+            "pos": [
+              1520,
+              120
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "src",
+                "name": "src",
+                "type": "NPARRAY,IMAGE,MASK",
+                "link": 112
+              },
+              {
+                "localized_name": "thresh",
+                "name": "thresh",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "thresh"
+                },
+                "link": 113
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "float",
+                "name": "float",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "localized_name": "result",
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  114
+                ]
+              }
+            ],
+            "title": "Keep the regions at or above it",
+            "properties": {
+              "Node name for S&R": "cv2_threshold"
+            },
+            "widgets_values": [
+              0.5,
+              1.0,
+              "THRESH_BINARY"
+            ]
+          },
+          {
+            "id": 9,
+            "type": "CV_TakeByIndex",
+            "pos": [
+              1900,
+              120
+            ],
+            "size": [
+              280,
+              130
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "link": 114
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "NPARRAY",
+                "link": 115
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  116
+                ]
+              }
+            ],
+            "title": "Paint the verdict over the labels",
+            "properties": {
+              "Node name for S&R": "CV_TakeByIndex"
+            },
+            "widgets_values": [
+              "clamp",
+              0
+            ]
+          },
+          {
+            "id": 10,
+            "type": "CV_CVToMask",
+            "pos": [
+              2260,
+              120
+            ],
+            "size": [
+              270,
+              60
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "nparray",
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 116
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "mask",
+                "name": "mask",
+                "type": "MASK",
+                "links": [
+                  117
+                ]
+              }
+            ],
+            "title": "CV Array -> Mask",
+            "properties": {
+              "Node name for S&R": "CV_CVToMask"
+            },
+            "widgets_values": []
+          },
+          {
+            "id": 11,
+            "type": "CV_TakeByIndex",
+            "pos": [
+              1900,
+              330
+            ],
+            "size": [
+              280,
+              130
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "table",
+                "name": "table",
+                "type": "NPARRAY",
+                "link": 118
+              },
+              {
+                "localized_name": "index",
+                "name": "index",
+                "type": "NPARRAY",
+                "link": 119
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "values",
+                "name": "values",
+                "type": "NPARRAY",
+                "links": [
+                  120
+                ]
+              }
+            ],
+            "title": "Paint the coverage over the labels",
+            "properties": {
+              "Node name for S&R": "CV_TakeByIndex"
+            },
+            "widgets_values": [
+              "clamp",
+              0
+            ]
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "MASK"
+          },
+          {
+            "id": 102,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 4,
+            "target_id": 2,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 104,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 2,
+            "origin_slot": 1,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 3,
+            "origin_slot": 4,
+            "target_id": 4,
+            "target_slot": 1,
+            "type": "CV_TUPLE"
+          },
+          {
+            "id": 107,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 108,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 109,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 5,
+            "target_slot": 3,
+            "type": "INT"
+          },
+          {
+            "id": 110,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 111,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "FLOAT"
+          },
+          {
+            "id": 112,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 113,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 114,
+            "origin_id": 8,
+            "origin_slot": 1,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 115,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 9,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 116,
+            "origin_id": 9,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 117,
+            "origin_id": 10,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "MASK"
+          },
+          {
+            "id": 118,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 119,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 120,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 121,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 122,
+            "origin_id": 5,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 3,
+            "type": "NPARRAY"
+          }
+        ],
+        "extra": {}
+      }
+    ]
+  },
+  "extra": {}
+}

@@ -1,0 +1,653 @@
+{
+  "id": "58e9c69c-1a66-4290-8229-2ce32b88f23f",
+  "revision": 0,
+  "last_node_id": 15,
+  "last_link_id": 17,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        -3.9651093013069953
+      ],
+      "size": [
+        759.984375,
+        201.109375
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "Hough playground\n\nParametric shape detection: HoughLinesP votes edge pixels into (rho, theta) line space and returns SEGMENTS (Nx1x4 endpoint quadruples), HoughCircles votes gradients into (x, y, r) circle space (1xNx3). Both return None when nothing passes the threshold - the draw nodes pass the image through and report count=0 instead of failing; branch on the count with if/else if a later step needs the detections. Tune: 'threshold' = votes needed, minLineLength/maxLineGap join or drop fragments, param2 is the circle accumulator threshold (lower = more, noisier)."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        240
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1,
+            5,
+            10
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "CV_ImageToCV",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        290,
+        168
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "title": "To grayscale",
+      "properties": {
+        "Node name for S&R": "CV_ImageToCV"
+      },
+      "widgets_values": [
+        "GRAY",
+        "uint8 (0-255)",
+        0
+      ]
+    },
+    {
+      "id": 4,
+      "type": "cv2_medianBlur",
+      "pos": [
+        740,
+        240
+      ],
+      "size": [
+        290,
+        108
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK,LATENT",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            3,
+            9
+          ]
+        }
+      ],
+      "title": "Denoise (median 5)",
+      "properties": {
+        "Node name for S&R": "cv2_medianBlur"
+      },
+      "widgets_values": [
+        5
+      ]
+    },
+    {
+      "id": 5,
+      "type": "cv2_Canny_0",
+      "pos": [
+        1090,
+        40
+      ],
+      "size": [
+        290,
+        186
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "NPARRAY",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "title": "Edges for the line detector",
+      "properties": {
+        "Node name for S&R": "cv2_Canny_0"
+      },
+      "widgets_values": [
+        60,
+        180,
+        3,
+        false
+      ]
+    },
+    {
+      "id": 6,
+      "type": "cv2_HoughLinesP",
+      "pos": [
+        1440,
+        40
+      ],
+      "size": [
+        290,
+        212
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "title": "[cv2.HoughLinesP] Probabilistic Hough lines",
+      "properties": {
+        "Node name for S&R": "cv2_HoughLinesP"
+      },
+      "widgets_values": [
+        1,
+        0.017453292519943295,
+        40,
+        30,
+        8
+      ]
+    },
+    {
+      "id": 7,
+      "type": "CV_DrawSegments",
+      "pos": [
+        1790,
+        40
+      ],
+      "size": [
+        290,
+        188
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 5
+        },
+        {
+          "name": "segments",
+          "type": "NPARRAY",
+          "link": 6
+        },
+        {
+          "name": "labels",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            7
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "title": "Detected segments (vermillion)",
+      "properties": {
+        "Node name for S&R": "CV_DrawSegments"
+      },
+      "widgets_values": [
+        2,
+        "(0, 94, 213)"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_CVPreview",
+      "pos": [
+        2140,
+        40
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Lines over the photo",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 10,
+      "type": "cv2_HoughCircles",
+      "pos": [
+        1403.8903834110974,
+        565.5986663961828
+      ],
+      "size": [
+        327.671875,
+        271.84375
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "title": "[cv2.HoughCircles]",
+      "properties": {
+        "Node name for S&R": "cv2_HoughCircles"
+      },
+      "widgets_values": [
+        "HOUGH_GRADIENT",
+        1.5,
+        30,
+        120,
+        40,
+        8,
+        60
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CV_DrawCircles",
+      "pos": [
+        1790,
+        565.5986663961828
+      ],
+      "size": [
+        290,
+        192
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 10
+        },
+        {
+          "name": "circles",
+          "type": "NPARRAY",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "title": "Detected circles (orange rings)",
+      "properties": {
+        "Node name for S&R": "CV_DrawCircles"
+      },
+      "widgets_values": [
+        2,
+        "(0, 158, 230)",
+        true
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_CVPreview",
+      "pos": [
+        2215.854215581643,
+        565.5986663961828
+      ],
+      "size": [
+        290,
+        364
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Circles over the photo",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 14,
+      "type": "PreviewAny",
+      "pos": [
+        1794.1168684728345,
+        271.38787108191605
+      ],
+      "size": [
+        286.703125,
+        172
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "How many segments?",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 15,
+      "type": "PreviewAny",
+      "pos": [
+        1793.0231881245763,
+        795.535766068509
+      ],
+      "size": [
+        408.484375,
+        172.875
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Preview as Text: count - Detected circles (orange rings)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      3,
+      0,
+      4,
+      0,
+      "NPARRAY"
+    ],
+    [
+      3,
+      4,
+      0,
+      5,
+      0,
+      "NPARRAY"
+    ],
+    [
+      4,
+      5,
+      0,
+      6,
+      0,
+      "NPARRAY"
+    ],
+    [
+      5,
+      2,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      6,
+      0,
+      7,
+      1,
+      "NPARRAY"
+    ],
+    [
+      7,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      4,
+      0,
+      10,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      2,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      10,
+      0,
+      11,
+      1,
+      "NPARRAY"
+    ],
+    [
+      12,
+      11,
+      0,
+      12,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      7,
+      1,
+      14,
+      0,
+      "INT"
+    ],
+    [
+      17,
+      11,
+      1,
+      15,
+      0,
+      "INT"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.43504503667935934,
+      "offset": [
+        -972.3828778845091,
+        774.4630334681201
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

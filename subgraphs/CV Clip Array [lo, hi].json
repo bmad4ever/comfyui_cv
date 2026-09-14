@@ -1,0 +1,375 @@
+{
+  "last_node_id": 1,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "f07d3a51-8e42-4c96-b3d7-15a9e6c208b4",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        320,
+        132
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "lo",
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "name": "hi",
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Clip Array [lo, hi]",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "f07d3a51-8e42-4c96-b3d7-15a9e6c208b4",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 4,
+          "lastLinkId": 107,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Clip Array [lo, hi]",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "34b7ef88-9a89-599c-8ec1-e8b922489a07",
+            "name": "src",
+            "type": "NPARRAY",
+            "linkIds": [
+              103
+            ],
+            "localized_name": "src",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "2fabf7e2-d28f-559f-85d0-b54c22c75d1f",
+            "name": "lo",
+            "type": "STRING",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "lo",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "84d818aa-400a-53fc-91fe-bbdfffca85d6",
+            "name": "hi",
+            "type": "STRING",
+            "linkIds": [
+              102
+            ],
+            "localized_name": "hi",
+            "pos": [
+              140,
+              260
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "81f3c554-49b3-5da5-a875-341358c4b7fd",
+            "name": "nparray",
+            "type": "NPARRAY",
+            "linkIds": [
+              107
+            ],
+            "localized_name": "nparray",
+            "pos": [
+              2100,
+              220
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "CV_ScalarArray",
+            "pos": [
+              60,
+              60
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values",
+                "type": "STRING",
+                "widget": {
+                  "name": "values"
+                },
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  104
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ScalarArray"
+            },
+            "widgets_values": [
+              "0.0",
+              "float64 (cv2 Scalar default)"
+            ],
+            "title": "lo"
+          },
+          {
+            "id": 2,
+            "type": "CV_ScalarArray",
+            "pos": [
+              60,
+              580
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values",
+                "type": "STRING",
+                "widget": {
+                  "name": "values"
+                },
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  106
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ScalarArray"
+            },
+            "widgets_values": [
+              "1.0",
+              "float64 (cv2 Scalar default)"
+            ],
+            "title": "hi"
+          },
+          {
+            "id": 3,
+            "type": "cv2_max",
+            "pos": [
+              420,
+              60
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 103
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 104
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  105
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_max"
+            },
+            "widgets_values": [],
+            "title": "max(src, lo)"
+          },
+          {
+            "id": 4,
+            "type": "cv2_min",
+            "pos": [
+              780,
+              320
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src1",
+                "type": "NPARRAY",
+                "link": 105
+              },
+              {
+                "name": "src2",
+                "type": "NPARRAY",
+                "link": 106
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  107
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_min"
+            },
+            "widgets_values": [],
+            "title": "min(., hi)"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 103,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 104,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 105,
+            "origin_id": 3,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 106,
+            "origin_id": 2,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 107,
+            "origin_id": 4,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          }
+        ]
+      }
+    ]
+  }
+}

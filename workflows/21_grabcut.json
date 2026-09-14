@@ -1,0 +1,798 @@
+{
+  "id": "b91d4f7a-2c68-4e05-9a3d-6f81c5e20b94",
+  "revision": 0,
+  "last_node_id": 18,
+  "last_link_id": 24,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "Note",
+      "pos": [
+        40,
+        26.305981066508195
+      ],
+      "size": [
+        1479.984375,
+        232.40625
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "GrabCut foreground extraction\n\n'CV Annotate Points' is the interaction: RUN ONCE to load the photo into the node, then LEFT-CLICK around the object (drag to fine-tune, SHIFT+CLICK to remove). The same clicks seed GrabCut two ways:\n\n- RECTANGLE INIT (top): the points' bounding box goes into the 'points' input - everything outside the box is sure background, the inside is refined from color statistics. 2 points (opposite corners) are enough.\n- POLYGON INIT (bottom): the annotate node's polygon mask goes into the 'mask' input as PROBABLE FOREGROUND - with 3+ points hugging the silhouette this seeds tighter than a box and survives objects that touch the frame.\n\nEach branch previews the cutout (cv2.bitwise_and through the foreground mask), the raw 4-value GrabCut label map as a heatmap (sure/probable x fg/bg - watch the probable ring shrink onto the object), and inspects 'success'. Failure tolerance: too few points (or a box covering the whole frame) gives success=false and an empty mask instead of an error."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2,
+            3,
+            5,
+            6,
+            10,
+            12,
+            13
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Photo with a clear subject",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "CV_AnnotatePoints",
+      "pos": [
+        400,
+        540
+      ],
+      "size": [
+        340,
+        430
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "points",
+          "type": "NPARRAY",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "count",
+          "type": "INT",
+          "links": null
+        },
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "title": "Click around the object here",
+      "properties": {
+        "Node name for S&R": "CV_AnnotatePoints"
+      },
+      "widgets_values": [
+        "[[0.5062,0.5382],[0.5674,0.8243],[0.4321,0.8243],[0.465,0.3858],[0.1854,0.0909],[0.4967,0.2493],[0.7813,0.1162],[0.5158,0.3858]]"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "CV_GrabCut",
+      "pos": [
+        820,
+        300
+      ],
+      "size": [
+        400,
+        200
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 3
+        },
+        {
+          "name": "points",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": 4
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        },
+        {
+          "name": "sure_foreground",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        },
+        {
+          "name": "sure_background",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            7,
+            19
+          ]
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "success",
+          "type": "BOOLEAN",
+          "links": [
+            22
+          ]
+        }
+      ],
+      "title": "[CV GrabCut] GrabCut (rectangle from the points)",
+      "properties": {
+        "Node name for S&R": "CV_GrabCut"
+      },
+      "widgets_values": [
+        5
+      ]
+    },
+    {
+      "id": 6,
+      "type": "cv2_bitwise_and",
+      "pos": [
+        1240,
+        300
+      ],
+      "size": [
+        310,
+        120
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 5
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 6
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "Cutout (photo under the fg mask)",
+      "properties": {
+        "Node name for S&R": "cv2_bitwise_and"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 7,
+      "type": "CV_CVPreview",
+      "pos": [
+        1600,
+        300
+      ],
+      "size": [
+        300,
+        364
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (cutout, rect init)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 8,
+      "type": "CV_CVPreview",
+      "pos": [
+        1940,
+        300
+      ],
+      "size": [
+        300,
+        364
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (labels heatmap, rect init)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        false
+      ]
+    },
+    {
+      "id": 9,
+      "type": "CV_GrabCut",
+      "pos": [
+        817,
+        749.29846816057
+      ],
+      "size": [
+        390,
+        200
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 10
+        },
+        {
+          "name": "points",
+          "shape": 7,
+          "type": "NPARRAY",
+          "link": null
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": 11
+        },
+        {
+          "name": "sure_foreground",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        },
+        {
+          "name": "sure_background",
+          "shape": 7,
+          "type": "NPARRAY,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            14
+          ]
+        },
+        {
+          "name": "labels",
+          "type": "NPARRAY",
+          "links": [
+            16
+          ]
+        },
+        {
+          "name": "success",
+          "type": "BOOLEAN",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "title": "[CV GrabCut] GrabCut (polygon = probable FG)",
+      "properties": {
+        "Node name for S&R": "CV_GrabCut"
+      },
+      "widgets_values": [
+        5
+      ]
+    },
+    {
+      "id": 10,
+      "type": "cv2_bitwise_and",
+      "pos": [
+        1240,
+        762.9924870940622
+      ],
+      "size": [
+        310,
+        120
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src1",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        },
+        {
+          "name": "src2",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 13
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "title": "Cutout (photo under the fg mask)",
+      "properties": {
+        "Node name for S&R": "cv2_bitwise_and"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 11,
+      "type": "CV_CVPreview",
+      "pos": [
+        1600,
+        763.6345008508297
+      ],
+      "size": [
+        300,
+        364
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 15
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (cutout, polygon init)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 12,
+      "type": "CV_CVPreview",
+      "pos": [
+        1924,
+        763.6345008508297
+      ],
+      "size": [
+        321.90625,
+        364
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview (labels heatmap, polygon init)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "heatmap",
+        false
+      ]
+    },
+    {
+      "id": 15,
+      "type": "CV_CVPreview",
+      "pos": [
+        2265,
+        300.3883304494036
+      ],
+      "size": [
+        300,
+        364
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview mask (sure + probable fg)",
+      "properties": {
+        "Node name for S&R": "CV_CVPreview"
+      },
+      "widgets_values": [
+        "image",
+        false
+      ]
+    },
+    {
+      "id": 16,
+      "type": "PreviewAny",
+      "pos": [
+        1230,
+        461.9440920790968
+      ],
+      "size": [
+        322.09375,
+        172
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Inspect (success, rect init)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        true
+      ]
+    },
+    {
+      "id": 17,
+      "type": "PreviewAny",
+      "pos": [
+        1238,
+        929.1817250425414
+      ],
+      "size": [
+        306.3125,
+        172
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 24
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Inspect (success, polygon init)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewAny"
+      },
+      "widgets_values": [
+        null,
+        null,
+        true
+      ]
+    }
+  ],
+  "links": [
+    [
+      2,
+      2,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      2,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      4,
+      0,
+      5,
+      1,
+      "NPARRAY"
+    ],
+    [
+      5,
+      2,
+      0,
+      6,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      2,
+      0,
+      6,
+      1,
+      "IMAGE"
+    ],
+    [
+      7,
+      5,
+      0,
+      6,
+      2,
+      "NPARRAY"
+    ],
+    [
+      8,
+      6,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      5,
+      1,
+      8,
+      0,
+      "NPARRAY"
+    ],
+    [
+      10,
+      2,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      4,
+      2,
+      9,
+      2,
+      "NPARRAY"
+    ],
+    [
+      12,
+      2,
+      0,
+      10,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      2,
+      0,
+      10,
+      1,
+      "IMAGE"
+    ],
+    [
+      14,
+      9,
+      0,
+      10,
+      2,
+      "NPARRAY"
+    ],
+    [
+      15,
+      10,
+      0,
+      11,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      9,
+      1,
+      12,
+      0,
+      "NPARRAY"
+    ],
+    [
+      19,
+      5,
+      0,
+      15,
+      0,
+      "NPARRAY"
+    ],
+    [
+      22,
+      5,
+      2,
+      16,
+      0,
+      "BOOLEAN"
+    ],
+    [
+      24,
+      9,
+      2,
+      17,
+      0,
+      "BOOLEAN"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.37473156764495474,
+      "offset": [
+        504.4181837477299,
+        785.5178574379232
+      ]
+    },
+    "frontendVersion": "1.45.20"
+  },
+  "version": 0.4
+}

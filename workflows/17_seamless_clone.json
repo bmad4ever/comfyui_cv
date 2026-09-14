@@ -1,0 +1,1232 @@
+{
+  "id": "e60f10ce-7e64-45f5-9460-046ae797b7ad",
+  "revision": 0,
+  "last_node_id": 31,
+  "last_link_id": 43,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "pos": [
+        40,
+        210
+      ],
+      "size": [
+        338.703125,
+        364
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            26
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load Image (source patch)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "seamless_birds_sky.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "pos": [
+        398,
+        772.824120560298
+      ],
+      "size": [
+        369.234375,
+        364
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "Load Image (destination)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "seamless_sky_landscape.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "cv2_seamlessClone",
+      "pos": [
+        1087,
+        486.7998699091502
+      ],
+      "size": [
+        340,
+        218.65625
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 26
+        },
+        {
+          "name": "dst",
+          "type": "NPARRAY,IMAGE",
+          "link": 2
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "title": "cv2.seamlessClone (Poisson blend)",
+      "properties": {
+        "Node name for S&R": "cv2_seamlessClone"
+      },
+      "widgets_values": [
+        "(600, 363)",
+        "MIXED_CLONE"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "PreviewImage",
+      "pos": [
+        1582,
+        483.7755676213104
+      ],
+      "size": [
+        670.4375,
+        580.390625
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: cv2.seamlessClone (Poisson blend)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.24.1",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "Note",
+      "pos": [
+        30,
+        -71.57260556676022
+      ],
+      "size": [
+        858.75,
+        221.96875
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "cv2.seamlessClone (Poisson blending)\n\nInserts the source patch into the destination with seamless color matching - the raw cv2 wrapper, IMAGE links straight in and the blend comes back as an IMAGE. The source is a crop of birds on plain overcast sky, so the whole-rectangle border is uniform sky and Poisson blending drops the flock into the destination sky with NO mask connected (an unconnected mask = clone the entire patch) - only the birds survive, the sky border melts in. p_x/p_y = 600/363 place the patch center in the destination's sky band; the masked region must fit inside the destination at that point. For a source that is NOT on a uniform background, connect a mask sized like the SOURCE patch (white = clone). \n\nTry flags = NORMAL_CLONE for a plain insert or MONOCHROME_TRANSFER to transfer structure only."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 7,
+      "type": "Note",
+      "pos": [
+        -114.53464220462865,
+        621.8389804206487
+      ],
+      "size": [
+        494.40625,
+        170.625
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "seamless_birds_sky.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Birds flying at Sky 2.JPG\nCreator: Augustus Binu\nLicense: CC BY-SA 3.0 (attribution + share-alike)\n         https://creativecommons.org/licenses/by-sa/3.0/\nSource:  https://commons.wikimedia.org/wiki/File:Birds_flying_at_Sky_2.JPG\nSize:    540x294 (sky-only crop, downscaled from original 3604x2158)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 8,
+      "type": "Note",
+      "pos": [
+        235.7675230354937,
+        1182.6166362737472
+      ],
+      "size": [
+        531.40625,
+        187.578125
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "seamless_sky_landscape.jpg",
+      "properties": {},
+      "widgets_values": [
+        "Title:   Clouds in the sky landscape.jpg\nCreator: Aammell\nLicense: CC0 1.0 (public domain dedication)\n         https://creativecommons.org/publicdomain/zero/1.0/\nSource:  https://commons.wikimedia.org/wiki/File:Clouds_in_the_sky_landscape.jpg\nSize:    1200x900 (downscaled from original 4000x3000)\nFull provenance: example_inputs/sources.txt"
+      ],
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 12,
+      "type": "Note",
+      "pos": [
+        829,
+        1634.202033511455
+      ],
+      "size": [
+        999.78125,
+        218.609375
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "cv2.photo family showcase (extends the seamlessClone demo above)\n\nTOP - the SAME source patch cloned into the SAME destination three ways (mask left unconnected = clone the whole rectangle, so the modes are the only difference): NORMAL_CLONE pastes the patch with its colours matched to the destination; MIXED_CLONE keeps only the strong source GRADIENTS so the birds survive but the plain sky melts in; MONOCHROME_TRANSFER transfers structure as a single channel.\n\nBOTTOM - the local (region) edits from cv2.photo, each a Poisson / gradient-domain solve seeded by a mask. 'CV Color Range' keys a region of the destination (here the bright sky) into a mask; colorChange re-tints that region by per-channel multipliers and illuminationChange relights it (alpha = local contrast, beta = falloff). textureFlattening instead runs over the WHOLE frame, wiping fine texture between the edges its internal Canny keeps."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 13,
+      "type": "LoadImage",
+      "pos": [
+        29,
+        1826.4632382876532
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            6,
+            9,
+            12
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "cv2.photo: source patch",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "seamless_birds_sky.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 14,
+      "type": "LoadImage",
+      "pos": [
+        27,
+        2238.1187194117992
+      ],
+      "size": [
+        320,
+        364
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            7,
+            10,
+            13,
+            15,
+            18,
+            21,
+            24
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "title": "cv2.photo: destination",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "seamless_sky_landscape.jpg",
+        "image"
+      ]
+    },
+    {
+      "id": 15,
+      "type": "cv2_seamlessClone",
+      "pos": [
+        811,
+        2274.3452582131863
+      ],
+      "size": [
+        443.75,
+        218
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 6
+        },
+        {
+          "name": "dst",
+          "type": "NPARRAY,IMAGE",
+          "link": 7
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "title": "[cv2.seamlessClone] Clone: NORMAL (paste + colour match)",
+      "properties": {
+        "Node name for S&R": "cv2_seamlessClone"
+      },
+      "widgets_values": [
+        "(600, 363)",
+        "NORMAL_CLONE"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "PreviewImage",
+      "pos": [
+        811,
+        1920.375415042691
+      ],
+      "size": [
+        320,
+        304
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 8
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            27
+          ]
+        }
+      ],
+      "title": "Preview: NORMAL (paste + colour match)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 17,
+      "type": "cv2_seamlessClone",
+      "pos": [
+        1261,
+        2271.7362570718246
+      ],
+      "size": [
+        430.59375,
+        218
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 9
+        },
+        {
+          "name": "dst",
+          "type": "NPARRAY,IMAGE",
+          "link": 10
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "title": "[cv2.seamlessClone] Clone: MIXED (source gradients only)",
+      "properties": {
+        "Node name for S&R": "cv2_seamlessClone"
+      },
+      "widgets_values": [
+        "(600, 363)",
+        "MIXED_CLONE"
+      ]
+    },
+    {
+      "id": 18,
+      "type": "PreviewImage",
+      "pos": [
+        1279.46159293265,
+        1920.150049208875
+      ],
+      "size": [
+        302.0625,
+        304
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            28
+          ]
+        }
+      ],
+      "title": "Preview: MIXED (source gradients only)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 19,
+      "type": "cv2_seamlessClone",
+      "pos": [
+        1701,
+        2276.2781618530994
+      ],
+      "size": [
+        440.5625,
+        218
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 12
+        },
+        {
+          "name": "dst",
+          "type": "NPARRAY,IMAGE",
+          "link": 13
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            14
+          ]
+        }
+      ],
+      "title": "[cv2.seamlessClone] Clone: MONOCHROME (structure only)",
+      "properties": {
+        "Node name for S&R": "cv2_seamlessClone"
+      },
+      "widgets_values": [
+        "(600, 363)",
+        "MONOCHROME_TRANSFER"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "PreviewImage",
+      "pos": [
+        1785.0446204199736,
+        1919.9246833750587
+      ],
+      "size": [
+        320,
+        304
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 14
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: MONOCHROME (structure only)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 21,
+      "type": "CV_ScalarArray",
+      "pos": [
+        40,
+        2653.633626431417
+      ],
+      "size": [
+        290,
+        140
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "title": "Sky colour (B, G, R)",
+      "properties": {
+        "Node name for S&R": "CV_ScalarArray"
+      },
+      "widgets_values": [
+        "(200, 220, 235)",
+        "float32"
+      ]
+    },
+    {
+      "id": 22,
+      "type": "CV_ScalarArray",
+      "pos": [
+        40,
+        2853.633626431419
+      ],
+      "size": [
+        290,
+        140
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nparray",
+          "type": "NPARRAY",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "title": "Tolerance per channel",
+      "properties": {
+        "Node name for S&R": "CV_ScalarArray"
+      },
+      "widgets_values": [
+        "(70, 70, 70)",
+        "float32"
+      ]
+    },
+    {
+      "id": 23,
+      "type": "CV_ColorRange",
+      "pos": [
+        729,
+        3012.3707402170053
+      ],
+      "size": [
+        298.328125,
+        143.65625
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "NPARRAY,IMAGE",
+          "link": 15
+        },
+        {
+          "name": "center",
+          "type": "NPARRAY",
+          "link": 16
+        },
+        {
+          "name": "tolerance",
+          "type": "NPARRAY",
+          "link": 17
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mask",
+          "type": "NPARRAY",
+          "links": [
+            19,
+            22
+          ]
+        }
+      ],
+      "title": "Sky region mask",
+      "properties": {
+        "Node name for S&R": "CV_ColorRange"
+      },
+      "widgets_values": [
+        "linear - no circular channel (BGR/RGB/Lab/Luv/YCrCb/gray)"
+      ]
+    },
+    {
+      "id": 24,
+      "type": "cv2_colorChange",
+      "pos": [
+        1500,
+        2999.260746025506
+      ],
+      "size": [
+        290,
+        182
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE",
+          "link": 18
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 19
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            20
+          ]
+        }
+      ],
+      "title": "colorChange: re-tint the sky",
+      "properties": {
+        "Node name for S&R": "cv2_colorChange"
+      },
+      "widgets_values": [
+        1.6,
+        0.6,
+        0.6
+      ]
+    },
+    {
+      "id": 25,
+      "type": "PreviewImage",
+      "pos": [
+        1069,
+        2661.9763500078257
+      ],
+      "size": [
+        280,
+        304
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 20
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: colorChange",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 26,
+      "type": "cv2_illuminationChange",
+      "pos": [
+        1060,
+        3013.3371920369623
+      ],
+      "size": [
+        435.640625,
+        156
+      ],
+      "flags": {},
+      "order": 22,
+      "mode": 0,
+      "showAdvanced": false,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE",
+          "link": 21
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": 22
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "title": "[cv2.illuminationChange] illuminationChange: relight the sky",
+      "properties": {
+        "Node name for S&R": "cv2_illuminationChange"
+      },
+      "widgets_values": [
+        0.2,
+        0.4
+      ]
+    },
+    {
+      "id": 27,
+      "type": "PreviewImage",
+      "pos": [
+        1480,
+        2658.175531212691
+      ],
+      "size": [
+        280,
+        304
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 23
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: illuminationChange",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 28,
+      "type": "cv2_textureFlattening",
+      "pos": [
+        1889,
+        3005.960920280509
+      ],
+      "size": [
+        395.359375,
+        182
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "src",
+          "type": "NPARRAY,IMAGE",
+          "link": 24
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "NPARRAY,IMAGE,MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "result",
+          "type": "IMAGE",
+          "links": [
+            25
+          ]
+        }
+      ],
+      "title": "[cv2.textureFlattening] textureFlattening: whole frame",
+      "properties": {
+        "Node name for S&R": "cv2_textureFlattening"
+      },
+      "widgets_values": [
+        30,
+        45,
+        3
+      ]
+    },
+    {
+      "id": 29,
+      "type": "PreviewImage",
+      "pos": [
+        1891,
+        2654.3747124175566
+      ],
+      "size": [
+        280,
+        304
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Preview: textureFlattening",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 30,
+      "type": "ImageCompare",
+      "pos": [
+        2194.810959389993,
+        1807.5197472282612
+      ],
+      "size": [
+        775.0625,
+        666.59375
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image_a",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 27
+        },
+        {
+          "name": "image_b",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 28
+        }
+      ],
+      "outputs": [],
+      "title": "NORMAL vs MIXED",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.27.0",
+        "Node name for S&R": "ImageCompare"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      2,
+      2,
+      0,
+      3,
+      1,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      6,
+      13,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ],
+    [
+      7,
+      14,
+      0,
+      15,
+      1,
+      "IMAGE"
+    ],
+    [
+      8,
+      15,
+      0,
+      16,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      13,
+      0,
+      17,
+      0,
+      "IMAGE"
+    ],
+    [
+      10,
+      14,
+      0,
+      17,
+      1,
+      "IMAGE"
+    ],
+    [
+      11,
+      17,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      12,
+      13,
+      0,
+      19,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      14,
+      0,
+      19,
+      1,
+      "IMAGE"
+    ],
+    [
+      14,
+      19,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      15,
+      14,
+      0,
+      23,
+      0,
+      "IMAGE"
+    ],
+    [
+      16,
+      21,
+      0,
+      23,
+      1,
+      "NPARRAY"
+    ],
+    [
+      17,
+      22,
+      0,
+      23,
+      2,
+      "NPARRAY"
+    ],
+    [
+      18,
+      14,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      19,
+      23,
+      0,
+      24,
+      1,
+      "NPARRAY"
+    ],
+    [
+      20,
+      24,
+      0,
+      25,
+      0,
+      "IMAGE"
+    ],
+    [
+      21,
+      14,
+      0,
+      26,
+      0,
+      "IMAGE"
+    ],
+    [
+      22,
+      23,
+      0,
+      26,
+      1,
+      "NPARRAY"
+    ],
+    [
+      23,
+      26,
+      0,
+      27,
+      0,
+      "IMAGE"
+    ],
+    [
+      24,
+      14,
+      0,
+      28,
+      0,
+      "IMAGE"
+    ],
+    [
+      25,
+      28,
+      0,
+      29,
+      0,
+      "IMAGE"
+    ],
+    [
+      26,
+      1,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      27,
+      16,
+      0,
+      30,
+      0,
+      "IMAGE"
+    ],
+    [
+      28,
+      18,
+      0,
+      30,
+      1,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.18260271200149214,
+      "offset": [
+        2461.400015160279,
+        1004.2010431703528
+      ]
+    },
+    "frontendVersion": "1.48.7"
+  },
+  "version": 0.4
+}

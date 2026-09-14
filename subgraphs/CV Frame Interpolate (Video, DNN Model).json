@@ -1,0 +1,2788 @@
+{
+  "last_node_id": 2,
+  "last_link_id": 0,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "5e8b1f24-7c93-4a06-8d51-2b6f0a9e43c7",
+      "pos": [
+        390,
+        240
+      ],
+      "size": [
+        320,
+        156
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "model",
+          "type": "COMBO",
+          "link": null
+        },
+        {
+          "name": "multiplier",
+          "type": "INT",
+          "link": null
+        },
+        {
+          "name": "engine",
+          "type": "COMBO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "frames_out",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "frame_count",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "properties": {},
+      "widgets_values": [],
+      "title": "CV Frame Interpolate (Video, DNN Model)",
+      "color": "#333a40",
+      "bgcolor": "#3d454b"
+    },
+    {
+      "id": 2,
+      "type": "MarkdownNote",
+      "pos": [
+        750,
+        240
+      ],
+      "size": [
+        380,
+        190
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Model: rife_v4.9.onnx",
+      "properties": {},
+      "widgets_values": [
+        "rife_v4.9.onnx at\nhttps://huggingface.co/FuryTMP/RIFE_v4.9\n(21 MB fp32)\n\nDrop it into ComfyUI/models/onnx. NOT the export at https://huggingface.co/FuryTMP/RIFE_fp32 - cv2.dnn cannot run that graph."
+      ],
+      "color": "#2a363b",
+      "bgcolor": "#3f5159"
+    }
+  ],
+  "links": [],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4,
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "5e8b1f24-7c93-4a06-8d51-2b6f0a9e43c7",
+        "version": 1,
+        "state": {
+          "lastGroupId": 0,
+          "lastNodeId": 41,
+          "lastLinkId": 168,
+          "lastRerouteId": 0
+        },
+        "revision": 0,
+        "config": {},
+        "name": "CV Frame Interpolate (Video, DNN Model)",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            40,
+            200,
+            120,
+            80
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            2080,
+            200,
+            120,
+            80
+          ]
+        },
+        "inputs": [
+          {
+            "id": "258dcc0a-c328-5bde-8cc4-6cdf61003cb2",
+            "name": "frames",
+            "type": "IMAGE",
+            "linkIds": [
+              102,
+              108,
+              119,
+              122,
+              164
+            ],
+            "localized_name": "frames",
+            "pos": [
+              140,
+              220
+            ]
+          },
+          {
+            "id": "c25edb3f-ddde-51b9-b252-b63d6cad14b9",
+            "name": "model",
+            "type": "COMBO",
+            "linkIds": [
+              145
+            ],
+            "localized_name": "model",
+            "pos": [
+              140,
+              240
+            ]
+          },
+          {
+            "id": "9c92fd67-e083-59cf-8b42-520adfa99e27",
+            "name": "multiplier",
+            "type": "INT",
+            "linkIds": [
+              101
+            ],
+            "localized_name": "multiplier",
+            "pos": [
+              140,
+              260
+            ]
+          },
+          {
+            "id": "280e9f35-1836-5e16-9c06-9f371e5df45a",
+            "name": "engine",
+            "type": "COMBO",
+            "linkIds": [
+              146
+            ],
+            "localized_name": "engine",
+            "pos": [
+              140,
+              280
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "6b636716-3236-52da-87ec-9c2abdbfd43b",
+            "name": "frames_out",
+            "type": "IMAGE",
+            "linkIds": [
+              167
+            ],
+            "localized_name": "frames_out",
+            "pos": [
+              2100,
+              220
+            ]
+          },
+          {
+            "id": "d2228586-62a2-57d9-bb13-f3a2f0beea59",
+            "name": "frame_count",
+            "type": "INT",
+            "linkIds": [
+              168
+            ],
+            "localized_name": "frame_count",
+            "pos": [
+              2100,
+              240
+            ]
+          }
+        ],
+        "widgets": [],
+        "groups": [],
+        "extra": {},
+        "nodes": [
+          {
+            "id": 1,
+            "type": "PrimitiveInt",
+            "pos": [
+              40,
+              840
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "value",
+                "type": "INT",
+                "widget": {
+                  "name": "value"
+                },
+                "link": 101
+              }
+            ],
+            "outputs": [
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  104,
+                  106,
+                  113,
+                  115,
+                  117
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "PrimitiveInt"
+            },
+            "widgets_values": [
+              2
+            ],
+            "title": "multiplier (2 = double the frame rate)"
+          },
+          {
+            "id": 2,
+            "type": "GetImageSize",
+            "pos": [
+              390,
+              640
+            ],
+            "size": [
+              290,
+              126
+            ],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 102
+              }
+            ],
+            "outputs": [
+              {
+                "name": "width",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "height",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "batch_size",
+                "type": "INT",
+                "links": [
+                  103,
+                  105
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "GetImageSize"
+            },
+            "widgets_values": [],
+            "title": "how many frames?"
+          },
+          {
+            "id": 3,
+            "type": "ComfyMathExpression",
+            "pos": [
+              740,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 103
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 104
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  107
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "(a - 1) * b"
+            ],
+            "title": "output slots = (N - 1) * multiplier"
+          },
+          {
+            "id": 4,
+            "type": "ComfyMathExpression",
+            "pos": [
+              740,
+              840
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 105
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 106
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  168
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "(a - 1) * b + 1"
+            ],
+            "title": "frame count = (N - 1) * multiplier + 1"
+          },
+          {
+            "id": 5,
+            "type": "Basic data handling: DataListRange",
+            "pos": [
+              1090,
+              640
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "stop",
+                "type": "INT",
+                "widget": {
+                  "name": "stop"
+                },
+                "link": 107
+              }
+            ],
+            "outputs": [
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  109
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "Basic data handling: DataListRange"
+            },
+            "widgets_values": [
+              0,
+              16,
+              1
+            ],
+            "title": "0 .. output slots (self-sizing)"
+          },
+          {
+            "id": 6,
+            "type": "ImageFromBatch",
+            "pos": [
+              1090,
+              440
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 108
+              }
+            ],
+            "outputs": [
+              {
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "links": [
+                  111
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImageFromBatch"
+            },
+            "widgets_values": [
+              0,
+              1
+            ],
+            "title": "seed the fold (stripped again below)"
+          },
+          {
+            "id": 7,
+            "type": "WorklistToItemList //Inspire",
+            "pos": [
+              1440,
+              640
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "item",
+                "type": "*",
+                "link": 109
+              }
+            ],
+            "outputs": [
+              {
+                "name": "item_list",
+                "type": "ITEM_LIST",
+                "links": [
+                  110
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "WorklistToItemList //Inspire"
+            },
+            "widgets_values": [],
+            "title": "list -> ITEM_LIST"
+          },
+          {
+            "id": 8,
+            "type": "ForeachListBegin //Inspire",
+            "pos": [
+              1790,
+              440
+            ],
+            "size": [
+              290,
+              148
+            ],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "item_list",
+                "type": "ITEM_LIST",
+                "link": 110
+              },
+              {
+                "name": "initial_input",
+                "type": "*",
+                "link": 111
+              }
+            ],
+            "outputs": [
+              {
+                "name": "flow_control",
+                "type": "FOREACH_LIST_CONTROL",
+                "links": [
+                  160
+                ]
+              },
+              {
+                "name": "remained_list",
+                "type": "ITEM_LIST",
+                "links": [
+                  161
+                ]
+              },
+              {
+                "name": "item",
+                "type": "*",
+                "links": [
+                  112,
+                  114
+                ]
+              },
+              {
+                "name": "intermediate_output",
+                "type": "*",
+                "links": [
+                  158
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ForeachListBegin //Inspire"
+            },
+            "widgets_values": [],
+            "title": "for each OUTPUT slot"
+          },
+          {
+            "id": 9,
+            "type": "ComfyMathExpression",
+            "pos": [
+              2140,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 112
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 113
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  120,
+                  121
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / b"
+            ],
+            "title": "pair index i = j / multiplier (INT truncates)"
+          },
+          {
+            "id": 10,
+            "type": "ComfyMathExpression",
+            "pos": [
+              2140,
+              840
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 114
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 115
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  116,
+                  118
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a % b"
+            ],
+            "title": "sub-step k = j %% multiplier"
+          },
+          {
+            "id": 11,
+            "type": "ComfyMathExpression",
+            "pos": [
+              2490,
+              840
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 10,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 116
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 117
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": [
+                  139
+                ]
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a / b"
+            ],
+            "title": "t = k / multiplier"
+          },
+          {
+            "id": 12,
+            "type": "ComfyMathExpression",
+            "pos": [
+              2490,
+              1040
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 118
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": [
+                  157
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a == 0"
+            ],
+            "title": "k == 0 -> this slot IS an original frame"
+          },
+          {
+            "id": 13,
+            "type": "ImageFromBatch",
+            "pos": [
+              2490,
+              40
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 119
+              },
+              {
+                "name": "batch_index",
+                "type": "INT",
+                "widget": {
+                  "name": "batch_index"
+                },
+                "link": 120
+              }
+            ],
+            "outputs": [
+              {
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "links": [
+                  124,
+                  156
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImageFromBatch"
+            },
+            "widgets_values": [
+              0,
+              1
+            ],
+            "title": "frame i"
+          },
+          {
+            "id": 14,
+            "type": "ComfyMathExpression",
+            "pos": [
+              2490,
+              240
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 121
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  123
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "a + 1"
+            ],
+            "title": "i + 1"
+          },
+          {
+            "id": 15,
+            "type": "ImageFromBatch",
+            "pos": [
+              2840,
+              240
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 122
+              },
+              {
+                "name": "batch_index",
+                "type": "INT",
+                "widget": {
+                  "name": "batch_index"
+                },
+                "link": 123
+              }
+            ],
+            "outputs": [
+              {
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "links": [
+                  125
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImageFromBatch"
+            },
+            "widgets_values": [
+              0,
+              1
+            ],
+            "title": "frame i+1"
+          },
+          {
+            "id": 16,
+            "type": "CV_ImageToCV",
+            "pos": [
+              3190,
+              40
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 124
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  126,
+                  129
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ImageToCV"
+            },
+            "widgets_values": [
+              "RGB",
+              "float32 (0-1)",
+              0
+            ],
+            "title": "Frame A -> RGB 0..1 (what RIFE wants)"
+          },
+          {
+            "id": 17,
+            "type": "CV_ImageToCV",
+            "pos": [
+              3190,
+              240
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 125
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  132
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ImageToCV"
+            },
+            "widgets_values": [
+              "RGB",
+              "float32 (0-1)",
+              0
+            ],
+            "title": "Frame B -> RGB 0..1"
+          },
+          {
+            "id": 18,
+            "type": "CV_CVArrayShape",
+            "pos": [
+              3540,
+              440
+            ],
+            "size": [
+              290,
+              148
+            ],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 126
+              }
+            ],
+            "outputs": [
+              {
+                "name": "height",
+                "type": "INT",
+                "links": [
+                  127,
+                  151
+                ]
+              },
+              {
+                "name": "width",
+                "type": "INT",
+                "links": [
+                  128,
+                  153
+                ]
+              },
+              {
+                "name": "channels",
+                "type": "INT",
+                "links": null
+              },
+              {
+                "name": "dsize",
+                "type": "STRING",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVArrayShape"
+            },
+            "widgets_values": [],
+            "title": "source H / W"
+          },
+          {
+            "id": 19,
+            "type": "ComfyMathExpression",
+            "pos": [
+              3890,
+              440
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 18,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 127
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  130,
+                  133
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "(0 - a) % 32"
+            ],
+            "title": "pad rows to a multiple of 32"
+          },
+          {
+            "id": 20,
+            "type": "ComfyMathExpression",
+            "pos": [
+              3890,
+              640
+            ],
+            "size": [
+              290,
+              152
+            ],
+            "flags": {},
+            "order": 19,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "values.a",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": 128
+              },
+              {
+                "name": "values.b",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              },
+              {
+                "name": "values.c",
+                "type": "FLOAT,INT,BOOLEAN",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "FLOAT",
+                "type": "FLOAT",
+                "links": null
+              },
+              {
+                "name": "INT",
+                "type": "INT",
+                "links": [
+                  131,
+                  134
+                ]
+              },
+              {
+                "name": "BOOLEAN",
+                "type": "BOOLEAN",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfyMathExpression"
+            },
+            "widgets_values": [
+              "(0 - a) % 32"
+            ],
+            "title": "pad cols to a multiple of 32"
+          },
+          {
+            "id": 21,
+            "type": "cv2_copyMakeBorder",
+            "pos": [
+              4240,
+              40
+            ],
+            "size": [
+              290,
+              360
+            ],
+            "flags": {},
+            "order": 20,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 129
+              },
+              {
+                "name": "bottom",
+                "type": "INT",
+                "widget": {
+                  "name": "bottom"
+                },
+                "link": 130
+              },
+              {
+                "name": "right",
+                "type": "INT",
+                "widget": {
+                  "name": "right"
+                },
+                "link": 131
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  135,
+                  137
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_copyMakeBorder"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              0,
+              "BORDER_REPLICATE",
+              "(0, 0, 0, 0)"
+            ],
+            "title": "Pad A (the net rejects other sizes)"
+          },
+          {
+            "id": 22,
+            "type": "cv2_copyMakeBorder",
+            "pos": [
+              4240,
+              240
+            ],
+            "size": [
+              290,
+              360
+            ],
+            "flags": {},
+            "order": 21,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "src",
+                "type": "NPARRAY",
+                "link": 132
+              },
+              {
+                "name": "bottom",
+                "type": "INT",
+                "widget": {
+                  "name": "bottom"
+                },
+                "link": 133
+              },
+              {
+                "name": "right",
+                "type": "INT",
+                "widget": {
+                  "name": "right"
+                },
+                "link": 134
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "NPARRAY",
+                "links": [
+                  136
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "cv2_copyMakeBorder"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              0,
+              "BORDER_REPLICATE",
+              "(0, 0, 0, 0)"
+            ],
+            "title": "Pad B (identically)"
+          },
+          {
+            "id": 23,
+            "type": "CV_ToBlob",
+            "pos": [
+              4590,
+              40
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 22,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 135
+              }
+            ],
+            "outputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "links": [
+                  140
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ToBlob"
+            },
+            "widgets_values": [
+              1.0,
+              0,
+              0
+            ],
+            "title": "A -> (1, 3, H, W)"
+          },
+          {
+            "id": 24,
+            "type": "CV_ToBlob",
+            "pos": [
+              4590,
+              240
+            ],
+            "size": [
+              290,
+              160
+            ],
+            "flags": {},
+            "order": 23,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 136
+              }
+            ],
+            "outputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "links": [
+                  141
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ToBlob"
+            },
+            "widgets_values": [
+              1.0,
+              0,
+              0
+            ],
+            "title": "B -> (1, 3, H, W)"
+          },
+          {
+            "id": 25,
+            "type": "CV_ConstantLike",
+            "pos": [
+              4590,
+              440
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 24,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 137
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  138
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ConstantLike"
+            },
+            "widgets_values": [
+              1,
+              "grayscale (single channel)"
+            ],
+            "title": "a plane of ONES"
+          },
+          {
+            "id": 26,
+            "type": "CV_ToBlob",
+            "pos": [
+              4940,
+              440
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 25,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 138
+              },
+              {
+                "name": "scale",
+                "type": "FLOAT",
+                "widget": {
+                  "name": "scale"
+                },
+                "link": 139
+              }
+            ],
+            "outputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "links": [
+                  143
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ToBlob"
+            },
+            "widgets_values": [
+              0.5,
+              0,
+              0
+            ],
+            "title": "1 * t -> (1, 1, H, W) filled with exactly t"
+          },
+          {
+            "id": 27,
+            "type": "CV_ConcatArrays",
+            "pos": [
+              5290,
+              40
+            ],
+            "size": [
+              290,
+              174
+            ],
+            "flags": {},
+            "order": 26,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "array1",
+                "type": "NPARRAY",
+                "link": 140
+              },
+              {
+                "name": "array2",
+                "type": "NPARRAY",
+                "link": 141
+              },
+              {
+                "name": "array3",
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "name": "array4",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  142
+                ]
+              },
+              {
+                "name": "length",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ConcatArrays"
+            },
+            "widgets_values": [
+              1
+            ],
+            "title": "A|B -> (1, 6, H, W)"
+          },
+          {
+            "id": 28,
+            "type": "CV_ConcatArrays",
+            "pos": [
+              5640,
+              40
+            ],
+            "size": [
+              290,
+              174
+            ],
+            "flags": {},
+            "order": 27,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "array1",
+                "type": "NPARRAY",
+                "link": 142
+              },
+              {
+                "name": "array2",
+                "type": "NPARRAY",
+                "link": 143
+              },
+              {
+                "name": "array3",
+                "type": "NPARRAY",
+                "link": null
+              },
+              {
+                "name": "array4",
+                "type": "NPARRAY",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  144
+                ]
+              },
+              {
+                "name": "length",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_ConcatArrays"
+            },
+            "widgets_values": [
+              1
+            ],
+            "title": "+ timestep -> (1, 7, H, W)"
+          },
+          {
+            "id": 29,
+            "type": "CV_DnnForwardAll",
+            "pos": [
+              5990,
+              40
+            ],
+            "size": [
+              290,
+              282
+            ],
+            "flags": {},
+            "order": 28,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "link": 144
+              },
+              {
+                "name": "model",
+                "type": "COMBO",
+                "widget": {
+                  "name": "model"
+                },
+                "link": 145
+              },
+              {
+                "name": "engine",
+                "type": "COMBO",
+                "widget": {
+                  "name": "engine"
+                },
+                "link": 146
+              }
+            ],
+            "outputs": [
+              {
+                "name": "outputs",
+                "type": "NPARRAY",
+                "links": [
+                  147
+                ]
+              },
+              {
+                "name": "output_names",
+                "type": "STRING",
+                "links": null
+              },
+              {
+                "name": "count",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DnnForwardAll"
+            },
+            "widgets_values": [
+              "rife_v4.9.onnx",
+              "",
+              "auto (default backend)",
+              "auto (default target)",
+              "auto (default engine)",
+              ""
+            ],
+            "title": "Forward (one 7-channel input, batch 1)",
+            "color": "#2a363b",
+            "bgcolor": "#3f5159"
+          },
+          {
+            "id": 30,
+            "type": "CV_DnnPickOutput",
+            "pos": [
+              6340,
+              40
+            ],
+            "size": [
+              290,
+              182
+            ],
+            "flags": {},
+            "order": 29,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "outputs",
+                "type": "NPARRAY",
+                "link": 147
+              },
+              {
+                "name": "output_names",
+                "type": "STRING",
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "NPARRAY",
+                "links": [
+                  148
+                ]
+              },
+              {
+                "name": "index",
+                "type": "INT",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DnnPickOutput"
+            },
+            "widgets_values": [
+              "first",
+              0,
+              ""
+            ],
+            "title": "the single output"
+          },
+          {
+            "id": 31,
+            "type": "CV_DnnImagesFromBlob",
+            "pos": [
+              6690,
+              40
+            ],
+            "size": [
+              290,
+              82
+            ],
+            "flags": {},
+            "order": 30,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "blob",
+                "type": "NPARRAY",
+                "link": 148
+              }
+            ],
+            "outputs": [
+              {
+                "name": "images",
+                "type": "NPARRAY",
+                "links": [
+                  149
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_DnnImagesFromBlob"
+            },
+            "widgets_values": [],
+            "title": "NCHW -> (1, H, W, 3)"
+          },
+          {
+            "id": 32,
+            "type": "CV_IndexBatch",
+            "pos": [
+              7040,
+              40
+            ],
+            "size": [
+              290,
+              108
+            ],
+            "flags": {},
+            "order": 31,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 149
+              }
+            ],
+            "outputs": [
+              {
+                "name": "frame",
+                "type": "NPARRAY",
+                "links": [
+                  150
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_IndexBatch"
+            },
+            "widgets_values": [
+              0
+            ],
+            "title": "the single frame"
+          },
+          {
+            "id": 33,
+            "type": "CV_SliceArray",
+            "pos": [
+              7390,
+              40
+            ],
+            "size": [
+              290,
+              234
+            ],
+            "flags": {},
+            "order": 32,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 150
+              },
+              {
+                "name": "stop",
+                "type": "INT",
+                "widget": {
+                  "name": "stop"
+                },
+                "link": 151
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  152
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_SliceArray"
+            },
+            "widgets_values": [
+              0,
+              0,
+              0,
+              1,
+              true
+            ],
+            "title": "crop rows back to the source height"
+          },
+          {
+            "id": 34,
+            "type": "CV_SliceArray",
+            "pos": [
+              7740,
+              40
+            ],
+            "size": [
+              290,
+              234
+            ],
+            "flags": {},
+            "order": 33,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 152
+              },
+              {
+                "name": "stop",
+                "type": "INT",
+                "widget": {
+                  "name": "stop"
+                },
+                "link": 153
+              }
+            ],
+            "outputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "links": [
+                  154
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_SliceArray"
+            },
+            "widgets_values": [
+              1,
+              0,
+              0,
+              1,
+              true
+            ],
+            "title": "crop cols back to the source width"
+          },
+          {
+            "id": 35,
+            "type": "CV_CVToImage",
+            "pos": [
+              8090,
+              40
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 34,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "nparray",
+                "type": "NPARRAY",
+                "link": 154
+              }
+            ],
+            "outputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "links": [
+                  155
+                ]
+              },
+              {
+                "name": "alpha",
+                "type": "MASK",
+                "links": null
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "CV_CVToImage"
+            },
+            "widgets_values": [
+              "RGB"
+            ],
+            "title": "-> IMAGE (the array is already RGB)"
+          },
+          {
+            "id": 36,
+            "type": "ComfySwitchNode",
+            "pos": [
+              8440,
+              40
+            ],
+            "size": [
+              290,
+              130
+            ],
+            "flags": {},
+            "order": 35,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "on_false",
+                "type": "*",
+                "link": 155
+              },
+              {
+                "name": "on_true",
+                "type": "*",
+                "link": 156
+              },
+              {
+                "name": "switch",
+                "type": "BOOLEAN",
+                "widget": {
+                  "name": "switch"
+                },
+                "link": 157
+              }
+            ],
+            "outputs": [
+              {
+                "name": "output",
+                "type": "*",
+                "links": [
+                  159
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ComfySwitchNode"
+            },
+            "widgets_values": [
+              false
+            ],
+            "title": "k == 0 ? the ORIGINAL frame : the synthesised one"
+          },
+          {
+            "id": 37,
+            "type": "BatchImagesNode",
+            "pos": [
+              8790,
+              40
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 36,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "images.image0",
+                "type": "IMAGE",
+                "link": 158
+              },
+              {
+                "name": "images.image1",
+                "type": "IMAGE",
+                "link": 159
+              }
+            ],
+            "outputs": [
+              {
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "links": [
+                  162
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "BatchImagesNode"
+            },
+            "widgets_values": [],
+            "title": "append this slot's frame"
+          },
+          {
+            "id": 38,
+            "type": "ForeachListEnd //Inspire",
+            "pos": [
+              9140,
+              40
+            ],
+            "size": [
+              290,
+              126
+            ],
+            "flags": {},
+            "order": 37,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "flow_control",
+                "type": "FOREACH_LIST_CONTROL",
+                "link": 160
+              },
+              {
+                "name": "remained_list",
+                "type": "ITEM_LIST",
+                "link": 161
+              },
+              {
+                "name": "intermediate_output",
+                "type": "*",
+                "link": 162
+              }
+            ],
+            "outputs": [
+              {
+                "name": "result",
+                "type": "*",
+                "links": [
+                  163
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ForeachListEnd //Inspire"
+            },
+            "widgets_values": [],
+            "title": "end of the fold"
+          },
+          {
+            "id": 39,
+            "type": "ImageFromBatch",
+            "pos": [
+              9490,
+              40
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 38,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 163
+              }
+            ],
+            "outputs": [
+              {
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "links": [
+                  165
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImageFromBatch"
+            },
+            "widgets_values": [
+              1,
+              4096
+            ],
+            "title": "drop the seed frame"
+          },
+          {
+            "id": 40,
+            "type": "ImageFromBatch",
+            "pos": [
+              9490,
+              240
+            ],
+            "size": [
+              290,
+              134
+            ],
+            "flags": {},
+            "order": 39,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image",
+                "type": "IMAGE",
+                "link": 164
+              }
+            ],
+            "outputs": [
+              {
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "links": [
+                  166
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImageFromBatch"
+            },
+            "widgets_values": [
+              -1,
+              1
+            ],
+            "title": "the final frame (the loop never reaches it)"
+          },
+          {
+            "id": 41,
+            "type": "ImageBatch",
+            "pos": [
+              9840,
+              40
+            ],
+            "size": [
+              290,
+              104
+            ],
+            "flags": {},
+            "order": 40,
+            "mode": 0,
+            "inputs": [
+              {
+                "name": "image1",
+                "type": "IMAGE",
+                "link": 165
+              },
+              {
+                "name": "image2",
+                "type": "IMAGE",
+                "link": 166
+              }
+            ],
+            "outputs": [
+              {
+                "name": "IMAGE",
+                "type": "IMAGE",
+                "links": [
+                  167
+                ]
+              }
+            ],
+            "properties": {
+              "Node name for S&R": "ImageBatch"
+            },
+            "widgets_values": [],
+            "title": "(N - 1) * multiplier + 1 frames"
+          }
+        ],
+        "links": [
+          {
+            "id": 101,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 1,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 102,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 2,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 103,
+            "origin_id": 2,
+            "origin_slot": 2,
+            "target_id": 3,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 104,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 3,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 105,
+            "origin_id": 2,
+            "origin_slot": 2,
+            "target_id": 4,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 106,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 4,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 107,
+            "origin_id": 3,
+            "origin_slot": 1,
+            "target_id": 5,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 108,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 6,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 109,
+            "origin_id": 5,
+            "origin_slot": 0,
+            "target_id": 7,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 110,
+            "origin_id": 7,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 0,
+            "type": "ITEM_LIST"
+          },
+          {
+            "id": 111,
+            "origin_id": 6,
+            "origin_slot": 0,
+            "target_id": 8,
+            "target_slot": 1,
+            "type": "IMAGE"
+          },
+          {
+            "id": 112,
+            "origin_id": 8,
+            "origin_slot": 2,
+            "target_id": 9,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 113,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 9,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 114,
+            "origin_id": 8,
+            "origin_slot": 2,
+            "target_id": 10,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 115,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 10,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 116,
+            "origin_id": 10,
+            "origin_slot": 1,
+            "target_id": 11,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 117,
+            "origin_id": 1,
+            "origin_slot": 0,
+            "target_id": 11,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 118,
+            "origin_id": 10,
+            "origin_slot": 1,
+            "target_id": 12,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 119,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 13,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 120,
+            "origin_id": 9,
+            "origin_slot": 1,
+            "target_id": 13,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 121,
+            "origin_id": 9,
+            "origin_slot": 1,
+            "target_id": 14,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 122,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 15,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 123,
+            "origin_id": 14,
+            "origin_slot": 1,
+            "target_id": 15,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 124,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 16,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 125,
+            "origin_id": 15,
+            "origin_slot": 0,
+            "target_id": 17,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 126,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 18,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 127,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": 19,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 128,
+            "origin_id": 18,
+            "origin_slot": 1,
+            "target_id": 20,
+            "target_slot": 0,
+            "type": "INT"
+          },
+          {
+            "id": 129,
+            "origin_id": 16,
+            "origin_slot": 0,
+            "target_id": 21,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 130,
+            "origin_id": 19,
+            "origin_slot": 1,
+            "target_id": 21,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 131,
+            "origin_id": 20,
+            "origin_slot": 1,
+            "target_id": 21,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 132,
+            "origin_id": 17,
+            "origin_slot": 0,
+            "target_id": 22,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 133,
+            "origin_id": 19,
+            "origin_slot": 1,
+            "target_id": 22,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 134,
+            "origin_id": 20,
+            "origin_slot": 1,
+            "target_id": 22,
+            "target_slot": 2,
+            "type": "INT"
+          },
+          {
+            "id": 135,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 23,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 136,
+            "origin_id": 22,
+            "origin_slot": 0,
+            "target_id": 24,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 137,
+            "origin_id": 21,
+            "origin_slot": 0,
+            "target_id": 25,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 138,
+            "origin_id": 25,
+            "origin_slot": 0,
+            "target_id": 26,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 139,
+            "origin_id": 11,
+            "origin_slot": 0,
+            "target_id": 26,
+            "target_slot": 1,
+            "type": "FLOAT"
+          },
+          {
+            "id": 140,
+            "origin_id": 23,
+            "origin_slot": 0,
+            "target_id": 27,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 141,
+            "origin_id": 24,
+            "origin_slot": 0,
+            "target_id": 27,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 142,
+            "origin_id": 27,
+            "origin_slot": 0,
+            "target_id": 28,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 143,
+            "origin_id": 26,
+            "origin_slot": 0,
+            "target_id": 28,
+            "target_slot": 1,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 144,
+            "origin_id": 28,
+            "origin_slot": 0,
+            "target_id": 29,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 145,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 29,
+            "target_slot": 1,
+            "type": "COMBO"
+          },
+          {
+            "id": 146,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 29,
+            "target_slot": 2,
+            "type": "COMBO"
+          },
+          {
+            "id": 147,
+            "origin_id": 29,
+            "origin_slot": 0,
+            "target_id": 30,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 148,
+            "origin_id": 30,
+            "origin_slot": 0,
+            "target_id": 31,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 149,
+            "origin_id": 31,
+            "origin_slot": 0,
+            "target_id": 32,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 150,
+            "origin_id": 32,
+            "origin_slot": 0,
+            "target_id": 33,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 151,
+            "origin_id": 18,
+            "origin_slot": 0,
+            "target_id": 33,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 152,
+            "origin_id": 33,
+            "origin_slot": 0,
+            "target_id": 34,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 153,
+            "origin_id": 18,
+            "origin_slot": 1,
+            "target_id": 34,
+            "target_slot": 1,
+            "type": "INT"
+          },
+          {
+            "id": 154,
+            "origin_id": 34,
+            "origin_slot": 0,
+            "target_id": 35,
+            "target_slot": 0,
+            "type": "NPARRAY"
+          },
+          {
+            "id": 155,
+            "origin_id": 35,
+            "origin_slot": 0,
+            "target_id": 36,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 156,
+            "origin_id": 13,
+            "origin_slot": 0,
+            "target_id": 36,
+            "target_slot": 1,
+            "type": "IMAGE"
+          },
+          {
+            "id": 157,
+            "origin_id": 12,
+            "origin_slot": 2,
+            "target_id": 36,
+            "target_slot": 2,
+            "type": "BOOLEAN"
+          },
+          {
+            "id": 158,
+            "origin_id": 8,
+            "origin_slot": 3,
+            "target_id": 37,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 159,
+            "origin_id": 36,
+            "origin_slot": 0,
+            "target_id": 37,
+            "target_slot": 1,
+            "type": "*"
+          },
+          {
+            "id": 160,
+            "origin_id": 8,
+            "origin_slot": 0,
+            "target_id": 38,
+            "target_slot": 0,
+            "type": "FOREACH_LIST_CONTROL"
+          },
+          {
+            "id": 161,
+            "origin_id": 8,
+            "origin_slot": 1,
+            "target_id": 38,
+            "target_slot": 1,
+            "type": "ITEM_LIST"
+          },
+          {
+            "id": 162,
+            "origin_id": 37,
+            "origin_slot": 0,
+            "target_id": 38,
+            "target_slot": 2,
+            "type": "IMAGE"
+          },
+          {
+            "id": 163,
+            "origin_id": 38,
+            "origin_slot": 0,
+            "target_id": 39,
+            "target_slot": 0,
+            "type": "*"
+          },
+          {
+            "id": 164,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 40,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 165,
+            "origin_id": 39,
+            "origin_slot": 0,
+            "target_id": 41,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 166,
+            "origin_id": 40,
+            "origin_slot": 0,
+            "target_id": 41,
+            "target_slot": 1,
+            "type": "IMAGE"
+          },
+          {
+            "id": 167,
+            "origin_id": 41,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "IMAGE"
+          },
+          {
+            "id": 168,
+            "origin_id": 4,
+            "origin_slot": 1,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "INT"
+          }
+        ]
+      }
+    ]
+  }
+}
